@@ -152,7 +152,31 @@ points on the GUI  at will. Moving back and forth between the model and the view
     </p>
     <h2> Basic Geometric Algorithm</h2>
     <img src="./Geometry of Tribalance.svg">
-    The basic geometric algorithm to compute the three values from a point on the triangle is straightforward:
+    <figure>
+  <img src=""./Geometry of Tribalance.svg" alt="A diagram of the geometry of the algorithm with variables" style="width:100%">
+  <figcaption>Fig.1 - Geometric quantities represented by variables in the algorithm TriBalance2to3</figcaption>
+</figure>
+<p>
+    Please refer to the diagram above when considering Algorithm TriBalance2to3 below.
+In the algorithm below, I use the <a href="https://threejs.org/">THREE.js</a> library, which provides a few useful vector operations (.add,.multiplyScalar,.clampLength). However, these could be easily replaced with a lighter library or those functions could be coded by hand.
+    Additionally, I use
+a slight modification of a routine "GetRayToLineSegmentIntersection" <a href="https://stackoverflow.com/questions/14307158/how-do-you-check-for-intersection-between-a-line-segment-and-a-line-ray-emanatin">provided</a>
+    on Stack Overflow by <a href="https://stackoverflow.com/users/71689/ezolotko">ezolotko</a>is called.
+    </p>
+    <p>
+    The basic geometric algorithm to compute the three values from a point on the triangle is straightforward. The basic insight is that any point specifies an amount of "balance",
+proportionaly to how close it is to the center of the triangle,
+represented in the vector "bal" and an amount of imbalance, depending on where a ray
+intersects the edge, represented by the variable
+"imb". The final result is a linear combination of these two unit-length vectors, which is guaranteed by
+linearity to have a unit-length norm. Note that the function is parametrized by the
+norming function, we can use either the L1 or L2 norm (or any other.)
+</p>
+    <p> Before we begin, let us note that special case of the input point being precisely
+the origin or a vertex is in fact handled correctly, although this is perhaps not obvious;
+this is tested in our unit test suite.
+    </p>
+    <p>
     <ol>
     <li>If the point is the exact center of the triangle, return a perfectly balanced vector.
     </li>
@@ -173,8 +197,9 @@ points on the GUI  at will. Moving back and forth between the model and the view
     Return the sum of BAL and IMB.
     </li>
     </ol>
+    </p>
     <h2> The Inverse Function</h2>
-    <p> The inverse function reverses this action. </p>
+    <p> The function TriBalance2to3 calculates a 3-vector from the clicked point on the triangle; the inverse function invertTriBlance2to3 gives you back the clicked point when given the 3-vector. The utility of producing a 3-vector to represent the 3 attributes in balance depends entirely on having such an inverse function; no alternative TriBalance2to3 function which does not have an inverse can be useful.
 
     <h2>Alternative Approaches</h2>
     <p>
@@ -187,6 +212,9 @@ points on the GUI  at will. Moving back and forth between the model and the view
     Finally, it might be possible to define a GUI element that allows you to select from not 3, but four or more dimenstions, such as the elements of activity: Earth/Air/Water/Fire. However, this would necessarily impose an even further constraint than "balance" on what is possible. For example, if any number of elements can be
 arranged radially in a natural way so that being close to one completely excludes being close to those that are 2 or more elments away, this could be a natural system.
     </p>
+<h2> How to Best Reuse </h2>
+This project is contributing javascript and math. To make an easily reusable GUI component requires configuration and design skill. I would love to have somebody take this 
+code and make a <a href="https://d3js.org/"> d3</a> or <a href="https://reactjs.org/">React</a> component out of it, so that it could be enjoyed by others as a plug-in as easy using another d3 GUI element, for example. To perform vector operations, these algorithms use <a href="https://threejs.org/">THREE.js</a>. One could selectively replace the small number of operations used from that library to make it a pure javascript project with a light footprint (a few hundred lines of code at most for the math part.)
     
   <h2>License</h2>
   You are free to reuse this software under the terms
@@ -244,7 +272,7 @@ function get_world_triangle() {
 function vph(h,y) { return (-y); }
 function vpw(w,x) { return (x); }
 
-var ADDED_TET_PROJs = [];
+var CUR_POINT;
 
 var CUR_TRIANGLE_COORDS;
 
@@ -309,8 +337,7 @@ function render_svg() {
             
         }
     }
-    ADDED_TET_PROJs.forEach( atp => add_triangle(atp,"red"));
-
+    add_triangle(CUR_POINT,"red");
 }
 
 
@@ -349,7 +376,7 @@ function getRadioValue(name) {
 
 
 function setBalance(atp) {
-    var norm_to_use = (getRadioValue("norm") == 0 ? L1NORM :L2NORM);
+    var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);
     let bal = TriBalance2to3(atp,WORLD_TRIANGLE_COORDS,norm_to_use);
 
     $( "#d0" ).text( (bal.x * 100).toFixed(0) +  "%" );
@@ -373,7 +400,7 @@ function clicked(evt){
     // to the coordinates of our triangle.
     var yc = -(y + -H/2) ;
     var xc = x + -W/2;
-    var triangle_coords = {x: xc,y: yc};
+    var triangle_coords = new THREE.Vector2(xc,yc);
 
     // Note, we could balance and invert here to make sure we are inside the trianble!
     CUR_TRIANGLE_COORDS = triangle_coords;
@@ -383,7 +410,7 @@ function clicked(evt){
     var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);
     var triangle_coords_inside_triangle = invertTriBalance2to3(vec,WORLD_TRIANGLE_COORDS,norm_to_use);
 
-    ADDED_TET_PROJs.push(triangle_coords_inside_triangle);
+    CUR_POINT = triangle_coords_inside_triangle;
     render_svg();
 }         
 
