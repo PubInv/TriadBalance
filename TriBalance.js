@@ -90,6 +90,9 @@ function L2LENGTH(v) {
 var L1 = [L1NORM,L1LENGTH];
 var L2 = [L2NORM,L2LENGTH];
 
+function near(x,y,e = 1e-4) {
+    return Math.abs(x - y) < e;
+}
 
 // tp is the a point in the 2-dimenstional triangle space
 // wtc are the three vertices of the triangle
@@ -118,11 +121,14 @@ function TriBalance2to3(tp,wtc,normalize = L2NORM) {
     // it's length so that it is precisely on the edge.
     p.clampLength(0,total_distance_to_edge);
 
-    var p_to_edge = p.distanceTo(point_on_edge)/origin.distanceTo(point_on_edge);
+    let distance_to_p_o_e = p.distanceTo(point_on_edge);
+    let distance_p_to_orign = p.distanceTo(origin);
+    
+    var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
     
     let BAL = new THREE.Vector3(1,1,1);
     normalize(BAL);
-    BAL.multiplyScalar(p_to_edge);
+    BAL.multiplyScalar(ratio_p_to_edge);
 
     // Now the remainder of the contribution
     // to the unit vector should come from the two
@@ -137,7 +143,7 @@ function TriBalance2to3(tp,wtc,normalize = L2NORM) {
     
     let IMB = new THREE.Vector3(vs[0],vs[1],vs[2]);
     normalize(IMB);
-    IMB.multiplyScalar(1-p_to_edge);
+    IMB.multiplyScalar(1 - ratio_p_to_edge);
     
     // now construct a balanced vector proportional
     // to the length from the edge to the p towards the axis

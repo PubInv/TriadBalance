@@ -94,7 +94,7 @@
 
 <div style="display:flex; justify-content: center">
     <div id="container_to_have_global_coords_on_svg">
-        <svg id="create_svg"  height="500px" width="500px" style="background: silver;" viewbox="-250 -250 500 500"> </svg>
+        <svg id="create_svg"  height="500px" width="500px" style="background: silver;" viewbox="-250 -250 500 500" font-size="24px"> </svg>
     </div>
 </div>
 <section>
@@ -151,6 +151,7 @@ points on the GUI  at will. Moving back and forth between the model and the view
     usually greater than 1.0.
     </p>
     <h2> Basic Geometric Algorithm</h2>
+    <img src="./Geometry of Tribalance.svg">
     The basic geometric algorithm to compute the three values from a point on the triangle is straightforward:
     <ol>
     <li>If the point is the exact center of the triangle, return a perfectly balanced vector.
@@ -173,7 +174,19 @@ points on the GUI  at will. Moving back and forth between the model and the view
     </li>
     </ol>
     <h2> The Inverse Function</h2>
-    <p> The inverse function reverses this action. 
+    <p> The inverse function reverses this action. </p>
+
+    <h2>Alternative Approaches</h2>
+    <p>
+    I am not a user interface expert; nonetheless I offer these comments. The obvious alternative is to use three sliders. However, this at a minimum requires the user to make two clicks. It also does not visually represent the concept of interdependence.
+    </p>
+    <p>
+    A possible alternative which may be more attractive and in a since more elegant is to use a circle, with a the same triangle inscribed. This would be similar, but make better use of the screen space corresponding to the bounding box. The math would be slightly different, and probably simpler, than what is presented here.
+    </p>
+    <p>
+    Finally, it might be possible to define a GUI element that allows you to select from not 3, but four or more dimenstions, such as the elements of activity: Earth/Air/Water/Fire. However, this would necessarily impose an even further constraint than "balance" on what is possible. For example, if any number of elements can be
+arranged radially in a natural way so that being close to one completely excludes being close to those that are 2 or more elments away, this could be a natural system.
+    </p>
     
   <h2>License</h2>
   You are free to reuse this software under the terms
@@ -238,7 +251,7 @@ var CUR_TRIANGLE_COORDS;
 function append_text(svg,x,y,text) {
     var newText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     newText.setAttributeNS(null,"x",x);      
-    newText.setAttributeNS(null,"y",y);   
+    newText.setAttributeNS(null,"y",y);
     newText.appendChild(document.createTextNode(text));
     svg.appendChild(newText);
 }
