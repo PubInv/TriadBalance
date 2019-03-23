@@ -47,10 +47,6 @@ function GetRayToLineSegmentIntersection(rayOrigin,rayDirection,point1,point2)
     }
     return null;
 }
-// This is a crummy hack because the above code doesn't work when the segment points are in a particular order.
-function GetRayToLineSegmentInt(rayOrigin,rayDirection,p1,p2) {
-    return GetRayToLineSegmentIntersection(rayOrigin,rayDirection,p1,p2);
-}
 
 // This is the fundamental math behind a TriBalance Diagram.
 // I will probably put this in LaTeX soon.
@@ -95,13 +91,9 @@ var L1 = [L1NORM,L1LENGTH];
 var L2 = [L2NORM,L2LENGTH];
 
 function TriBalance2to3(obj,wtc,normalize = L2NORM) {
-    // First, let's set everything up in THREE.js so we can use vector math...
-    let WTC = [new THREE.Vector2(wtc[0][0],wtc[0][1]),
-               new THREE.Vector2(wtc[1][0],wtc[1][1]),
-               new THREE.Vector2(wtc[2][0],wtc[2][1])];
-    let ro = new THREE.Vector2(0,0);
-    
     let p = new THREE.Vector2(obj.x,obj.y);
+    
+    let rorigin = new THREE.Vector2(0,0);    
     // Now we want to do a linear interpolation of how far we are from an edge,
     // but also how far the projection to the edge is between the vertices.
     // We must first decide which edges the line form the orign to p intersects.
@@ -109,30 +101,31 @@ function TriBalance2to3(obj,wtc,normalize = L2NORM) {
     var first;
     var first_idx = -1;
     for(var i = 0; i < 3; i++) {
-        var r = GetRayToLineSegmentInt(ro,p,WTC[i],WTC[(i +1) %3]);
+        var r = GetRayToLineSegmentIntersection(rorigin,p,wtc[i],wtc[(i +1) %3]);
         if (r != null) {
             first_idx = i;
             first = r;
         }
     }
     console.assert(first != null);
-    if (first == null) {
-        console.log("UNABLE TO FIND",obj);
-    }
+    
     // now first tells us an edge struck by the ray. We will now
     // compute the distances...
     // This is the distance to the edge...
-    let total_distance_to_edge = ro.distanceTo(first[0]);
+    let total_distance_to_edge = rorigin.distanceTo(first[0]);
+    // If the point is outside the triangle, we clamp it's length
+    // to that is is precisely on the edge.
     p.clampLength(0,total_distance_to_edge);
-    var p_to_edge = p.distanceTo(first[0])/ro.distanceTo(first[0]);
+    
+    var p_to_edge = p.distanceTo(first[0])/rorigin.distanceTo(first[0]);
     let BAL = new THREE.Vector3(1,1,1);
 
     // Now the remainder of the contribution
     // to the unit vector should come from the two
     // points on the edge, in linear proportion.
     // These coordinates are first_idx and (first_idx+1) % 3.
-    var d1 = WTC[first_idx].distanceTo(first[0]);
-    var d2 = WTC[(first_idx+1)%3].distanceTo(first[0]);
+    var d1 = wtc[first_idx].distanceTo(first[0]);
+    var d2 = wtc[(first_idx+1)%3].distanceTo(first[0]);
     let vs = [0,0,0];
     vs[first_idx] = d2;
     vs[(first_idx+1) % 3] = d1;
@@ -154,9 +147,6 @@ function TriBalance2to3(obj,wtc,normalize = L2NORM) {
 
 // This is an attempt to invert the above function, which is basically needed
 function invertTriBalance2to3(vec,wtc,normAndLen = L2) {
-    let WTC = [new THREE.Vector2(wtc[0][0],wtc[0][1]),
-               new THREE.Vector2(wtc[1][0],wtc[1][1]),
-               new THREE.Vector2(wtc[2][0],wtc[2][1])];
     
     // First, can we determine the blance and imbalance coefficients?
     let min = Math.min(Math.min(vec.x,vec.y),vec.z);
@@ -186,18 +176,18 @@ function invertTriBalance2to3(vec,wtc,normAndLen = L2) {
     var s = imb.x + imb.y + imb.z; // one of these is always zero.
     if (imb.x == 0) {
         first_zero = 0;
-        from = WTC[2];
-        to = WTC[1];
+        from = wtc[2];
+        to = wtc[1];
         alpha = imb.y/s;
     } else if (imb.y == 0) {
         first_zero = 1;
-        from = WTC[0];
-        to = WTC[2];
+        from = wtc[0];
+        to = wtc[2];
         alpha = imb.z/s;        
     } else if (imb.z == 0) {
         first_zero = 2;
-        from = WTC[1];
-        to = WTC[0];
+        from = wtc[1];
+        to = wtc[0];
         alpha = imb.x/s;        
     }
     console.assert(first_zero != -1);
@@ -219,17 +209,17 @@ function testGetRayToLineSegmentIntersection(wtc) {
     let rd = new THREE.Vector2(1,1);
     let p1 = new THREE.Vector2(0,10);
     let p2 = new THREE.Vector2(10,0);
-    var r = GetRayToLineSegmentInt(ro,rd,p1,p2)[0];
+    var r = GetRayToLineSegmentIntersection(ro,rd,p1,p2)[0];
     console.assert(r.x == r.y);
-    var r = GetRayToLineSegmentInt(ro,rd,p2,p1)[0];
+    var r = GetRayToLineSegmentIntersection(ro,rd,p2,p1)[0];
     console.assert(r.x == r.y);
 
     var rd1 = new THREE.Vector2(94.1015625,-36.36328125);
-    let c0 = new THREE.Vector2(wtc[0][0],wtc[0][1]);
-    let c1 = new THREE.Vector2(wtc[1][0],wtc[1][1]);
-    let c2 = new THREE.Vector2(wtc[2][0],wtc[2][1]);        
+    let c0 = new THREE.Vector2(wtc[0].x,wtc[0].y);
+    let c1 = new THREE.Vector2(wtc[1].x,wtc[1].y);
+    let c2 = new THREE.Vector2(wtc[2].x,wtc[2].y);        
 
-    var r12 = GetRayToLineSegmentInt(ro,rd1,c1,c2);
+    var r12 = GetRayToLineSegmentIntersection(ro,rd1,c1,c2);
     console.assert(r12 != null);
 }
 
@@ -237,7 +227,7 @@ function testGetRayToLineSegmentIntersection(wtc) {
 function testTriBalance2to3(wtc) {
     let p = new THREE.Vector2(30000,30);    
     TriBalance2to3(p,wtc,L1NORM);
-    let py = new THREE.Vector2(0,wtc[2][1]);
+    let py = new THREE.Vector2(0,wtc[2].y);
     TriBalance2to3(py,wtc,L1NORM);
 }
 
@@ -250,7 +240,7 @@ function testInversion(wtc) {
     vpc.sub(p);
     console.assert(vpc.length() < 1e-4);
     
-    let py = new THREE.Vector2(0,wtc[2][1]);
+    let py = new THREE.Vector2(0,wtc[2].y);
     var vpy = TriBalance2to3(py,wtc,L1NORM);    
     var vpy_inv = invertTriBalance2to3(vpy,wtc,L1);
     
@@ -273,8 +263,8 @@ function testInversionNegativeY(wtc) {
 // thus exercising all angles (instigated by a bug.)
 function testInversionWithACircle(wtc,NORM) {
 
-    let wtcp = new THREE.Vector2(wtc[1][0],
-                                 wtc[1][1]);
+    let wtcp = new THREE.Vector2(wtc[1].x,
+                                 wtc[1].y);
     let radius = wtcp.length()/3;    
     let n = 10;
     let thirty_six = 2 * Math.PI / 10;
@@ -298,13 +288,14 @@ function testInversionWithACircle(wtc,NORM) {
 
 // wtc is the WORLD_TRIANGLE_COORDS, an array of three Vector2 objects.
 function testAllTriBalance(wtc) {
+    
     testGetRayToLineSegmentIntersection(wtc);
     testTriBalance2to3(wtc);
     testInversion(wtc);
     testInversionNegativeY(wtc);
 
-    let wtcp = new THREE.Vector2(wtc[1][0],
-                                 wtc[1][1]);
+    let wtcp = new THREE.Vector2(wtc[1].x,
+                                 wtc[1].y);
     
     let small_radius = wtcp.length()/3;    
     testInversionWithACircle(wtc,L1,small_radius);
