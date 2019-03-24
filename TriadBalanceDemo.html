@@ -106,13 +106,14 @@
     Triad Balance Diagrams
 </h1>
     <p>
-    This is an explanation of what may be a new graphical user interface element---the "tri-balance" diagram. The purpose is to use a
+    This is an explanation of what may be a new graphical user interface element---the "triad-balance" diagram. The purpose is to use a
 triangle to enter three values such as "Mind/Body/Sprit" or "Strength/Endurance/Flexibility" that are presumed to in some sense
 be "in balance" or where it is interesting if they are in balance. 
     </p>
     <p>
-    This is an <a href="https://github.com/PubInv/TriadBalance">open source demonstration project</a> of <a href="https://pubinv.github.io/PubInv/">Public Invention</a>. This grew out of the project <a href="https://github.com/PubInv/https://github.com/PubInv/SocialTetrahedrons">open source demonstration project</a>.
-    Altough I searched a good bit, I may have missed a previous implementation if the tri-balance diagram has been implmented previously please inform me at &lt;read.robert@gmail.com&gt;.
+      This is an <a href="https://github.com/PubInv/TriadBalance">open source demonstration project</a> of <a href="https://pubinv.github.io/PubInv/">Public Invention</a>.
+      This grew out of the project <a href="https://github.com/PubInv/https://github.com/PubInv/SocialTetrahedrons">Social Tetrahedrons</a> instigated by Mark Frazier.
+    Altough I searched a good bit, I may have missed a previous implementation if the triad-balance diagram has been implmented previously please inform me at &lt;read.robert@gmail.com&gt;.
   </p>
     <h2>Usage</h2>
 Click near the yellow triangle and are red dot will appear within the triangle and will determine three values. These three values
@@ -172,9 +173,9 @@ a slight modification of a routine "GetRayToLineSegmentIntersection" <a href="ht
     <p>
     The basic geometric algorithm to compute the three values from a point on the triangle is straightforward. The basic insight is that any point specifies an amount of "balance",
 proportionaly to how close it is to the center of the triangle,
-represented in the vector "bal" and an amount of imbalance, depending on where a ray
+represented in the vector <code class="language-js">bal</code> and an amount of imbalance, depending on where a ray
 intersects the edge, represented by the variable
-"imb". The final result is a linear combination of these two unit-length vectors, which is guaranteed by
+<code class="language-js">imb</code>. The final result is a linear combination of these two unit-length vectors, which is guaranteed by
 linearity to have a unit-length norm. Note that the function is parametrized by the
 norming function, we can use either the L1 or L2 norm (or any other.)
 </p>
@@ -182,7 +183,7 @@ norming function, we can use either the L1 or L2 norm (or any other.)
 the origin or a vertex is in fact handled correctly, although this is perhaps not obvious;
 this is tested in our unit test suite.
     </p>
-    <p> The Triad Balance2to3 algorithm takes as input a triangle point, three vertices, and
+    <p> The <code class="language-js">TriadBalance2to3</code> algorithm takes as input a triangle point, three vertices, and
 a selection of which norm to use (L1 and L2 norms are provided).</p>
     <pre><code class="language-js">
 // tp is the a point in the 2-dimensional triangle space
@@ -205,9 +206,11 @@ a selection of which norm to use (L1 and L2 norms are provided).</p>
     }
         </code></pre>        
             
-            <p> Find the point "point_on_edge" where the line from the center of the triangle through the point intersects a triangle edge.
-            Such a point must exists, and is on one edge or the intersection of two edges. Imagine a ray from the origin through point p to point E.
-            The point E is along the ray OP and length is at most the distance from the origin to the edge along this ray (to keep the point inside the triangle.)
+            <p> Find the point <code class="language-js">point_on_edge</code> where the line from the center of the triangle through the point intersects a triangle edge.
+              Such a point must exists, and is on one edge or the intersection of two edges. Imagine a ray from the <code class="language-js">origin</code> through
+              point <code class="language-js">p</code> to <code class="language-js">point_on_edge</code>.
+              The point <code class="language-js">point_on_edge</code> is along the ray from <code class="language-js">origin</code> to <code class="language-js">p</code>
+              and length is at most the distance from the origin to the edge along this ray (to keep the point inside the triangle.)
         </p>
             <pre><code class="language-js">
     let origin = new THREE.Vector2(0,0);    
@@ -227,8 +230,13 @@ a selection of which norm to use (L1 and L2 norms are provided).</p>
     // now point_on_edge is a point on edge fe_idx.     
         </code></pre>        
             
-    <p>
-    Compute the length from P to E, and the total length from O to P.
+  <p>
+    THREE.js provides a function <code class="language-js">clampLength</code> which limits the length of a vector
+    to an input value. Since we know the distance from the <code class="language-js">orign</code> to <code class="language-js">point_on_edge</code>,
+    the act of clamping <code class="language-js">p</code> brings it to the edge of the triangle if it is outside,
+    and leades it unchanged if inside.
+    Compute the length from <code class="language-js">p</code> to <code class="language-js">point_on_edge</code>, and the total length from
+    <code class="language-js">origin</code> to <code class="language-js">p</code>.
             </p>
             <pre><code class="language-js">
     let total_distance_to_edge = origin.distanceTo(point_on_edge);
@@ -238,8 +246,10 @@ a selection of which norm to use (L1 and L2 norms are provided).</p>
 
     let distance_to_p_o_e = p.distanceTo(point_on_edge);            
         </code></pre>        
-            <p> Determine the ratio (p_to_edge) of PE to OP. If this is close to zero, we are close to perfectly balanced; if it is close to 1, we are close to having zero for one attribute.
-              Compute the a balanced vector BAL  with all values the same, scaled by the ratio to the p_to_edge. 
+  <p> Determine the ratio <code class="language-js">ratio_p_to_edge</code>.
+    If this is close to zero, we are close to perfectly balanced; if it is close to 1, we are close to having zero for one attribute.
+    Compute the a balanced vector <code class="language-js">bal</code>.  with all values the same,
+    scaled by the ratio to the <code class="language-js">ratio_p_to_edge</code>. 
             </p>
     <pre><code class="language-js">        
     var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
@@ -262,7 +272,7 @@ a selection of which norm to use (L1 and L2 norms are provided).</p>
             <p>We assign these two distances to to the corresponding attributes
             in a 3-vector. The remaining one is zero. We then normalize the vector,
         driving it&#39;s length to one, and then scale it by an amount chosen such
-that by linearity the sum with the balance vector will be one: (1 - ratio_p_to_edge).
+that by linearity the sum with the balance vector will be one: <code class="language-js">(1 - ratio_p_to_edge)</code>.
         <pre><code class="language-js">    
     let vs = [0,0,0];
     vs[fe_idx] = d2;
@@ -272,7 +282,7 @@ that by linearity the sum with the balance vector will be one: (1 - ratio_p_to_e
     imb.multiplyScalar(1 - ratio_p_to_edge);
         </code></pre>            
     <p>
-Now the vector bal and the vector imb added together are the return value.
+Now the vector <code class="language-js">bal</code> and the vector <code class="language-js">imb</code> added together are the return value.
             </p>
     <pre><code class="language-js">        
     // now construct a balanced vector proportional
@@ -281,11 +291,11 @@ Now the vector bal and the vector imb added together are the return value.
     return new THREE.Vector3().add(imb).add(bal);
 }
         </code></pre>        
-    <p>
-    Return the sum of BAL and IMB.
-     </p>
     <h2> The Inverse Function</h2>
-    <p> The function TriadBalance2to3 calculates a 3-vector from the clicked point on the triangle; the inverse function invertTriadBalance2to3 gives you back the clicked point when given the 3-vector. The utility of producing a 3-vector to represent the 3 attributes in balance depends entirely on having such an inverse function; no alternative TriadBalance2to3 function which does not have an inverse can be useful.
+  <p> The function <code class="language-js">TriadBalance2to3</code> calculates a 3-vector from the clicked point on the triangle;
+    the inverse function <code class="language-js">invertTriadBalance2to3</code> gives you back the clicked point when given the 3-vector.
+    The utility of producing a 3-vector to represent the 3 attributes in balance depends entirely on having such an inverse function;
+    no alternative <code class="language-js">TriadBalance2to3</code> function which does not have an inverse can be useful.
     </p>
     <p>
     This fundamental insight of this algorithm is that since the ray trough the triangle point
@@ -392,6 +402,10 @@ function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
 arranged radially in a natural way so that being close to one completely excludes being close to those that are 2 or more elments away, this could be a natural system.
     </p>
     <h2> How to Best Reuse </h2>
+  <p>
+    <a href="https://pubinv.github.io/PubInv/">Public Invention</a> is a non-profit promoting the idea of "Inventing in the public, for the public." We are always seeking volunteer Public Inventors and Invention Coaches.
+    Addtionally, we always need web designers, artists, programmers and writers, and this project is no exception, although it is at a stable point for what it is.
+    </p>
     <p>
 This project is contributing javascript and math. To make an easily reusable GUI component requires configuration and design skill. I would love to have somebody take this 
 code and make a <a href="https://d3js.org/"> d3</a> or <a href="https://reactjs.org/">React</a> component out of it, so that it could be enjoyed by others as a plug-in as easy using another d3 GUI element, for example. To perform vector operations, these algorithms use <a href="https://threejs.org/">THREE.js</a>. One could selectively replace the small number of operations used from that library to make it a pure javascript project with a light footprint (a few hundred lines of code at most for the math part.)
