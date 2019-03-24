@@ -48,11 +48,10 @@
     
 </section>    
 <body>
-    <script src="./js/prism.js"></script>
-  <br>
+<script src="./js/prism.js"></script>
+<br>
   <div class="container">
     <h1 class="section-title h1">TriBalance</h1>
-    
     <h2>First Three Dimensions</h2>
     <div>
       <button type="button" class="btn btn-primary" id="MBS">Mind/Body/Spirit</button>
