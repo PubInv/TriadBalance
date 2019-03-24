@@ -1,20 +1,20 @@
 <!--
     Copyright 2019, Robert L. Read
 
-    This file is part of TriBalance.
+    This file is part of TriadBalance.
 
-    TriBalance is free software: you can redistribute it and/or modify
+    TriadBalance is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    TriBalance is distributed in the hope that it will be useful,
+    TriadBalance is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with TriBalance.  If not, see <https://www.gnu.org/licenses/>.
+    along with TriadBalance.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <!doctype html>
@@ -22,8 +22,8 @@
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <title>TriBalance</title>
-    <meta name="description" content="Math and demonstration of a TriBalance diagram represneting attributes in balance such as Mind/Body/Spirit">
+    <title>Triad Balance Interactive Diagram</title>
+    <meta name="description" content="Math and demonstration of a Triad Balance Diagram representing attributes in balance such as Mind/Body/Spirit">
     <meta name="author" content="Robert L. Read">
 
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -51,7 +51,7 @@
     <script src="./js/prism.js"></script>
   <br>
   <div class="container">
-    <h1 class="section-title h1">TriBalance</h1>
+    <h1 class="section-title h1">Triad Balance</h1>
     
     <h2>First Three Dimensions</h2>
     <div>
@@ -103,7 +103,7 @@
 </div>
 <section>
   <h1>
-    TriBalance Diagrams
+    Triad Balance Diagrams
 </h1>
     <p>
     This is an explanation of what may be a new graphical user interface element---the "tri-balance" diagram. The purpose is to use a
@@ -111,7 +111,7 @@ triangle to enter three values such as "Mind/Body/Sprit" or "Strength/Endurance/
 be "in balance" or where it is interesting if they are in balance. 
     </p>
     <p>
-    This is an <a href="https://github.com/PubInv/TriBalance">open source demonstration project</a> of <a href="https://pubinv.github.io/PubInv/">Public Invention</a>. This grew out of the project <a href="https://github.com/PubInv/https://github.com/PubInv/SocialTetrahedrons">open source demonstration project</a>.
+    This is an <a href="https://github.com/PubInv/TriadBalance">open source demonstration project</a> of <a href="https://pubinv.github.io/PubInv/">Public Invention</a>. This grew out of the project <a href="https://github.com/PubInv/https://github.com/PubInv/SocialTetrahedrons">open source demonstration project</a>.
     Altough I searched a good bit, I may have missed a previous implementation if the tri-balance diagram has been implmented previously please inform me at &lt;read.robert@gmail.com&gt;.
   </p>
     <h2>Usage</h2>
@@ -155,13 +155,12 @@ points on the GUI  at will. Moving back and forth between the model and the view
     usually greater than 1.0.
     </p>
     <h2> Basic Geometric Algorithm</h2>
-    <img src="./Geometry of Tribalance.svg">
     <figure>
-  <img src=""./Geometry of Tribalance.svg" alt="A diagram of the geometry of the algorithm with variables" style="width:100%">
-  <figcaption>Fig.1 - Geometric quantities represented by variables in the algorithm TriBalance2to3</figcaption>
+  <img src="./Geometry_of_TriadBalance.svg" alt="A diagram of the geometry of the algorithm with variables" style="width:100%">
+  <figcaption>Fig.1 - Geometric quantities represented by variables in the algorithm TriadBalance2to3</figcaption>
 </figure>
 <p>
-    Please refer to the diagram above when considering Algorithm TriBalance2to3 below.
+    Please refer to the diagram above when considering Algorithm TriadBalance2to3 below.
 In the algorithm below, I use the <a href="https://threejs.org/">THREE.js</a> library, which provides a few useful vector operations (.add,.multiplyScalar,.clampLength). However, these could be easily replaced with a lighter library or those functions could be coded by hand.
     We should all be grateful to the contributors to THREE.js, but it is coded in an
 imperative, rather than a functional style, which creates extra lines of code and
@@ -183,14 +182,14 @@ norming function, we can use either the L1 or L2 norm (or any other.)
 the origin or a vertex is in fact handled correctly, although this is perhaps not obvious;
 this is tested in our unit test suite.
     </p>
-    <p> The TriBalance2to3 algorithm takes as input a triangle point, three vertices, and
+    <p> The Triad Balance2to3 algorithm takes as input a triangle point, three vertices, and
 a selection of which norm to use (L1 and L2 norms are provided).</p>
     <pre><code class="language-js">
 // tp is the a point in the 2-dimensional triangle space
 // wtc are the three vertices of an eqilateral triangle whose centroid is the origin
 // LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
 // return the corresponding 3-vector in the attribute space
-    function TriBalance2to3(tp,wtc,LXnorm_and_length = L2) {
+    function Triad Balance2to3(tp,wtc,LXnorm_and_length = L2) {
         </code></pre>
             <p> For clarity, we provide a name for the normalization function.</p>
     <pre><code class="language-js">
@@ -286,7 +285,7 @@ Now the vector bal and the vector imb added together are the return value.
     Return the sum of BAL and IMB.
      </p>
     <h2> The Inverse Function</h2>
-    <p> The function TriBalance2to3 calculates a 3-vector from the clicked point on the triangle; the inverse function invertTriBlance2to3 gives you back the clicked point when given the 3-vector. The utility of producing a 3-vector to represent the 3 attributes in balance depends entirely on having such an inverse function; no alternative TriBalance2to3 function which does not have an inverse can be useful.
+    <p> The function TriadBalance2to3 calculates a 3-vector from the clicked point on the triangle; the inverse function invertTriadBalance2to3 gives you back the clicked point when given the 3-vector. The utility of producing a 3-vector to represent the 3 attributes in balance depends entirely on having such an inverse function; no alternative TriadBalance2to3 function which does not have an inverse can be useful.
     </p>
     <p>
     This fundamental insight of this algorithm is that since the ray trough the triangle point
@@ -306,7 +305,7 @@ us the point in two space.
 // wtc are the three vertices of an eqilateral triangle whose centroid is the origin
 // LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
 // return the corresponding 2-vector in the triangle space
-function invertTriBalance2to3(vec,wtc,LXnorm_and_length = L2) {
+function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
     let length = LXnorm_and_length[1];
     let min = Math.min(Math.min(vec.x,vec.y),vec.z);
     let imb = new THREE.Vector3(vec.x - min, vec.y - min, vec.z - min);
@@ -392,13 +391,19 @@ function invertTriBalance2to3(vec,wtc,LXnorm_and_length = L2) {
     Finally, it might be possible to define a GUI element that allows you to select from not 3, but four or more dimenstions, such as the elements of activity: Earth/Air/Water/Fire. However, this would necessarily impose an even further constraint than "balance" on what is possible. For example, if any number of elements can be
 arranged radially in a natural way so that being close to one completely excludes being close to those that are 2 or more elments away, this could be a natural system.
     </p>
-<h2> How to Best Reuse </h2>
+    <h2> How to Best Reuse </h2>
+    <p>
 This project is contributing javascript and math. To make an easily reusable GUI component requires configuration and design skill. I would love to have somebody take this 
 code and make a <a href="https://d3js.org/"> d3</a> or <a href="https://reactjs.org/">React</a> component out of it, so that it could be enjoyed by others as a plug-in as easy using another d3 GUI element, for example. To perform vector operations, these algorithms use <a href="https://threejs.org/">THREE.js</a>. One could selectively replace the small number of operations used from that library to make it a pure javascript project with a light footprint (a few hundred lines of code at most for the math part.)
+</p>
+    <h3>How to Lighten the Footpring</h3>
+    The current approach works with any equalateral triangle centered on the origin, using vector math. If you fixed the triangles orientation and size,
+it wold be possible to optimize some of the math so that fewer vector operations were required. This would lower the footprint of the javascript code
+that would have to be included to build an interactive diagram.
     
   <h2>License</h2>
   You are free to reuse this software under the terms
-  of the GNU General Public License.
+of the GNU General Public License. Contact me (&lt;read.robert@gmail.com&gt;) with any quesitons or comments.
 </section>
 </div>
 
@@ -414,7 +419,7 @@ code and make a <a href="https://d3js.org/"> d3</a> or <a href="https://reactjs.
 
 
 <!-- This is brings in the math and the norm defintions we need -->
-    <script src="./TriBalance.js"></script>
+    <script src="./TriadBalance.js"></script>
 
     <script>
 
@@ -557,7 +562,7 @@ function getRadioValue(name) {
 
 function setBalance(atp) {
     var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);
-    let bal = TriBalance2to3(atp,WORLD_TRIANGLE_COORDS,norm_to_use);
+    let bal = TriadBalance2to3(atp,WORLD_TRIANGLE_COORDS,norm_to_use);
 
     $( "#d0" ).text( (bal.x * 100).toFixed(0) +  "%" );
     $( "#d1" ).text( (bal.y * 100).toFixed(0) +  "%" );
@@ -588,7 +593,7 @@ function clicked(evt){
     var vec = new THREE.Vector3(bal[0],bal[1],bal[2]);
     
     var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);
-    var triangle_coords_inside_triangle = invertTriBalance2to3(vec,WORLD_TRIANGLE_COORDS,norm_to_use);
+    var triangle_coords_inside_triangle = invertTriadBalance2to3(vec,WORLD_TRIANGLE_COORDS,norm_to_use);
 
     CUR_POINT = triangle_coords_inside_triangle;
     render_svg();
@@ -600,7 +605,7 @@ $( document ).ready(function() {
     
     WORLD_TRIANGLE_COORDS = get_world_triangle();
     
-    testAllTriBalance(WORLD_TRIANGLE_COORDS);
+    testAllTriadBalance(WORLD_TRIANGLE_COORDS);
     
     main();
 });
