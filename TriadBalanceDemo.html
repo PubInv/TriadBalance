@@ -25,7 +25,7 @@
     <title>Triad Balance Interactive Diagram</title>
     <meta name="description" content="Math and demonstration of a Triad Balance Diagram representing attributes in balance such as Mind/Body/Spirit">
     <meta name="author" content="Robert L. Read">
-
+    <link rel="shortcut icon" type="image/ico" href="./images/favicon.ico"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -156,7 +156,7 @@ points on the GUI  at will. Moving back and forth between the model and the view
     </p>
     <h2> Basic Geometric Algorithm</h2>
     <figure>
-  <img src="./Geometry_of_TriadBalance.svg" alt="A diagram of the geometry of the algorithm with variables" style="width:100%">
+  <img src="./images/Geometry_of_TriadBalance.svg" alt="A diagram of the geometry of the algorithm with variables" style="width:100%">
   <figcaption>Fig.1 - Geometric quantities represented by variables in the algorithm TriadBalance2to3</figcaption>
 </figure>
 <p>
@@ -396,7 +396,7 @@ arranged radially in a natural way so that being close to one completely exclude
 This project is contributing javascript and math. To make an easily reusable GUI component requires configuration and design skill. I would love to have somebody take this 
 code and make a <a href="https://d3js.org/"> d3</a> or <a href="https://reactjs.org/">React</a> component out of it, so that it could be enjoyed by others as a plug-in as easy using another d3 GUI element, for example. To perform vector operations, these algorithms use <a href="https://threejs.org/">THREE.js</a>. One could selectively replace the small number of operations used from that library to make it a pure javascript project with a light footprint (a few hundred lines of code at most for the math part.)
 </p>
-    <h3>How to Lighten the Footpring</h3>
+    <h4>How to Lighten the Footprint</h4>
     The current approach works with any equalateral triangle centered on the origin, using vector math. If you fixed the triangles orientation and size,
 it wold be possible to optimize some of the math so that fewer vector operations were required. This would lower the footprint of the javascript code
 that would have to be included to build an interactive diagram.
