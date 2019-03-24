@@ -1,18 +1,18 @@
 // Copyright 2019, Robert L. Read
-// This file is part of TriBalance.
+// This file is part of TriadBalance.
 //
-// TriBalance is free software: you can redistribute it and/or modify
+// TriadBalance is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// TriBalance is distributed in the hope that it will be useful,
+// TriadBalance is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with TriBalance.  If not, see <https://www.gnu.org/licenses/>.
+// along with TriadBalance.  If not, see <https://www.gnu.org/licenses/>.
 
 
 
@@ -48,12 +48,12 @@ function GetRayToLineSegmentIntersection(rayOrigin,rayDirection,point1,point2)
     return null;
 }
 
-// This is the fundamental math behind a TriBalance Diagram.
+// This is the fundamental math behind a TriadBalance Diagram.
 // I will probably put this in LaTeX soon.
 // A balance diagram is a way of choosing a unit vector
 // of n dimensions (most usefully 3) from a n-gon.
 // If n > 3, it is not possible to complete map all points.
-// The fundamental math of a TriBalance diagram is to convert
+// The fundamental math of a TriadBalance diagram is to convert
 // between a point on the 2-dimensional n-gon (the "representation") from
 // the "balance" -- a n-dimensional vector.
 // Call the function that produces the repesentation from a unit vector
@@ -98,7 +98,7 @@ function near(x,y,e = 1e-4) {
 // wtc are the three vertices of an eqilateral triangle whose centroid is the origin
 // LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
 // return the corresponding 3-vector in the attribute space
-function TriBalance2to3(tp,wtc,LXnorm_and_length = L2) {
+function TriadBalance2to3(tp,wtc,LXnorm_and_length = L2) {
     let LXnormalize = LXnorm_and_length[0];
     if (near(tp.lengthSq(),0,1e-5)) {
         return LXnormalize(new THREE.Vector3(1,1,1));
@@ -157,7 +157,7 @@ function TriBalance2to3(tp,wtc,LXnorm_and_length = L2) {
 // wtc are the three vertices of an eqilateral triangle whose centroid is the origin
 // LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
 // return the corresponding 2-vector in the triangle space
-function invertTriBalance2to3(vec,wtc,LXnorm_and_length = L2) {
+function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
     let length = LXnorm_and_length[1];
     let min = Math.min(Math.min(vec.x,vec.y),vec.z);
     let imb = new THREE.Vector3(vec.x - min, vec.y - min, vec.z - min);
@@ -232,19 +232,19 @@ function testGetRayToLineSegmentIntersection(wtc) {
 }
 
 
-function testTriBalance2to3(wtc) {
+function testTriadBalance2to3(wtc) {
     let p = new THREE.Vector2(30000,30);    
-    let pv = TriBalance2to3(p,wtc,L1);
+    let pv = TriadBalance2to3(p,wtc,L1);
     console.assert(near(L1LENGTH(pv),1));
     let py = new THREE.Vector2(0,wtc[2].y);
-    let pyv = TriBalance2to3(py,wtc,L1);
+    let pyv = TriadBalance2to3(py,wtc,L1);
     console.assert(near(L1LENGTH(pyv),1));    
 }
 
 function testOriginAndVertices(wtc) {
     // The origin should return a perfectly balanced vector
     let o = new THREE.Vector2(0,0);
-    let ov = TriBalance2to3(o,wtc,L1);
+    let ov = TriadBalance2to3(o,wtc,L1);
     console.assert(near(ov.x,1/3));
     console.assert(near(ov.y,1/3));
     console.assert(near(ov.z,1/3));    
@@ -252,35 +252,35 @@ function testOriginAndVertices(wtc) {
     // A vertex should return a vector with a 1 in exactly 1 position
     {
         let p = new THREE.Vector2(wtc[0].x,wtc[0].y);
-        let pv = TriBalance2to3(p,wtc,L1);
+        let pv = TriadBalance2to3(p,wtc,L1);
         console.assert(near(pv.x,1));
     }
 
     {
         let p = new THREE.Vector2(wtc[1].x,wtc[1].y);
-        let pv = TriBalance2to3(p,wtc,L1);
+        let pv = TriadBalance2to3(p,wtc,L1);
         console.assert(near(pv.y,1));
     }
 
     {
         let p = new THREE.Vector2(wtc[2].x,wtc[2].y);
-        let pv = TriBalance2to3(p,wtc,L1);
+        let pv = TriadBalance2to3(p,wtc,L1);
         console.assert(near(pv.z,1));
     }
 }
 
 function testInversion(wtc) {
     let p = new THREE.Vector2(30,30);    
-    var vp = TriBalance2to3(p,wtc,L1);
-    var vp_inv = invertTriBalance2to3(vp,wtc,L1);
+    var vp = TriadBalance2to3(p,wtc,L1);
+    var vp_inv = invertTriadBalance2to3(vp,wtc,L1);
     // test length here
     var vpc = vp_inv.clone();
     vpc.sub(p);
     console.assert(vpc.length() < 1e-4);
     
     let py = new THREE.Vector2(0,wtc[2].y);
-    var vpy = TriBalance2to3(py,wtc,L1);    
-    var vpy_inv = invertTriBalance2to3(vpy,wtc,L1);
+    var vpy = TriadBalance2to3(py,wtc,L1);    
+    var vpy_inv = invertTriadBalance2to3(vpy,wtc,L1);
     
     var vpyc = vpy_inv.clone();
     vpyc.sub(py);
@@ -289,8 +289,8 @@ function testInversion(wtc) {
 
 function testInversionNegativeY(wtc) {
     let p = new THREE.Vector2(0,-30);    
-    var vp = TriBalance2to3(p,wtc,L1);
-    var vp_inv = invertTriBalance2to3(vp,wtc,L1);
+    var vp = TriadBalance2to3(p,wtc,L1);
+    var vp_inv = invertTriadBalance2to3(vp,wtc,L1);
     // test length here
     var vpc = vp_inv.clone();
     vpc.sub(p);
@@ -315,8 +315,8 @@ function testInversionWithACircle(wtc,NORM) {
         {
             let p = new THREE.Vector2(x,y);
             p.multiplyScalar(radius);        
-            var vp = TriBalance2to3(p,wtc,NORM);
-            var vp_inv = invertTriBalance2to3(vp,wtc,NORM);
+            var vp = TriadBalance2to3(p,wtc,NORM);
+            var vp_inv = invertTriadBalance2to3(vp,wtc,NORM);
             var vpyc = vp_inv.clone();
             vpyc.sub(p);
             console.assert(vpyc.length() < 1e-4);
@@ -325,10 +325,10 @@ function testInversionWithACircle(wtc,NORM) {
 }
 
 // wtc is the WORLD_TRIANGLE_COORDS, an array of three Vector2 objects.
-function testAllTriBalance(wtc) {
+function testAllTriadBalance(wtc) {
     testOriginAndVertices(wtc);    
     testGetRayToLineSegmentIntersection(wtc);
-    testTriBalance2to3(wtc);
+    testTriadBalance2to3(wtc);
     testInversion(wtc);
     testInversionNegativeY(wtc);
 
