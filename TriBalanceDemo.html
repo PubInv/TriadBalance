@@ -42,9 +42,13 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="./js/three.js"></script>
+
+    <!-- Prism for typesetting code -->
+	<link href="css/prism.css" rel="stylesheet" />
     
     
-<body>
+    <body>
+    <script src="./js/prism.js"></script>
   <br>
   <div class="container">
     <h1 class="section-title h1">TriBalance</h1>
@@ -159,6 +163,9 @@ points on the GUI  at will. Moving back and forth between the model and the view
 <p>
     Please refer to the diagram above when considering Algorithm TriBalance2to3 below.
 In the algorithm below, I use the <a href="https://threejs.org/">THREE.js</a> library, which provides a few useful vector operations (.add,.multiplyScalar,.clampLength). However, these could be easily replaced with a lighter library or those functions could be coded by hand.
+    We should all be grateful to the contributors to THREE.js, but it is coded in an
+imperative, rather than a functional style, which creates extra lines of code and
+a bit of awkwardness in the code below. (I am fan of purely functional programming whenever possible.)
     Additionally, I use
 a slight modification of a routine "GetRayToLineSegmentIntersection" <a href="https://stackoverflow.com/questions/14307158/how-do-you-check-for-intersection-between-a-line-segment-and-a-line-ray-emanatin">provided</a>
     on Stack Overflow by <a href="https://stackoverflow.com/users/71689/ezolotko">ezolotko</a>is called.
@@ -176,30 +183,203 @@ norming function, we can use either the L1 or L2 norm (or any other.)
 the origin or a vertex is in fact handled correctly, although this is perhaps not obvious;
 this is tested in our unit test suite.
     </p>
+    <p> The TriBalance2to3 algorithm takes as input a triangle point, three vertices, and
+a selection of which norm to use (L1 and L2 norms are provided).</p>
+    <pre><code class="language-js">
+// tp is the a point in the 2-dimensional triangle space
+// wtc are the three vertices of an eqilateral triangle whose centroid is the origin
+// LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
+// return the corresponding 3-vector in the attribute space
+    function TriBalance2to3(tp,wtc,LXnorm_and_length = L2) {
+        </code></pre>
+            <p> For clarity, we provide a name for the normalization function.</p>
+    <pre><code class="language-js">
+    let LXnormalize = LXnorm_and_length[0];            
+        </code></pre>        
     <p>
-    <ol>
-    <li>If the point is the exact center of the triangle, return a perfectly balanced vector.
-    </li>
-    <li> Find the point E where the line from the center of the triangle through the point intersects a triangle edge. Such a point must exists, and is on one edge or the intersection of two edges. Imagine a ray from the origin through point P to point E. The point E is along the ray OP and length is at most the distance from the origin to the edge along this ray (to keep the point inside the triangle.)
-</li>
-    <li>
-    Compute the lengte from P to E, and the total length from O to P.
-    </li>
-    <li> Determine the ratio (p_to_edge) of PE to OP. If this is close to zero, we are close to perfectly balanced; if it is close to 1, we are close to having zero for one attribute.
-    </li>
-    <li>
-    Compute the a balanced vector BAL  with all values the same, scaled by the ratio to the p_to_edge. 
-    </li>
-    <li>
-    Compute the imbalanced vector IMB scaled (1-p_to_edge).
-    </li>
-    <li>
+            If the point is the triangle exact center of the triangle, we cannot
+        construct a ray to an edge, and we return a perfectly balanced vector.
+             </p>
+            <pre><code class="language-js">
+    if (near(tp.lengthSq(),0,1e-5)) {
+        return LXnormalize(new THREE.Vector3(1,1,1));
+    }
+        </code></pre>        
+            
+            <p> Find the point "point_on_edge" where the line from the center of the triangle through the point intersects a triangle edge.
+            Such a point must exists, and is on one edge or the intersection of two edges. Imagine a ray from the origin through point p to point E.
+            The point E is along the ray OP and length is at most the distance from the origin to the edge along this ray (to keep the point inside the triangle.)
+        </p>
+            <pre><code class="language-js">
+    let origin = new THREE.Vector2(0,0);    
+    // Now we want to do a linear interpolation of how far we are from an edge,
+    // but also how far the projection to the edge is between the vertices.
+    // We must first decide which edges the line form the orign to p intersects.
+    // If it intersects two segments, then it is aimed at a vertex.
+    var point_on_edge; 
+    var fe_idx = -1; // index of the first edge we intersect
+    for(var i = 0; i < 3 && fe_idx < 0; i++) {
+        var r = GetRayToLineSegmentIntersection(origin,p,wtc[i],wtc[(i +1) % 3]);
+        if (r != null) { // if null, the ray did not intersect the edge
+            fe_idx = i;
+            point_on_edge = r[0]; // The first comp. of return value is intersection
+        }
+    }
+    // now point_on_edge is a point on edge fe_idx.     
+        </code></pre>        
+            
+    <p>
+    Compute the length from P to E, and the total length from O to P.
+            </p>
+            <pre><code class="language-js">
+    let total_distance_to_edge = origin.distanceTo(point_on_edge);
+    // If the point is outside the triangle, we clamp (truncate if needed)
+    // it's length so that it is precisely on the edge.
+    p.clampLength(0,total_distance_to_edge);
+
+    let distance_to_p_o_e = p.distanceTo(point_on_edge);            
+        </code></pre>        
+            <p> Determine the ratio (p_to_edge) of PE to OP. If this is close to zero, we are close to perfectly balanced; if it is close to 1, we are close to having zero for one attribute.
+              Compute the a balanced vector BAL  with all values the same, scaled by the ratio to the p_to_edge. 
+            </p>
+    <pre><code class="language-js">        
+    var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
+    
+    let bal = LXnormalize(new THREE.Vector3(1,1,1));
+    bal.multiplyScalar(ratio_p_to_edge);
+        </code></pre>
+            <p>
+            Now to compute the "imbalance", we linearly divide the edge
+        into the distance to the two vertices. Possibly one of these lengths will be zero.
+            </p>
+        <pre><code class="language-js">
+    // Now the remainder of the contribution
+    // to the unit vector should come from the two
+    // points on the edge, in linear proportion.
+    // These coordinates are fe_idx and (fe_idx+1) % 3.
+    var d1 = wtc[fe_idx].distanceTo(point_on_edge);
+    var d2 = wtc[(fe_idx+1) % 3].distanceTo(point_on_edge);
+        </code></pre>
+            <p>We assign these two distances to to the corresponding attributes
+            in a 3-vector. The remaining one is zero. We then normalize the vector,
+        driving it&#39;s length to one, and then scale it by an amount chosen such
+that by linearity the sum with the balance vector will be one: (1 - ratio_p_to_edge).
+        <pre><code class="language-js">    
+    let vs = [0,0,0];
+    vs[fe_idx] = d2;
+    vs[(fe_idx+1) % 3] = d1;
+    
+    let imb = LXnormalize(new THREE.Vector3(vs[0],vs[1],vs[2]));
+    imb.multiplyScalar(1 - ratio_p_to_edge);
+        </code></pre>            
+    <p>
+Now the vector bal and the vector imb added together are the return value.
+            </p>
+    <pre><code class="language-js">        
+    // now construct a balanced vector proportional
+    // to the length from the edge to the p towards the axis
+    // so that this be a unit vector if p is the origin.
+    return new THREE.Vector3().add(imb).add(bal);
+}
+        </code></pre>        
+    <p>
     Return the sum of BAL and IMB.
-    </li>
-    </ol>
-    </p>
+     </p>
     <h2> The Inverse Function</h2>
     <p> The function TriBalance2to3 calculates a 3-vector from the clicked point on the triangle; the inverse function invertTriBlance2to3 gives you back the clicked point when given the 3-vector. The utility of producing a 3-vector to represent the 3 attributes in balance depends entirely on having such an inverse function; no alternative TriBalance2to3 function which does not have an inverse can be useful.
+    </p>
+    <p>
+    This fundamental insight of this algorithm is that since the ray trough the triangle point
+touches at most two edges, there is always a component of the attribute vector that
+is purely contributed by the "balance" component, and it is always a minimum of the
+values in the vector. We can therefore find this minimum, construct a balance vector
+with those values, subtract it from the input, and have a vector representing pure
+imbalance which has at least one zero in it. The two non-zero values represent a linear
+interpolation along the edge (or point, if two edges) that the ray strikes. Since
+we constucted the attribut value as a ratio of lengths between the vertices, we can
+use this fact to reconstruct, via linear interpretation, a point on the edge.
+    A second linear interpretation from the point based on the imbalance length gives
+us the point in two space.
+    </p>
+    <pre><code class="language-js">
+// vec is a 3-vector in the attribute space
+// wtc are the three vertices of an eqilateral triangle whose centroid is the origin
+// LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
+// return the corresponding 2-vector in the triangle space
+function invertTriBalance2to3(vec,wtc,LXnorm_and_length = L2) {
+    let length = LXnorm_and_length[1];
+    let min = Math.min(Math.min(vec.x,vec.y),vec.z);
+    let imb = new THREE.Vector3(vec.x - min, vec.y - min, vec.z - min);
+    let bal = vec.clone();
+    bal.sub(imb);
+    </code></pre>
+        <p>
+        Now it is the case that by construction, imb has has at least one zero
+    (whichever attributes were minimal), and bal has all attributes equal.
+        </p>
+    <pre><code class="language-js">    
+    // Now that we have balance, we need to compute it's length,
+    // which is dependent on the norm we chose!
+
+    let imb_r = length(imb);
+    let bal_r = length(bal);
+    console.assert(Math.abs((bal_r+imb_r) - 1) <   1e-5);
+    </code></pre>
+        <p> The ratio computed below is a ratio of values in attribute space;
+    it is not obious therefore that this can be used to perform a linear
+    interpreation in the <em>triangle</em> coordinate space. However,
+    we intensionally constructed the attribute vector in proportion to
+    the distance in the triangle space, so this works no matter which norm
+    we use in the attribute space.
+        </p>
+    <pre><code class="language-js">        
+    // Now we have the ratios. We need to determine the direction.
+    // this is a function of the imbalance vector. We could determine
+    // which side we are on, and then compute our position along that
+    // to determine a point on the triangle, and then multiply by the imb_r
+    // to obtain the actual point.
+    // At least one value of imb will be zero.
+    var from, to, ratio;
+    // the points are OPPOSITE the zero
+    // ratio will be the ratio along the triangle edge
+    // it requires a little thought to understand which
+    // of the other points should be the "from" and the "to"
+    // for the interpolation which occurs later.
+    var s = imb.x + imb.y + imb.z; // one of these is always zero.
+    if (imb.x == 0) {
+        from = wtc[2];
+        to = wtc[1];
+        ratio = imb.y/s;
+    } else if (imb.y == 0) {
+        from = wtc[0];
+        to = wtc[2];
+        ratio = imb.z/s;        
+    } else if (imb.z == 0) {
+        from = wtc[1];
+        to = wtc[0];
+        ratio = imb.x/s;        
+    }
+    </code></pre>
+        <p>The THREE.js library provides is a linear interpolation betwen
+    two vectors, named "lerpVectors", out of the box. We use this once
+    to interpolate along the edge, and then once to interpolate from th
+    origin towared this point.
+    <pre><code class="language-js">        
+    // The point on the triangle is by construction
+    // on one edge of the triangle.
+    var onTriangle = new THREE.Vector2();
+    onTriangle.lerpVectors(from,to,ratio);
+    // now onTriangle is a point on the triangle
+    // now, having found that we interpolate a ray
+    // to it of length imb_r...
+    let origin = new THREE.Vector2(0,0);
+    let inversion = new THREE.Vector2();
+    inversion.lerpVectors(origin,
+                          onTriangle,
+                          imb_r);
+    return inversion;
+}
+        </code></pre>        
 
     <h2>Alternative Approaches</h2>
     <p>

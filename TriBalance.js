@@ -94,12 +94,14 @@ function near(x,y,e = 1e-4) {
     return Math.abs(x - y) < e;
 }
 
-// tp is the a point in the 2-dimenstional triangle space
+// tp is the a point in the 2-dimensional triangle space
 // wtc are the three vertices of an eqilateral triangle whose centroid is the origin
-// normalize is a pair of functions to to normalize a vector and compute the length
-function TriBalance2to3(tp,wtc,LX = L2) {
+// LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
+// return the corresponding 3-vector in the attribute space
+function TriBalance2to3(tp,wtc,LXnorm_and_length = L2) {
+    let LXnormalize = LXnorm_and_length[0];
     if (near(tp.lengthSq(),0,1e-5)) {
-        return LX[0](new THREE.Vector3(1,1,1));
+        return LXnormalize(new THREE.Vector3(1,1,1));
     }
     let p = new THREE.Vector2(tp.x,tp.y);
     
@@ -114,7 +116,7 @@ function TriBalance2to3(tp,wtc,LX = L2) {
         var r = GetRayToLineSegmentIntersection(origin,p,wtc[i],wtc[(i +1) % 3]);
         if (r != null) { // if null, the ray did not intersect the edge
             fe_idx = i;
-            point_on_edge = r[0];
+            point_on_edge = r[0]; // The first comp. of return value is intersection
         }
     }
     // now point_on_edge is a point on edge fe_idx.     
@@ -125,12 +127,10 @@ function TriBalance2to3(tp,wtc,LX = L2) {
     p.clampLength(0,total_distance_to_edge);
 
     let distance_to_p_o_e = p.distanceTo(point_on_edge);
-    let distance_p_to_orign = p.distanceTo(origin);
     
     var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
     
-    let bal = new THREE.Vector3(1,1,1);
-    LX[0](bal);
+    let bal = LXnormalize(new THREE.Vector3(1,1,1));
     bal.multiplyScalar(ratio_p_to_edge);
 
     // Now the remainder of the contribution
@@ -138,31 +138,34 @@ function TriBalance2to3(tp,wtc,LX = L2) {
     // points on the edge, in linear proportion.
     // These coordinates are fe_idx and (fe_idx+1) % 3.
     var d1 = wtc[fe_idx].distanceTo(point_on_edge);
-    var d2 = wtc[(fe_idx+1)%3].distanceTo(point_on_edge);
+    var d2 = wtc[(fe_idx+1) % 3].distanceTo(point_on_edge);
     
     let vs = [0,0,0];
     vs[fe_idx] = d2;
     vs[(fe_idx+1) % 3] = d1;
     
-    let imb = new THREE.Vector3(vs[0],vs[1],vs[2]);
-    LX[0](imb);
+    let imb = LXnormalize(new THREE.Vector3(vs[0],vs[1],vs[2]));
     imb.multiplyScalar(1 - ratio_p_to_edge);
     
     // now construct a balanced vector proportional
     // to the length from the edge to the p towards the axis
     // so that this be a unit vector if p is the origin.
-    return  new THREE.Vector3().add(imb).add(bal);
+    return new THREE.Vector3().add(imb).add(bal);
 }
 
-// This is an attempt to invert the above function, which is basically needed
-function invertTriBalance2to3(vec,wtc,normAndLen = L2) {
+// vec is a 3-vector in the attribute space
+// wtc are the three vertices of an eqilateral triangle whose centroid is the origin
+// LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
+// return the corresponding 2-vector in the triangle space
+function invertTriBalance2to3(vec,wtc,LXnorm_and_length = L2) {
+    let length = LXnorm_and_length[1];
     let min = Math.min(Math.min(vec.x,vec.y),vec.z);
     let imb = new THREE.Vector3(vec.x - min, vec.y - min, vec.z - min);
     let bal = vec.clone();
     bal.sub(imb);
-    // Now that we have balance, we need to compute it's length---unfortuantely,
-    // This length is dependent on the norm we chose!
-    let length = normAndLen[1];
+    // Now that we have balance, we need to compute it's length,
+    // which is dependent on the norm we chose!
+
     let imb_r = length(imb);
     let bal_r = length(bal);
     console.assert(Math.abs((bal_r+imb_r) - 1) <   1e-5);
@@ -173,10 +176,9 @@ function invertTriBalance2to3(vec,wtc,normAndLen = L2) {
     // to determine a point on the triangle, and then multiply by the imb_r
     // to obtain the actual point.
     // At least one value of imb will be zero.
-    var first_zero = -1;
-    var from,to,alpha;
+    var from,to,ratio;
     // the points are OPPOSITE the zero
-    // alpha will be the ratio along the triangle edge
+    // ratio will be the ratio along the triangle edge
     // it requires a little thought to understand which
     // of the other points should be the "from" and the "to"
     // for the interpolation which occurs later.
@@ -184,24 +186,24 @@ function invertTriBalance2to3(vec,wtc,normAndLen = L2) {
     if (imb.x == 0) {
         from = wtc[2];
         to = wtc[1];
-        alpha = imb.y/s;
+        ratio = imb.y/s;
     } else if (imb.y == 0) {
         from = wtc[0];
         to = wtc[2];
-        alpha = imb.z/s;        
+        ratio = imb.z/s;        
     } else if (imb.z == 0) {
         from = wtc[1];
         to = wtc[0];
-        alpha = imb.x/s;        
+        ratio = imb.x/s;        
     }
 
     // The point on the triangle is by construction
     // on one edge of the triangle.
     var onTriangle = new THREE.Vector2();
-    onTriangle.lerpVectors(from,to,alpha);
+    onTriangle.lerpVectors(from,to,ratio);
     // now onTriangle is a point on the triangle
     // now, having found that we interpolate a ray
-    // to it of length bal_r...
+    // to it of length imb_r...
     let origin = new THREE.Vector2(0,0);
     let inversion = new THREE.Vector2();
     inversion.lerpVectors(origin,
