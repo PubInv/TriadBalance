@@ -17,15 +17,6 @@
     along with TriBalance.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!doctype html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-<meta charset="utf-8">
-<title>TriBalance</title>
-<meta name="description" content="Math and demonstration of a TriBalance diagram represneting attributes in balance such as Mind/Body/Spirit">
-<meta name="author" content="Robert L. Read">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <section>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script src="./js/three.js"></script>
