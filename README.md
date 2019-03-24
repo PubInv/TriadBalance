@@ -17,7 +17,7 @@
     along with TriBalance.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!doctype html>
+<!-- <!doctype html>
 <html lang="en">
   <head>
     <!-- Required meta tags -->
@@ -27,7 +27,8 @@
     <meta name="author" content="Robert L. Read">
 
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    -->
+<section>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     <script src="./js/three.js"></script>
@@ -46,8 +47,8 @@
     <!-- Prism for typesetting code -->
 	<link href="css/prism.css" rel="stylesheet" />
     
-    
-    <body>
+</section>    
+<body>
     <script src="./js/prism.js"></script>
   <br>
   <div class="container">
@@ -96,11 +97,13 @@
 
 </section>
 
+<section>
 <div style="display:flex; justify-content: center">
     <div id="container_to_have_global_coords_on_svg">
         <svg id="create_svg"  height="500px" width="500px" style="background: silver;" viewbox="-250 -250 500 500" font-size="24px"> </svg>
     </div>
 </div>
+</section>
 <section>
   <h1>
     TriBalance Diagrams
