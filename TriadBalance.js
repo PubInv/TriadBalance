@@ -94,7 +94,7 @@ function near(x,y,e = 1e-4) {
     return Math.abs(x - y) < e;
 }
 
-// tp is the a point in the 2-dimensional triangle space
+// tp is a point in the 2-dimensional triangle space
 // wtc are the three vertices of an eqilateral triangle whose centroid is the origin
 // LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
 // return the corresponding 3-vector in the attribute space
@@ -108,7 +108,7 @@ function TriadBalance2to3(tp,wtc,LXnorm_and_length = L2) {
     let origin = new THREE.Vector2(0,0);    
     // Now we want to do a linear interpolation of how far we are from an edge,
     // but also how far the projection to the edge is between the vertices.
-    // We must first decide which edges the line form the orign to p intersects.
+    // We must first decide which edges the line from the orign to p intersects.
     // If it intersects two segments, then it is aimed at a vertex.
     var point_on_edge; 
     var fe_idx = -1; // index of the first edge we intersect
@@ -148,7 +148,7 @@ function TriadBalance2to3(tp,wtc,LXnorm_and_length = L2) {
     imb.multiplyScalar(1 - ratio_p_to_edge);
     
     // now construct a balanced vector proportional
-    // to the length from the edge to the p towards the axis
+    // to the length from the edge to the point p towards the axis
     // so that this be a unit vector if p is the origin.
     return new THREE.Vector3().add(imb).add(bal);
 }
@@ -171,36 +171,36 @@ function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
     console.assert(Math.abs((bal_r+imb_r) - 1) <   1e-5);
 
     // Now we have the ratios. We need to determine the direction.
-    // this is a function of the imbalance vector. We could determine
+    // This is a function of the imbalance vector. We can determine
     // which side we are on, and then compute our position along that
     // to determine a point on the triangle, and then multiply by the imb_r
     // to obtain the actual point.
     // At least one value of imb will be zero.
-    var from,to,ratio;
+    var from_v,to_v,ratio;
     // the points are OPPOSITE the zero
     // ratio will be the ratio along the triangle edge
     // it requires a little thought to understand which
-    // of the other points should be the "from" and the "to"
+    // of the other points should be the "from_v" and the "to_v"
     // for the interpolation which occurs later.
     var s = imb.x + imb.y + imb.z; // one of these is always zero.
     if (imb.x == 0) {
-        from = wtc[2];
-        to = wtc[1];
+        from_v = wtc[2];
+        to_v = wtc[1];
         ratio = imb.y/s;
     } else if (imb.y == 0) {
-        from = wtc[0];
-        to = wtc[2];
+        from_v = wtc[0];
+        to_v = wtc[2];
         ratio = imb.z/s;        
     } else if (imb.z == 0) {
-        from = wtc[1];
-        to = wtc[0];
+        from_v = wtc[1];
+        to_v = wtc[0];
         ratio = imb.x/s;        
     }
 
     // The point on the triangle is by construction
     // on one edge of the triangle.
     var onTriangle = new THREE.Vector2();
-    onTriangle.lerpVectors(from,to,ratio);
+    onTriangle.lerpVectors(from_v,to_v,ratio);
     // now onTriangle is a point on the triangle
     // now, having found that we interpolate a ray
     // to it of length imb_r...
@@ -305,10 +305,10 @@ function testInversionWithACircle(wtc,NORM) {
                                  wtc[1].y);
     let radius = wtcp.length()/3;    
     let n = 10;
-    let thirty_six = 2 * Math.PI / 10;
+    let one_thirteenth = 2 * Math.PI / 13;
     for(var i = 0; i < n; i++) {
-        let x = Math.sin(i*thirty_six);
-        let y = Math.cos(i*thirty_six);
+        let x = Math.sin(i*one_thirteenth);
+        let y = Math.cos(i*one_thirteenth);
         // now x,y is a point on a circle within the trinagle
         // we will make sure the balance function inverts
         // to give the function back to us.
