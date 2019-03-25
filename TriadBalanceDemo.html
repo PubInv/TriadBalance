@@ -119,14 +119,14 @@ be "in balance" or where it is interesting if they are in balance.
     <p>
       This is an <a href="https://github.com/PubInv/TriadBalance">open source demonstration project</a> of <a href="https://pubinv.github.io/PubInv/">Public Invention</a>.
       This grew out of the project <a href="https://github.com/PubInv/https://github.com/PubInv/SocialTetrahedrons">Social Tetrahedrons</a> instigated by Mark Frazier.
-    Altough I searched a good bit, I may have missed a previous implementation if the triad-balance diagram has been implmented previously please inform me at &lt;read.robert@gmail.com&gt;.
+    Although I searched a good bit, I may have missed a previous implementation if the triad-balance diagram has been implemented previously please inform me at &lt;read.robert@gmail.com&gt;.
   </p>
     <h2>Usage</h2>
     <p>
 Click near the yellow triangle and a red dot will appear within the triangle and will determine three values. These three values
 will either sum to 100% or the square of the square roots will sum to 100%. 
 The closer to one corner of the triangle you are, the more strongly you reflect that
-  attribute. The center of the trinagle reflects all attributes equally--that is, "perfect balance."
+  attribute. The center of the triangle reflects all attributes equally--that is, "perfect balance."
   The weights of these attributes will be recorded with your assertion, and displayed above the
 triangle.
 </p>
@@ -141,11 +141,11 @@ from a two-dimensional coordinate by assuming the values are in some sense balan
     </p>
     <p> Additionally, to be useful, the function that produces the "balance vector" from a point on the triangle must have an inverse.
     That is, there must exist code which when given a "balance vector" and the shape of a triangle as input, computes the coordinates
-of the same point you started with. This allows you to, for example, store balance vectors in a database and reconstuct
+of the same point you started with. This allows you to, for example, store balance vectors in a database and reconstruct
 points on the GUI  at will. Moving back and forth between the model and the view is essential.
   <h2>L1 Norm vs. L2 Norm</h2>
   <p>
-    To be able to write algorithms about the similarity or complimentarity of,
+    To be able to write algorithms about the similarity or complementarity of,
     for example, a person to a project, in terms of Mind/Body/Spirit balance,
     we need a function to translate a position on the triangle into a mathematical
     object of some kind. We also must be able to invert this function, to
@@ -161,7 +161,7 @@ points on the GUI  at will. Moving back and forth between the model and the view
   </p>
   <p>
     However, it is also reasonable to use the L2 Norm, which is the "Euclidean distance." This is rather like saying every vector is a point on the surface
-    of sphere (or an eigth of a sphere) of radius 1.0.  The components of the L2 Norm will usually sum to something
+    of sphere (or an eighth of a sphere) of radius 1.0.  The components of the L2 Norm will usually sum to something
     greater than 1.0.
     </p>
     <h2> Basic Geometric Algorithm</h2>
@@ -181,7 +181,7 @@ a slight modification of a routine <code class="language-js">GetRayToLineSegment
     </p>
     <p>
     The basic geometric algorithm to compute the three values from a point on the triangle is straightforward. The basic insight is that any point specifies an amount of "balance",
-proportionaly to how close it is to the center of the triangle,
+proportionally to how close it is to the center of the triangle,
 represented in the vector <code class="language-js">bal</code> and an amount of imbalance, depending on where a ray
 intersects the edge, represented by the variable
 <code class="language-js">imb</code>. The final result is a linear combination of these two unit-length vectors, which is guaranteed by
@@ -316,7 +316,7 @@ values in the vector. We can therefore find this minimum, construct a balance ve
 with those values, subtract it from the input, and have a vector representing pure
 imbalance which has at least one zero in it. The two non-zero values represent a linear
 interpolation along the edge (or point, if two edges) that the ray strikes. Since
-we constucted the attribut valuee as a ratio of lengths between the vertices, we can
+we constructed the attribute value as a ratio of lengths between the vertices, we can
 use this fact to reconstruct, via linear interpolation, a point on the edge.
     A second linear interpolation from the point based on the imbalance length gives
 us the point in 2-space.
@@ -335,7 +335,7 @@ function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
     </code></pre>
         <p>
         Now it is the case that by construction, <code class="language-js">imb</code> has has at least one zero
-    (whichever attributes were minimal), and bal has all attributes equal.
+    (whichever attributes were minimal), and <code class="language-js">bal</code> has all attributes equal.
         </p>
     <pre><code class="language-js">    
     // Now that we have balance, we need to compute it's length,
@@ -346,8 +346,8 @@ function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
     console.assert(Math.abs((bal_r+imb_r) - 1) <   1e-5);
     </code></pre>
         <p> The ratio computed below is a ratio of values in attribute space;
-    it is not obious therefore that this can be used to perform a linear
-    interpreation in the <em>triangle</em> coordinate space. However,
+    it is not obvious therefore that this can be used to perform a linear
+    interpolation in the <em>triangle</em> coordinate space. However,
     we intensionally constructed the attribute vector in proportion to
     the distance in the triangle space, so this works no matter which norm
     we use in the attribute space.
@@ -380,10 +380,12 @@ function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
         ratio = imb.x/s;        
     }
     </code></pre>
-        <p>The THREE.js library provides is a linear interpolation betwen
-    two vectors, named "lerpVectors", out of the box. We use this once
+        <p>The THREE.js library provides is a linear interpolation between
+          two vectors, named <code class="language-js">lerpVectors</code>,
+          out of the box. We use this once
     to interpolate along the edge, and then once to interpolate from th
-    origin towared this point.
+          origin toward this point.
+          </p>
     <pre><code class="language-js">        
     // The point on the triangle is by construction
     // on one edge of the triangle.
@@ -412,25 +414,25 @@ function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
     A possible alternative which may be more attractive and in a sense more elegant is to use a circle, with the same triangle inscribed. This would be similar, but make better use of the screen space corresponding to the bounding box. The math would be slightly different, and probably simpler, than what is presented here.
     </p>
     <p>
-    Finally, it might be possible to define a GUI element that allows you to select from not three, but four or more dimenstions, such as the four elements of antiquity: Earth/Air/Water/Fire. However, this would necessarily impose an even further constraint than "balance" on what is possible. For example, if any number of elements can be
-arranged radially in a natural way so that being close to one completely excludes being close to those that are two or more elments away, this could be a natural system.
+    Finally, it might be possible to define a GUI element that allows you to select from not three, but four or more dimensions, such as the four elements of antiquity: Earth/Air/Water/Fire. However, this would necessarily impose an even further constraint than "balance" on what is possible. For example, if any number of elements can be
+arranged radially in a natural way so that being close to one completely excludes being close to those that are two or more elements away, this could be a natural system.
     </p>
     <h2> How to Best Reuse </h2>
   <p>
     <a href="https://pubinv.github.io/PubInv/">Public Invention</a> is a non-profit promoting the idea of "Inventing in the public, for the public." We are always seeking volunteer Public Inventors and Invention Coaches.
-    Addtionally, we always need web designers, artists, programmers and writers, and this project is no exception, although it is at a stable point for what it is.
+    Additionally, we always need web designers, artists, programmers and writers, and this project is no exception, although it is at a stable point for what it is.
     </p>
     <p>
-This project is contributing javascript and math. To make an easily reusable GUI component requires configuration and design skill. I would love to have somebody take this 
+This project is contributing JavaScript and math. To make an easily reusable GUI component requires configuration and design skill. I would love to have somebody take this 
 code and make a <a href="https://d3js.org/"> d3</a> or <a href="https://reactjs.org/">React</a> component out of it, so that it could be enjoyed by others as a plug-in as easy using another d3 GUI element, for example.
 </p>
     <h4>How to Lighten the Footprint</h4>
     <p>
-To perform vector operations, these algorithms use <a href="https://threejs.org/">THREE.js</a>. One could selectively replace the small number of operations used from that library to make it a pure javascript project with a light footprint (a few hundred lines of code at most for the math part.)
+To perform vector operations, these algorithms use <a href="https://threejs.org/">THREE.js</a>. One could selectively replace the small number of operations used from that library to make it a pure JavaScript project with a light footprint (a few hundred lines of code at most for the math part.)
 </p>
 
-    The current approach works with any equalateral triangle centered on the origin, using vector math. If you fixed the triangles orientation and size,
-it wold be possible to optimize some of the math so that fewer vector operations were required. This would lower the footprint of the javascript code
+    The current approach works with any equilateral triangle centered on the origin, using vector math. If you fixed the triangles orientation and size,
+it wold be possible to optimize some of the math so that fewer vector operations were required. This would lower the footprint of the JavaScript code
     that would have to be included to build an interactive diagram.
     <h4>The Test Suite</h4>
   <p>
@@ -445,7 +447,7 @@ it wold be possible to optimize some of the math so that fewer vector operations
     
   <h2>License</h2>
   You are free to reuse this software under the terms
-of the GNU General Public License. Contact me (&lt;read.robert@gmail.com&gt;) with any quesitons or comments.
+of the GNU General Public License. Contact me (&lt;read.robert@gmail.com&gt;) with any questions or comments.
 </section>
 </div>
 
