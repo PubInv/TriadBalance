@@ -23,10 +23,11 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <title>Triad Balance Interactive Diagram</title>
-    <meta name="description" content="Math and demonstration of a Triad Balance Diagram representing attributes in balance such as Mind/Body/Spirit">
+    <meta name="description" content="Math and demonstration of a JavaScript Triad Balance Diagram representing attributes in balance such as Mind/Body/Spirit">
     <meta name="author" content="Robert L. Read">
     <link rel="shortcut icon" type="image/ico" href="./images/favicon.ico"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="keywords" content="diagram, figure, JavaScript, math, balance, vector, norm, GUI, GUI element, interactive figure" />
 
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
@@ -417,13 +418,49 @@ function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
     Finally, it might be possible to define a GUI element that allows you to select from not three, but four or more dimensions, such as the four elements of antiquity: Earth/Air/Water/Fire. However, this would necessarily impose an even further constraint than "balance" on what is possible. For example, if any number of elements can be
 arranged radially in a natural way so that being close to one completely excludes being close to those that are two or more elements away, this could be a natural system.
     </p>
-    <h2> How to Best Reuse </h2>
+  <h2> Usage on Your Own Page </h2>
+  <p>
+    The file TriadBalance.js has everything you need (including tests.) The simplest way to use this is include this file in include this file
+    in a script tag, and also include three.js. Then in your code create an equilateral triangle as demonstrated on this page (TriadBalanceDemo.html). This page uses
+SVG but it could also be done with a canvas. Code to create an equilateral triangle is of edge length 300 that fits nicely onto a 500 by 500 pixel SVG is exemplified:
+    <pre><code class="language-js">        
+var WORLD_TRIANGLE_COORDS;
+const W = 500;
+const H = 500;
+
+const TRIANGLE_WIDTH = 1;
+const TRIANGLE_HEIGHT = Math.sqrt(3)/2;
+const SIDE_LENGTH_PIXEL = 300;
+const SIDE_LENGTH_HEIGHT = SIDE_LENGTH_PIXEL * TRIANGLE_HEIGHT;
+const BASE = -(1/3) * SIDE_LENGTH_HEIGHT;
+
+function get_world_triangle() {
+     let wtc = [[-SIDE_LENGTH_PIXEL/2,BASE],
+                [SIDE_LENGTH_PIXEL/2,BASE],
+                [0,BASE+SIDE_LENGTH_HEIGHT]];
+    let wtc_vector = [new THREE.Vector2(wtc[0][0],wtc[0][1]),
+               new THREE.Vector2(wtc[1][0],wtc[1][1]),
+               new THREE.Vector2(wtc[2][0],wtc[2][1])];
+    return wtc_vector;
+}
+
+
+// These function convert my abstract coordinates
+// to svg coordinates.
+function vph(h,y) { return (-y); }
+function vpw(w,x) { return (x); }
+</code></pre>
+  </p>
+
+    <h2> How to Best  Contribute </h2>
   <p>
     <a href="https://pubinv.github.io/PubInv/">Public Invention</a> is a non-profit promoting the idea of "Inventing in the public, for the public." We are always seeking volunteer Public Inventors and Invention Coaches.
     Additionally, we always need web designers, artists, programmers and writers, and this project is no exception, although it is at a stable point for what it is.
     </p>
     <p>
-This project is contributing JavaScript and math. To make an easily reusable GUI component requires configuration and design skill. I would love to have somebody take this 
+  This project is contributing JavaScript and math which makes implementing a TriadBalance diagram easy for a JavaScript programmer.
+  Additional work would be needed to make a TriadBalance as easy to use by lightly skilled front-end programmers as, for example, a Bootstrap slider.
+  To make an easily reusable GUI component requires configuration and design skill. I would love to have somebody take this 
 code and make a <a href="https://d3js.org/"> d3</a> or <a href="https://reactjs.org/">React</a> component out of it, so that it could be enjoyed by others as a plug-in as easy using another d3 GUI element, for example.
 </p>
     <h4>How to Lighten the Footprint</h4>
@@ -487,7 +524,7 @@ const BASE = -(1/3) * SIDE_LENGTH_HEIGHT;
 
 function get_world_triangle() {
      let wtc = [[-SIDE_LENGTH_PIXEL/2,BASE],
-                             [SIDE_LENGTH_PIXEL/2,BASE],
+                [SIDE_LENGTH_PIXEL/2,BASE],
                 [0,BASE+SIDE_LENGTH_HEIGHT]];
     let wtc_vector = [new THREE.Vector2(wtc[0][0],wtc[0][1]),
                new THREE.Vector2(wtc[1][0],wtc[1][1]),
@@ -497,7 +534,7 @@ function get_world_triangle() {
 
 
 // These function convert my abstract coordinates
-// to canvas coordinates.
+// to svg coordinates.
 function vph(h,y) { return (-y); }
 function vpw(w,x) { return (x); }
 
