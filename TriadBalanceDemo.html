@@ -469,10 +469,11 @@ code and make a <a href="https://d3js.org/"> d3</a> or <a href="https://reactjs.
     <p>
 To perform vector operations, these algorithms use <a href="https://threejs.org/">THREE.js</a>. One could selectively replace the small number of operations used from that library to make it a pure JavaScript project with a light footprint (a few hundred lines of code at most for the math part.)
 </p>
-
+<p>
     The current approach works with any equilateral triangle centered on the origin, using vector math. If you fixed the triangles orientation and size,
 it wold be possible to optimize some of the math so that fewer vector operations were required. This would lower the footprint of the JavaScript code
-    that would have to be included to build an interactive diagram.
+that would have to be included to build an interactive diagram.
+  <p>
     <h4>The Test Suite</h4>
   <p>
     The file <a href="./TriadBalance.js">TriadBalance.js</a> contains not only the
