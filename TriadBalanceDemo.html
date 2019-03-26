@@ -423,7 +423,7 @@ arranged radially in a natural way so that being close to one completely exclude
     The file TriadBalance.js has everything you need (including tests.) The simplest way to use this is include this file in include this file
     in a script tag, and also include three.js. Then in your code create an equilateral triangle as demonstrated on this page (TriadBalanceDemo.html). This page uses
 SVG but it could also be done with a canvas. Code to create an equilateral triangle is of edge length 300 that fits nicely onto a 500 by 500 pixel SVG is exemplified:
-    <pre><code class="language-js">        
+    <pre><code class="language-js">
 var WORLD_TRIANGLE_COORDS;
 const W = 500;
 const H = 500;
@@ -435,15 +435,11 @@ const SIDE_LENGTH_HEIGHT = SIDE_LENGTH_PIXEL * TRIANGLE_HEIGHT;
 const BASE = -(1/3) * SIDE_LENGTH_HEIGHT;
 
 function get_world_triangle() {
-     let wtc = [[-SIDE_LENGTH_PIXEL/2,BASE],
-                [SIDE_LENGTH_PIXEL/2,BASE],
-                [0,BASE+SIDE_LENGTH_HEIGHT]];
-    let wtc_vector = [new THREE.Vector2(wtc[0][0],wtc[0][1]),
-               new THREE.Vector2(wtc[1][0],wtc[1][1]),
-               new THREE.Vector2(wtc[2][0],wtc[2][1])];
+    let wtc_vector = [new THREE.Vector2(-SIDE_LENGTH_PIXEL/2,BASE),
+               new THREE.Vector2(SIDE_LENGTH_PIXEL/2,BASE),
+               new THREE.Vector2(0,BASE+SIDE_LENGTH_HEIGHT)];
     return wtc_vector;
 }
-
 
 // These function convert my abstract coordinates
 // to svg coordinates.
@@ -526,12 +522,9 @@ const SIDE_LENGTH_HEIGHT = SIDE_LENGTH_PIXEL * TRIANGLE_HEIGHT;
 const BASE = -(1/3) * SIDE_LENGTH_HEIGHT;
 
 function get_world_triangle() {
-     let wtc = [[-SIDE_LENGTH_PIXEL/2,BASE],
-                [SIDE_LENGTH_PIXEL/2,BASE],
-                [0,BASE+SIDE_LENGTH_HEIGHT]];
-    let wtc_vector = [new THREE.Vector2(wtc[0][0],wtc[0][1]),
-               new THREE.Vector2(wtc[1][0],wtc[1][1]),
-               new THREE.Vector2(wtc[2][0],wtc[2][1])];
+    let wtc_vector = [new THREE.Vector2(-SIDE_LENGTH_PIXEL/2,BASE),
+               new THREE.Vector2(SIDE_LENGTH_PIXEL/2,BASE),
+               new THREE.Vector2(0,BASE+SIDE_LENGTH_HEIGHT)];
     return wtc_vector;
 }
 
