@@ -420,7 +420,7 @@ arranged radially in a natural way so that being close to one completely exclude
     </p>
   <h2> Usage on Your Own Page </h2>
   <p>
-    The file TriadBalance.js has everything you need (including tests.) The simplest way to use this is include this file in include this file
+    The file TriadBalanceMath.js has everything you need (including tests.) The simplest way to use this is include this file in include this file
     in a script tag, and also include three.js. Then in your code create an equilateral triangle as demonstrated on this page (TriadBalanceDemo.html). This page uses
 SVG but it could also be done with a canvas. Code to create an equilateral triangle is of edge length 300 that fits nicely onto a 500 by 500 pixel SVG is exemplified:
     <pre><code class="language-js">
@@ -472,7 +472,7 @@ that would have to be included to build an interactive diagram.
   <p>
     <h4>The Test Suite</h4>
   <p>
-    The file <a href="./TriadBalance.js">TriadBalance.js</a> contains not only the
+    The file <a href="./TriadBalanceMath.js">TriadBalanceMath.js</a> contains not only the
     function <code class="language-js">TriadBalance2to3</code> and its inverse
     <code class="language-js">invertTriadBalance2to3 </code>, but a number of
     test functions. Since these functions make the most sense in a browser,
@@ -495,188 +495,11 @@ of the GNU General Public License. Contact me (&lt;read.robert@gmail.com&gt;) wi
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
-
-
-
 <!-- This is brings in the math and the norm defintions we need -->
-    <script src="./TriadBalance.js"></script>
+<script src="./TriadBalanceMath.js"></script>
+<script src="./TriadBalanceExample.js"></script>
 
     <script>
-
-var THREE_DIMENSIONS = { "MBS": ["Mind","Body","Spirit"],
-                         "HHH": ["Head","Heart","Hands"],
-                         "PSM": ["Physical","Social","Mental"],
-                         "SEF": ["Strength","Endurance","Flexibility"],
-                         "FSH": ["Father","Son","Holy Spirit"]
-                       };
-var CURRENT_D = "MBS";
-
-var WORLD_TRIANGLE_COORDS;
-const W = 500;
-const H = 500;
-
-const TRIANGLE_WIDTH = 1;
-const TRIANGLE_HEIGHT = Math.sqrt(3)/2;
-const SIDE_LENGTH_PIXEL = 300;
-const SIDE_LENGTH_HEIGHT = SIDE_LENGTH_PIXEL * TRIANGLE_HEIGHT;
-const BASE = -(1/3) * SIDE_LENGTH_HEIGHT;
-
-function get_world_triangle() {
-    let wtc_vector = [new THREE.Vector2(-SIDE_LENGTH_PIXEL/2,BASE),
-               new THREE.Vector2(SIDE_LENGTH_PIXEL/2,BASE),
-               new THREE.Vector2(0,BASE+SIDE_LENGTH_HEIGHT)];
-    return wtc_vector;
-}
-
-
-// These function convert my abstract coordinates
-// to svg coordinates.
-function vph(h,y) { return (-y); }
-function vpw(w,x) { return (x); }
-
-var CUR_POINT;
-
-var CUR_TRIANGLE_COORDS;
-
-function append_text(svg,x,y,text) {
-    var newText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    newText.setAttributeNS(null,"x",x);      
-    newText.setAttributeNS(null,"y",y);
-    newText.appendChild(document.createTextNode(text));
-    svg.appendChild(newText);
-}
-
-
-function render_svg() {
-    var svg = $("#create_svg")[0];
-    $("#create_svg").empty();
-    var polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-    svg.appendChild(polygon);
-
-    let wtc = WORLD_TRIANGLE_COORDS;
-
-    var array = [ [ vpw(W,wtc[0].x),vph(H,wtc[0].y) ], 
-                  [ vpw(W,wtc[1].x),vph(H,wtc[1].y) ],
-                  [ vpw(W,wtc[2].x),vph(H,wtc[2].y) ] ];
-    
-    for (value of array) {
-        var point = svg.createSVGPoint();
-        point.x = value[0];
-        point.y = value[1];
-        polygon.points.appendItem(point);
-    }
-    polygon.style.fill='lemonchiffon';
-
-    
-
-    // These are ugly, they should really be computed from the text.
-    // In fact, since this does not change, the whole thing could go into
-    // HTML and css more profitably.
-    
-    append_text(svg,array[2][0]-20,array[2][1]-5,
-                THREE_DIMENSIONS[CURRENT_D][2]);
-    append_text(svg,array[0][0]-40,array[0][1]+20,
-                THREE_DIMENSIONS[CURRENT_D][0]);
-    append_text(svg,array[1][0],array[1][1]+20,
-                THREE_DIMENSIONS[CURRENT_D][1]
-               );
-    
-    var circle = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
-    circle.setAttributeNS(null, 'cx', vpw(W,0));
-    circle.setAttributeNS(null, 'cy', vph(H,0));
-    circle.setAttributeNS(null, 'r', 2);
-    circle.setAttributeNS(null, 'style', 'fill: black; stroke: black; stroke-width: 1px;' );
-    svg.appendChild(circle);
-    
-    function add_triangle(tri,c) {
-        if (tri) {
-            var polygon = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
-            polygon.setAttributeNS(null, 'cx', vpw(W,tri.x));
-            polygon.setAttributeNS(null, 'cy', vph(H,tri.y));
-            polygon.setAttributeNS(null, 'r', 4);
-            polygon.setAttributeNS(null, 'style', 'fill: '+c+'; stroke: '+c+'; stroke-width: 1px;' );
-            svg.appendChild(polygon);
-            
-        }
-    }
-    add_triangle(CUR_POINT,"red");
-}
-
-
-function main() {
-    render_svg();
-
-    function set_dimension_labels(cur) {
-        $("#d0l").text(THREE_DIMENSIONS[cur][0] + ":");
-        $("#d1l").text(THREE_DIMENSIONS[cur][1] + ":");
-        $("#d2l").text(THREE_DIMENSIONS[cur][2] + ":");
-    }
-    function set_and_render(cur) {
-        CURRENT_D = cur;
-        set_dimension_labels(CURRENT_D);
-        render_svg();        
-    }
-    
-    $("#MBS").click(() => { set_and_render("MBS");});
-    $("#HHH").click(() => { set_and_render("HHH");});
-    $("#PSM").click(() => { set_and_render("PSM");});
-    $("#SEF").click(() => { set_and_render("SEF");});
-    $("#FSH").click(() => { set_and_render("FSH");});
-}
-
-
-function getRadioValue(name) {
-    var rates = document.getElementsByName(name);
-    var rate_value;
-    for(var i = 0; i < rates.length; i++){
-        if(rates[i].checked){
-            rate_value = i;
-        }
-    }
-    return rate_value;
-}
-
-
-function setBalance(atp) {
-    var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);
-    let bal = TriadBalance2to3(atp,WORLD_TRIANGLE_COORDS,norm_to_use);
-
-    $( "#d0" ).text( (bal.x * 100).toFixed(0) +  "%" );
-    $( "#d1" ).text( (bal.y * 100).toFixed(0) +  "%" );
-    $( "#d2" ).text( (bal.z * 100).toFixed(0) +  "%" );
-    return [bal.x,bal.y,bal.z];
-}
-
-// This is tricky because click events on an SVG
-// depend on which object inside the SVG are hit.
-// We don't really want to do that, we have
-// created a global triangle space. A solution
-// that doesn't force us to become dependent on the SVG model
-// of objects rendered is to use screen coordinates.
-function clicked(evt){
-    var br = document.getElementById("container_to_have_global_coords_on_svg").getBoundingClientRect();
-    var x = evt.originalEvent.clientX - br.left;
-    var y = evt.originalEvent.clientY - br.top;
-    // x and y are in the coordinates of the
-    // SVG system; we need to convert them
-    // to the coordinates of our triangle.
-    var yc = -(y + -H/2) ;
-    var xc = x + -W/2;
-    var triangle_coords = new THREE.Vector2(xc,yc);
-
-    // Note, we could balance and invert here to make sure we are inside the trianble!
-    CUR_TRIANGLE_COORDS = triangle_coords;
-    var bal = setBalance(triangle_coords);
-    var vec = new THREE.Vector3(bal[0],bal[1],bal[2]);
-    
-    var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);
-    var triangle_coords_inside_triangle = invertTriadBalance2to3(vec,WORLD_TRIANGLE_COORDS,norm_to_use);
-
-    CUR_POINT = triangle_coords_inside_triangle;
-    render_svg();
-}         
-
-$("#container_to_have_global_coords_on_svg").click(clicked);
 
 $( document ).ready(function() {
     
