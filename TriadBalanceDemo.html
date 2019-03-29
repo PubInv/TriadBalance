@@ -113,22 +113,22 @@
     Triad Balance Diagrams
 </h1>
     <p>
-    This interactive page presents what may be a new graphical user interface element---the "triad-balance" diagram. The purpose is to use a
-triangle to enter three values such as "Mind/Body/Sprit" or "Strength/Endurance/Flexibility" that are presumed to in some sense
-be "in balance" or where it is interesting if they are in balance. 
+    This interactive page presents what may be a new graphical user interface element — the "triad-balance" diagram. The purpose is to use a
+single click on a triangle to enter three values such as "Mind/Body/Sprit" or "Strength/Endurance/Flexibility" that are presumed to in some sense
+be "in balance", or where it is interesting if they are in balance. 
     </p>
     <p>
       This is an <a href="https://github.com/PubInv/TriadBalance">open source demonstration project</a> of <a href="https://pubinv.github.io/PubInv/">Public Invention</a>.
       This grew out of the project <a href="https://github.com/PubInv/https://github.com/PubInv/SocialTetrahedrons">Social Tetrahedrons</a> instigated by Mark Frazier.
-    Although I searched a good bit, I may have missed a previous implementation if the triad-balance diagram has been implemented previously please inform me at &lt;read.robert@gmail.com&gt;.
+    Although I searched a good bit, I may have missed a previous implementation. If the triad-balance diagram has been implemented previously please inform me at &lt;read.robert@gmail.com&gt;.
   </p>
     <h2>Usage</h2>
     <p>
 Click near the yellow triangle and a red dot will appear within the triangle and will determine three values. These three values
 will either sum to 100% or the square of the square roots will sum to 100%. 
-The closer to one corner of the triangle you are, the more strongly you reflect that
-  attribute. The center of the triangle reflects all attributes equally--that is, "perfect balance."
-  The weights of these attributes will be recorded with your assertion, and displayed above the
+The closer to a corner of the triangle, the more strongly that
+  attribute is attributed. The center of the triangle reflects all attributes equally — that is, "perfect balance."
+  The weights of these attributes will be determined by your assertion, and displayed above the
 triangle.
 </p>
     <h2>Purpose</h2>
@@ -136,14 +136,14 @@ triangle.
     Clicking on the triangle gives you a two-dimensional specification. In some cases, that may be all you need.
     </p>
     <p>
-    However, if you want to execute some algorithm to determine, for example, which of two points has the higher "mind" value,
+    However, if you want to determine, for example, which of two points has the higher "mind" value,
 then calculating a 3-dimensional "balance vector" from the 2-dimensions makes more sense. It is only possible to specify three values
 from a two-dimensional coordinate by assuming the values are in some sense balance and not completely independent of each other.
     </p>
     <p> Additionally, to be useful, the function that produces the "balance vector" from a point on the triangle must have an inverse.
     That is, there must exist code which when given a "balance vector" and the shape of a triangle as input, computes the coordinates
 of the same point you started with. This allows you to, for example, store balance vectors in a database and reconstruct
-points on the GUI  at will. Moving back and forth between the model and the view is essential.
+points on the GUI at will. Moving back and forth between the model and the view is essential.
   <h2>L1 Norm vs. L2 Norm</h2>
   <p>
     To be able to write algorithms about the similarity or complementarity of,
@@ -155,14 +155,14 @@ points on the GUI  at will. Moving back and forth between the model and the view
   <p>
     The most obvious way to do this is to treat a given assertion as a vector
     with dimensions labeled, for example, Mind/Body/Spirit. Then a balance attribute
-    vector maybe thought of an any vector of non-negative components of unit length.
+    vector maybe thought of as any vector of non-negative components of unit length.
     There are different
     ways to express the length of a vector. The L1 Norm is simply the sum
-    of the absolute values, so by choosing that all dimensions sum to 1.0.
+    of the absolute values, so by choosing that, all dimensions sum to 1.0.
   </p>
   <p>
     However, it is also reasonable to use the L2 Norm, which is the "Euclidean distance." This is rather like saying every vector is a point on the surface
-    of sphere (or an eighth of a sphere) of radius 1.0.  The components of the L2 Norm will usually sum to something
+    of a sphere (or an eighth of a sphere) of radius 1.0.  The components of the L2 Norm will usually sum to something
     greater than 1.0.
     </p>
     <h2> Basic Geometric Algorithm</h2>
@@ -189,7 +189,7 @@ intersects the edge, represented by the variable
 linearity to have a unit-length norm. Note that the function is parametrized by the
 norming function, we can use either the L1 or L2 norm (or any other.)
 </p>
-    <p> Before we begin, let us note that special case of the input point being precisely
+    <p> Before we begin, let us note that the special case of the input point being precisely
 the origin or a vertex is in fact handled correctly, although this is perhaps not obvious;
 this is tested in our unit test suite.
     </p>
@@ -474,11 +474,12 @@ that would have to be included to build an interactive diagram.
   <p>
     The file <a href="./TriadBalance.js">TriadBalance.js</a> contains not only the
     function <code class="language-js">TriadBalance2to3</code> and its inverse
-    <code class="language-js">invertTriadBalance2to3 </code>, but a number of
+    <code class="language-js">invertTriadBalance2to3</code>, but also a number of
     test functions. Since these functions make the most sense in a browser,
     we normally invoke them from within a browser rather than with Mocha or something.
-    The function <code class="language-js">testAllTriadBalance(wtc)</code>
-    can be easily invoked from a browser.
+    The function <code class="language-js">testAllTriadBalance(WORLD_TRIANGLE_COORDS)</code>
+    can be easily invoked from a browser. Any failing tests will provide output to the browser's
+    JavaScript console. Invoking the test function and receiving no output indicates all the tests passed.
     </p>
     
   <h2>License</h2>
