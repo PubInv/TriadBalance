@@ -17,7 +17,7 @@
 
 "use strict";
 
-var CUR_POINT;
+var CUR_BALANCE;
 var CUR_TRIANGLE_COORDS;
 var W;
 var H;
@@ -25,6 +25,7 @@ var Whalf;
 var Hhalf;
 var NORM_TO_USE;
 var LABELS;
+var TRIAD_WORLD_TRIANGLE;
 
 function set_norm_to_use(norm) {
   NORM_TO_USE = norm;
@@ -60,15 +61,18 @@ function get_world_triangle(svg_id) {
 function vpy(y) { return (-y); }
 function vpx(x) { return (x); }
 
-function rerender_marker(svg,tri_point) {
-  if (tri_point) {
-    // We have to find the current marker and remove it..
-    var x = document.getElementsByClassName("triad-marker");
-    console.log(x);
+function clear_markers(svg) {
+  var x = document.getElementsByClassName("triad-marker");
     for(var i = 0; i < x.length; i++) {
-      console.log(x[i]);
       x[i].parentNode.removeChild(x[i]);
+      console.log("removed");
     }
+}
+function rerender_marker(svg,bal_vec) {
+  if (bal_vec) {
+    // We have to find the current marker and remove it..
+    clear_markers(svg);
+    let tri_point = invertTriadBalance2to3(bal_vec,TRIAD_WORLD_TRIANGLE,NORM_TO_USE);
     let point = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
     point.setAttributeNS(null, 'cx', vpx(tri_point.x));
     point.setAttributeNS(null, 'cy', vpy(tri_point.y));
@@ -79,7 +83,8 @@ function rerender_marker(svg,tri_point) {
   }
 }
 
-function render_svg(svg,wtc,fs_ratio_to_height) {
+function render_svg(svg,fs_ratio_to_height) {
+  console.assert(fs_ratio_to_height);
   let fs = H * fs_ratio_to_height;
 
   function append_text(svg,id,class_name,x,y,dy,text) {
@@ -106,8 +111,8 @@ function render_svg(svg,wtc,fs_ratio_to_height) {
 
   for (let i = 0; i < 3; i++) {
     var point = svg.createSVGPoint();
-    point.x = vpx(wtc[i].x);
-    point.y = vpy(wtc[i].y);
+    point.x = vpx(TRIAD_WORLD_TRIANGLE[i].x);
+    point.y = vpy(TRIAD_WORLD_TRIANGLE[i].y);
     polygon.points.appendItem(point);
   }
 
@@ -117,19 +122,22 @@ function render_svg(svg,wtc,fs_ratio_to_height) {
   // fs is the fontsize in pixels; hopefully we caculate this.
   function render_labels(svg,vertices,d_labels,fs) {
     append_text(svg,"vertex-2","triad-vertices",
-                vpx(wtc[2].x),vpy(wtc[2].y),-fs/2,
+                vpx(TRIAD_WORLD_TRIANGLE[2].x),vpy(TRIAD_WORLD_TRIANGLE[2].y),-fs/2,
                 d_labels[2]
                );
     append_text(svg,"vertex-0","triad-vertices",
-                vpx(wtc[0].x),vpy(wtc[0].y),fs,
+                vpx(TRIAD_WORLD_TRIANGLE[0].x),vpy(TRIAD_WORLD_TRIANGLE[0].y),fs,
                 d_labels[0]              
                );
     append_text(svg,"vertex-1","triad-vertices",
-                vpx(wtc[1].x),vpy(wtc[1].y),fs,
+                vpx(TRIAD_WORLD_TRIANGLE[1].x),vpy(TRIAD_WORLD_TRIANGLE[1].y),fs,
                 d_labels[1]
                );
   }
-  render_labels(svg,wtc,LABELS,fs);
+  if (!fs) {
+    debugger;
+  }
+  render_labels(svg,TRIAD_WORLD_TRIANGLE,LABELS,fs);
 
 
   // this is the center of the triangle...
@@ -140,7 +148,7 @@ function render_svg(svg,wtc,fs_ratio_to_height) {
   origin.setAttributeNS(null,"id","triangle_origin");        
   svg.appendChild(origin);
   
-  rerender_marker(svg,CUR_POINT);
+//  rerender_marker(svg,CUR_POINT);
 }
 
 
@@ -149,7 +157,7 @@ function render_svg(svg,wtc,fs_ratio_to_height) {
 // We don't really want to do that, we have
 // created a global triangle space. A solution is to
 // use screen coordinates, but only to compute a difference.
-function clicked(evt,container_id,fs,svg,wtc,labels,click_callback) {
+function clicked(evt,container_id,fs,svg,labels,click_callback) {
   var br = document.getElementById(container_id).getBoundingClientRect();
   var x = evt.clientX - br.left;
   var y = evt.clientY - br.top;
@@ -158,41 +166,55 @@ function clicked(evt,container_id,fs,svg,wtc,labels,click_callback) {
   // to the coordinates of our triangle.
   var xc = x + -Whalf;  
   var yc = -(y + -Hhalf);
-  var triangle_coords = new THREE.Vector2(xc,yc);
+  var triangle_coords = 
 
   // Note, we could balance and invert here to make sure we are inside the triangle!
-  CUR_TRIANGLE_COORDS = triangle_coords;
-  let vec = TriadBalance2to3(CUR_TRIANGLE_COORDS,wtc,NORM_TO_USE);
+      CUR_TRIANGLE_COORDS = new THREE.Vector2(xc,yc);
+  console.log("COORDS",CUR_TRIANGLE_COORDS);
+  CUR_BALANCE = TriadBalance2to3(CUR_TRIANGLE_COORDS,TRIAD_WORLD_TRIANGLE,NORM_TO_USE);
 
-  CUR_POINT = invertTriadBalance2to3(vec,wtc,NORM_TO_USE);
+  var CUR_POINT = invertTriadBalance2to3(CUR_BALANCE,TRIAD_WORLD_TRIANGLE,NORM_TO_USE);
   
-  rerender_marker(svg,CUR_POINT);  
-  click_callback(CUR_TRIANGLE_COORDS,CUR_POINT,vec);
+  rerender_marker(svg,CUR_BALANCE);  
+  click_callback(CUR_TRIANGLE_COORDS,CUR_POINT,CUR_BALANCE);
 }         
 
-function initialize_triad_diagram(svg_id,wtc,norm_to_use,labels,click_callback,fs_ratio_to_height = (1/20)) {
+function initialize_triad_diagram(svg_id,norm_to_use,labels,click_callback,fs_ratio_to_height = (1/20)) {
   var svg_elt = document.getElementById(svg_id);
 
   // Now the question is can we make this work with any width element?
-  W = svg_elt.clientWidth;
-  H = svg_elt.clientHeight;
-  Whalf = W/2;
-  Hhalf = H/2;
-  set_labels(labels);
-  set_norm_to_use(norm_to_use);
-
+  function setSizeConstants(svg_elt) {
+    W = svg_elt.clientWidth;
+    H = svg_elt.clientHeight;
+    Whalf = W/2;
+    Hhalf = H/2;
+    TRIAD_WORLD_TRIANGLE = get_world_triangle(svg_id);
   // This is convenient, but makes it hard for the client to
   // use this svg for their own purposes, which is probably okay
   // for this use...
-  svg_elt.setAttribute("viewBox", `-${Whalf} -${Hhalf} ${W} ${H}`);   
+    svg_elt.setAttribute("viewBox", `-${Whalf} -${Hhalf} ${W} ${H}`);
+    render_svg(svg_elt,fs_ratio_to_height);
+    rerender_marker(svg_elt,CUR_BALANCE);
+  }
+  
+  set_labels(labels);
+  set_norm_to_use(norm_to_use);
 
-  render_svg(svg_elt,wtc,fs_ratio_to_height);
+  setSizeConstants(svg_elt);
 
   svg_elt.addEventListener(
     "click",
     (evt) =>
-      clicked(evt,svg_id,fs_ratio_to_height,svg_elt,wtc,labels,click_callback)
+      clicked(evt,svg_id,fs_ratio_to_height,svg_elt,labels,click_callback)
   );
+  // This is insufficient; we need to recalculate the world triangle.
+  // Maybe I should make it internal?
+  window.addEventListener(
+    "resize",
+    (evt) => {
+      setSizeConstants(svg_elt);
+    });
+
 }
 
 

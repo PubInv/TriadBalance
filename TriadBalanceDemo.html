@@ -89,10 +89,8 @@
 </section>
 
 <div style="display:flex; justify-content: center;">
-<div style="display:flex-column; justify-content: center; align-content: center;">
-    <div id="container_to_have_global_coords_on_svg">
-        <svg id="create_svg"  height="500px" width="600px" style="background: silver;"  font-size="24px"> </svg>
-    </div>
+<div style="display:flex-column; justify-content: center; align-content: center; width: 50vw;">
+        <svg id="create_svg" style="background: silver; width: 50vw; height: 50vw;"  font-size="24px"> </svg>
     <div>
       Click to select attributes based on position.
       </div>
@@ -525,6 +523,7 @@ var THREE_DIMENSIONS = { "MBS": ["Mind","Body","Spirit"],
                          "FSH": ["Father","Son","Holy Spirit"]
                        };
 var CUR_LABELS = "MBS";
+
 function getRadioValue(name) {
   var rates = document.getElementsByName(name);
   var rate_value;
@@ -540,10 +539,9 @@ var CUR_BAL;
 // norm_to_use should be a parameter here
 function setBalance(bal) {
   CUR_BAL = bal;
-
-  $( "#d0" ).text( (bal.x * 100).toFixed(0) +  "%" );
-  $( "#d1" ).text( (bal.y * 100).toFixed(0) +  "%" );
-  $( "#d2" ).text( (bal.z * 100).toFixed(0) +  "%" );
+  $( "#d0" ).text( (CUR_BAL.x * 100).toFixed(0) +  "%" );
+  $( "#d1" ).text( (CUR_BAL.y * 100).toFixed(0) +  "%" );
+  $( "#d2" ).text( (CUR_BAL.z * 100).toFixed(0) +  "%" );
 }
 
 
@@ -556,7 +554,12 @@ $( document ).ready(function() {
 
   WORLD_TRIANGLE_COORDS = get_world_triangle(GLOBAL_SVG_ID);
 
-  testAllTriadBalance(WORLD_TRIANGLE_COORDS);
+  if (testAllTriadBalance(WORLD_TRIANGLE_COORDS)) {
+    console.log("TESTS ALL GREEN!");
+  } else {
+    console.log("SOME TESTS FAILED!");    
+  }
+    
 
   function set_dimension_labels(labels) {
     $("#d0l").text(labels[0] + ":");
@@ -569,7 +572,6 @@ $( document ).ready(function() {
     set_dimension_labels(THREE_DIMENSIONS[cur]);
     set_labels(THREE_DIMENSIONS[cur]);
     render_svg(GLOBAL_SVG_ELT,
-               WORLD_TRIANGLE_COORDS,
                FONT_SIZE_RATIO_TO_HEIGHT);        
   }
 
@@ -606,7 +608,6 @@ $( document ).ready(function() {
   }
   var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);  
   initialize_triad_diagram(GLOBAL_SVG_ID,
-                           WORLD_TRIANGLE_COORDS,
                            norm_to_use,
                            THREE_DIMENSIONS["MBS"],
                            callback_for_click,
