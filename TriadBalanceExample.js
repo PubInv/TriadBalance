@@ -25,16 +25,30 @@ var THREE_DIMENSIONS = { "MBS": ["Mind","Body","Spirit"],
 var CURRENT_D = "MBS";
 
 var WORLD_TRIANGLE_COORDS;
-const W = 500;
-const H = 500;
+var W;
+var H;
 
-const TRIANGLE_WIDTH = 1;
-const TRIANGLE_HEIGHT = Math.sqrt(3)/2;
-const SIDE_LENGTH_PIXEL = 300;
-const SIDE_LENGTH_HEIGHT = SIDE_LENGTH_PIXEL * TRIANGLE_HEIGHT;
-const BASE = -(1/3) * SIDE_LENGTH_HEIGHT;
+// const SIDE_LENGTH_PIXEL = 300;
+// const SIDE_LENGTH_HEIGHT = SIDE_LENGTH_PIXEL * TRIANGLE_HEIGHT;
+
+let GLOBAL_SVG_ID = "create_svg";
+let FONT_SIZE_RATIO_TO_HEIGHT = 1/20;
 
 function get_world_triangle() {
+  var GLOBAL_SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
+
+  // Now the question is can we make this work with any width element?
+  W = GLOBAL_SVG_ELT.clientWidth;
+  H = GLOBAL_SVG_ELT.clientHeight;
+  
+  let SIDE_LENGTH_PIXEL = W * (3/5);
+  
+  const TRIANGLE_WIDTH = 1;
+  const TRIANGLE_HEIGHT = Math.sqrt(3)/2;
+  
+  const SIDE_LENGTH_HEIGHT = SIDE_LENGTH_PIXEL * TRIANGLE_HEIGHT;
+  const BASE = -(1/3) * SIDE_LENGTH_HEIGHT;  
+
   let wtc_vector = [new THREE.Vector2(-SIDE_LENGTH_PIXEL/2,BASE),
                     new THREE.Vector2(SIDE_LENGTH_PIXEL/2,BASE),
                     new THREE.Vector2(0,BASE+SIDE_LENGTH_HEIGHT)];
@@ -48,22 +62,24 @@ function get_world_triangle() {
 var CUR_POINT;
 var CUR_TRIANGLE_COORDS;
 
-function append_text(svg,id,class_name,x,y,text) {
-  var newText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  newText.setAttributeNS(null,"x",x);      
-  newText.setAttributeNS(null,"y",y);
-  newText.setAttributeNS(null,"class",class_name);
-  newText.setAttributeNS(null,"id",id);      
-  newText.appendChild(document.createTextNode(text));
-  svg.appendChild(newText);
-}
 
 
-function render_svg(svg,wtc) {
+function render_svg(svg,wtc,d_labels,fs) {
 
   function vpy(y) { return (-y); }
   function vpx(x) { return (x); }
 
+  function append_text(svg,id,class_name,x,y,dy,text) {
+    var newText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    newText.setAttributeNS(null,"x",x);      
+    newText.setAttributeNS(null,"y",y);
+    newText.setAttributeNS(null,"dy",dy);
+    newText.setAttributeNS(null,"font-size",fs);          
+    newText.setAttributeNS(null,"class",class_name);
+    newText.setAttributeNS(null,"id",id);      
+    newText.appendChild(document.createTextNode(text));
+    svg.appendChild(newText);
+  }
 
   // Note: if we wished to depend on jQueryUI or d3, there are other solutions:
   // https://stackoverflow.com/questions/3674265/is-there-an-easy-way-to-clear-an-svg-elements-contents
@@ -92,23 +108,27 @@ function render_svg(svg,wtc) {
   // These are ugly, they should really be computed from the text.
   // In fact, since this does not change, the whole thing could go into
   // HTML and css more profitably.
+  // fs is the fontsize in pixels; hopefully we caculate this.
   
-  append_text(svg,"vertex-0","triad-vertices",array[2][0]-20,array[2][1]-5,
-              THREE_DIMENSIONS[CURRENT_D][2]);
-  append_text(svg,"vertex-1","triad-vertices",array[0][0]-40,array[0][1]+20,
-              THREE_DIMENSIONS[CURRENT_D][0]);
-  append_text(svg,"vertex-2","triad-vertices",array[1][0],array[1][1]+20,
-              THREE_DIMENSIONS[CURRENT_D][1]
+  append_text(svg,"vertex-0","triad-vertices",array[2][0],array[2][1],-fs/2,
+              d_labels[2]
+             );
+  append_text(svg,"vertex-1","triad-vertices",array[0][0],array[0][1],fs,
+              d_labels[0]              
+             );
+  append_text(svg,"vertex-2","triad-vertices",array[1][0],array[1][1],fs,
+              d_labels[1]
              );
 
 
   // this is the center of the triangle...
-  let orign = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
-  orign.setAttributeNS(null, 'cx', vpx(0));
-  orign.setAttributeNS(null, 'cy', vpy(0));
-  orign.setAttributeNS(null, 'r', 2);
-  orign.setAttributeNS(null, 'style', 'fill: black; stroke: black; stroke-width: 1px;' );
-  svg.appendChild(orign);
+  let origin = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
+  origin.setAttributeNS(null, 'cx', vpx(0));
+  origin.setAttributeNS(null, 'cy', vpy(0));
+  origin.setAttributeNS(null, 'r', 2);
+  origin.setAttributeNS(null,"id","triangle_origin");        
+//  origin.setAttributeNS(null, 'style', 'fill: black; stroke: black; stroke-width: 1px;' );
+  svg.appendChild(origin);
   
   function add_point(tri,c) {
     if (tri) {
@@ -116,7 +136,7 @@ function render_svg(svg,wtc) {
       point.setAttributeNS(null, 'cx', vpx(tri.x));
       point.setAttributeNS(null, 'cy', vpy(tri.y));
       point.setAttributeNS(null, 'r', 4);
-      point.setAttributeNS(null, 'style', 'fill: '+c+'; stroke: '+c+'; stroke-width: 1px;' );
+      point.setAttributeNS(null,"class","triangle_point");              
       svg.appendChild(point);
       
     }
@@ -124,10 +144,51 @@ function render_svg(svg,wtc) {
   add_point(CUR_POINT,"red");
 }
 
+// This is tricky because click events on an SVG
+// depend on which object inside the SVG are hit.
+// We don't really want to do that, we have
+// created a global triangle space. A solution
+// that doesn't force us to become dependent on the SVG model
+// of objects rendered is to use screen coordinates.
+
+function clicked(evt,fs,svg,wtc){
+  var br = document.getElementById("container_to_have_global_coords_on_svg").getBoundingClientRect();
+  var x = evt.originalEvent.clientX - br.left;
+  var y = evt.originalEvent.clientY - br.top;
+  // x and y are in the coordinates of the
+  // SVG system; we need to convert them
+  // to the coordinates of our triangle.
+  var xc = x + -W/2;  
+  var yc = -(y + -H/2);
+  XC = xc;
+  YC = yc;
+  var triangle_coords = new THREE.Vector2(xc,yc);
+
+  // Note, we could balance and invert here to make sure we are inside the trianble!
+  CUR_TRIANGLE_COORDS = triangle_coords;
+  var bal = setBalance(triangle_coords);
+  var vec = new THREE.Vector3(bal[0],bal[1],bal[2]);
+  
+  var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);
+  var triangle_coords_inside_triangle = invertTriadBalance2to3(vec,wtc,norm_to_use);
+
+  CUR_POINT = triangle_coords_inside_triangle;
+  
+  render_svg(svg,wtc,THREE_DIMENSIONS[CURRENT_D],fs);
+}         
+
+
 
 function main() {
-  var svg = document.getElementById("create_svg");        
-  render_svg(svg,WORLD_TRIANGLE_COORDS);
+  var GLOBAL_SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
+
+  // Now the question is can we make this work with any width element?
+  W = GLOBAL_SVG_ELT.clientWidth;
+  H = GLOBAL_SVG_ELT.clientHeight;
+
+  
+  let fs = H * FONT_SIZE_RATIO_TO_HEIGHT;
+  render_svg(GLOBAL_SVG_ELT,WORLD_TRIANGLE_COORDS,THREE_DIMENSIONS[CURRENT_D],fs);
 
   function set_dimension_labels(cur) {
     $("#d0l").text(THREE_DIMENSIONS[cur][0] + ":");
@@ -137,9 +198,7 @@ function main() {
   function set_and_render(cur) {
     CURRENT_D = cur;
     set_dimension_labels(CURRENT_D);
-    update_dimension_names();
-    var svg = document.getElementById("create_svg");            
-    render_svg(svg,WORLD_TRIANGLE_COORDS);        
+    render_svg(GLOBAL_SVG_ELT,WORLD_TRIANGLE_COORDS,THREE_DIMENSIONS[CURRENT_D],fs);        
   }
   
   $("#MBS").click(() => { set_and_render("MBS");});
@@ -152,6 +211,8 @@ function main() {
   $(':radio[name="norm"]').change(function() {
     setBalance(CUR_POINT);
   });
+
+  $("#container_to_have_global_coords_on_svg").click((evt) => clicked(evt,fs,GLOBAL_SVG_ELT,WORLD_TRIANGLE_COORDS));
 }
 
 
@@ -177,38 +238,5 @@ function setBalance(atp) {
   return [bal.x,bal.y,bal.z];
 }
 
-// This is tricky because click events on an SVG
-// depend on which object inside the SVG are hit.
-// We don't really want to do that, we have
-// created a global triangle space. A solution
-// that doesn't force us to become dependent on the SVG model
-// of objects rendered is to use screen coordinates.
 
-function clicked(evt){
-  var br = document.getElementById("container_to_have_global_coords_on_svg").getBoundingClientRect();
-  var x = evt.originalEvent.clientX - br.left;
-  var y = evt.originalEvent.clientY - br.top;
-  // x and y are in the coordinates of the
-  // SVG system; we need to convert them
-  // to the coordinates of our triangle.
-  var xc = x + -W/2;  
-  var yc = -(y + -H/2);
-  XC = xc;
-  YC = yc;
-  var triangle_coords = new THREE.Vector2(xc,yc);
-
-  // Note, we could balance and invert here to make sure we are inside the trianble!
-  CUR_TRIANGLE_COORDS = triangle_coords;
-  var bal = setBalance(triangle_coords);
-  var vec = new THREE.Vector3(bal[0],bal[1],bal[2]);
-  
-  var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);
-  var triangle_coords_inside_triangle = invertTriadBalance2to3(vec,WORLD_TRIANGLE_COORDS,norm_to_use);
-
-  CUR_POINT = triangle_coords_inside_triangle;
-  var svg = document.getElementById("create_svg");          
-  render_svg(svg,WORLD_TRIANGLE_COORDS);
-}         
-
-$("#container_to_have_global_coords_on_svg").click(clicked);
 

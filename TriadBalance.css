@@ -24,6 +24,7 @@
 
 .triad-vertices {
     fill: blue;
+    text-anchor: middle;
 }
 #vertex-0 {
     fill: green;
@@ -33,4 +34,16 @@
 }
 #vertex-2 {
     fill: red;
+}
+
+#triangle_origin {
+    fill: black;
+    stroke: black;
+    stroke-width: 1px;    
+}
+
+.triangle_point {
+    fill: red;
+    stroke: red;
+    stroke-width: 1px;
 }
