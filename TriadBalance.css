@@ -17,7 +17,7 @@
     along with TriadBalance.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-
+/* I need to give all of these a "triad" prefix to avoid collisions. */
 #triad-balance-triangle {
     fill: lemonchiffon;
 }
