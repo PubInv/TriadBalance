@@ -44,78 +44,90 @@ function get_world_triangle() {
 
 // These function convert my abstract coordinates
 // to svg coordinates.
-function vph(h,y) { return (-y); }
-function vpw(w,x) { return (x); }
 
 var CUR_POINT;
-
 var CUR_TRIANGLE_COORDS;
 
-function append_text(svg,x,y,text) {
+function append_text(svg,id,class_name,x,y,text) {
   var newText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
   newText.setAttributeNS(null,"x",x);      
   newText.setAttributeNS(null,"y",y);
+  newText.setAttributeNS(null,"class",class_name);
+  newText.setAttributeNS(null,"id",id);      
   newText.appendChild(document.createTextNode(text));
   svg.appendChild(newText);
 }
 
 
-function render_svg() {
-  var svg = $("#create_svg")[0];
-  $("#create_svg").empty();
+function render_svg(svg,wtc) {
+
+  function vpy(y) { return (-y); }
+  function vpx(x) { return (x); }
+
+
+  // Note: if we wished to depend on jQueryUI or d3, there are other solutions:
+  // https://stackoverflow.com/questions/3674265/is-there-an-easy-way-to-clear-an-svg-elements-contents
+  while (svg.lastChild) {
+    svg.removeChild(svg.lastChild);
+  }
+  
   var polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+  polygon.setAttributeNS(null,"id","triad-balance-triangle");  
   svg.appendChild(polygon);
 
-  let wtc = WORLD_TRIANGLE_COORDS;
-
-  var array = [ [ vpw(W,wtc[0].x),vph(H,wtc[0].y) ], 
-                [ vpw(W,wtc[1].x),vph(H,wtc[1].y) ],
-                [ vpw(W,wtc[2].x),vph(H,wtc[2].y) ] ];
+  // These are the vertices....
+  var array = [ [ vpx(wtc[0].x),vpy(wtc[0].y) ], 
+                [ vpx(wtc[1].x),vpy(wtc[1].y) ],
+                [ vpx(wtc[2].x),vpy(wtc[2].y) ] ];
   
-  for (value of array) {
+  for (let i = 0; i < 3; i++) {
+    value = array[i];
     var point = svg.createSVGPoint();
     point.x = value[0];
     point.y = value[1];
     polygon.points.appendItem(point);
   }
-  polygon.style.fill='lemonchiffon';
+//  polygon.style.fill='lemonchiffon';
 
   // These are ugly, they should really be computed from the text.
   // In fact, since this does not change, the whole thing could go into
   // HTML and css more profitably.
   
-  append_text(svg,array[2][0]-20,array[2][1]-5,
+  append_text(svg,"vertex-0","triad-vertices",array[2][0]-20,array[2][1]-5,
               THREE_DIMENSIONS[CURRENT_D][2]);
-  append_text(svg,array[0][0]-40,array[0][1]+20,
+  append_text(svg,"vertex-1","triad-vertices",array[0][0]-40,array[0][1]+20,
               THREE_DIMENSIONS[CURRENT_D][0]);
-  append_text(svg,array[1][0],array[1][1]+20,
+  append_text(svg,"vertex-2","triad-vertices",array[1][0],array[1][1]+20,
               THREE_DIMENSIONS[CURRENT_D][1]
              );
+
+
+  // this is the center of the triangle...
+  let orign = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
+  orign.setAttributeNS(null, 'cx', vpx(0));
+  orign.setAttributeNS(null, 'cy', vpy(0));
+  orign.setAttributeNS(null, 'r', 2);
+  orign.setAttributeNS(null, 'style', 'fill: black; stroke: black; stroke-width: 1px;' );
+  svg.appendChild(orign);
   
-  var circle = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
-  circle.setAttributeNS(null, 'cx', vpw(W,0));
-  circle.setAttributeNS(null, 'cy', vph(H,0));
-  circle.setAttributeNS(null, 'r', 2);
-  circle.setAttributeNS(null, 'style', 'fill: black; stroke: black; stroke-width: 1px;' );
-  svg.appendChild(circle);
-  
-  function add_triangle(tri,c) {
+  function add_point(tri,c) {
     if (tri) {
-      var polygon = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
-      polygon.setAttributeNS(null, 'cx', vpw(W,tri.x));
-      polygon.setAttributeNS(null, 'cy', vph(H,tri.y));
-      polygon.setAttributeNS(null, 'r', 4);
-      polygon.setAttributeNS(null, 'style', 'fill: '+c+'; stroke: '+c+'; stroke-width: 1px;' );
-      svg.appendChild(polygon);
+      let point = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
+      point.setAttributeNS(null, 'cx', vpx(tri.x));
+      point.setAttributeNS(null, 'cy', vpy(tri.y));
+      point.setAttributeNS(null, 'r', 4);
+      point.setAttributeNS(null, 'style', 'fill: '+c+'; stroke: '+c+'; stroke-width: 1px;' );
+      svg.appendChild(point);
       
     }
   }
-  add_triangle(CUR_POINT,"red");
+  add_point(CUR_POINT,"red");
 }
 
 
 function main() {
-  render_svg();
+  var svg = document.getElementById("create_svg");        
+  render_svg(svg,WORLD_TRIANGLE_COORDS);
 
   function set_dimension_labels(cur) {
     $("#d0l").text(THREE_DIMENSIONS[cur][0] + ":");
@@ -126,7 +138,8 @@ function main() {
     CURRENT_D = cur;
     set_dimension_labels(CURRENT_D);
     update_dimension_names();
-    render_svg();        
+    var svg = document.getElementById("create_svg");            
+    render_svg(svg,WORLD_TRIANGLE_COORDS);        
   }
   
   $("#MBS").click(() => { set_and_render("MBS");});
@@ -193,7 +206,8 @@ function clicked(evt){
   var triangle_coords_inside_triangle = invertTriadBalance2to3(vec,WORLD_TRIANGLE_COORDS,norm_to_use);
 
   CUR_POINT = triangle_coords_inside_triangle;
-  render_svg();
+  var svg = document.getElementById("create_svg");          
+  render_svg(svg,WORLD_TRIANGLE_COORDS);
 }         
 
 $("#container_to_have_global_coords_on_svg").click(clicked);

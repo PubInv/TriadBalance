@@ -36,6 +36,11 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
+
+    <!-- Template of .css elements used to style the TriadBalance widget -->    
+<link rel="stylesheet" type="text/css" href="./TriadBalance.css" />    
+    
+
   <script src="https://code.jquery.com/jquery-1.12.1.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
@@ -483,10 +488,16 @@ that would have to be included to build an interactive diagram.
     </p>
     
   <h2>License</h2>
+  <p>
   You are free to reuse this software under the terms
-of the GNU General Public License. Contact me (&lt;read.robert@gmail.com&gt;) with any questions or comments.
-	<h2> Acknowledgements</h2>
-	<p>Thanks to Mark Frazier for the concept and Sean Johnson for a proofread and code review.</p>
+  of the GNU General Public License. Although the code is covered
+  by the GPL, the algorithm is not. Please re-code the
+  math and algorithm here and use it as you see fit. 
+  </p>
+  <p>
+Contact me (&lt;read.robert@gmail.com&gt;) with any questions or comments.    </p>
+  <h2> Acknowledgements</h2>
+  <p>Thanks to Mark Frazier for the concept and Sean Johnson for a proofread and code review.</p>
 </section>
 </div>
 
@@ -498,8 +509,11 @@ of the GNU General Public License. Contact me (&lt;read.robert@gmail.com&gt;) wi
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
-<!-- This is brings in the math and the norm defintions we need -->
-<script src="./TriadBalanceMath.js"></script>
+
+    <!-- This is brings in the math and the norm defintions we need -->
+    <script src="./TriadBalanceMath.js"></script>
+    
+    <!-- The main() for this page, and examples of using the element -->    
 <script src="./TriadBalanceExample.js"></script>
 
     <script>
@@ -513,6 +527,6 @@ $( document ).ready(function() {
     main();
 });
 
-</script>
+    </script>
 </body>
 </html>
