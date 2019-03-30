@@ -15,6 +15,8 @@
 //   You should have received a copy of the GNU General Public License
 //   along with TriadBalance.  If not, see <https://www.gnu.org/licenses/>.
 
+"use strict";
+
 var CUR_POINT;
 var CUR_TRIANGLE_COORDS;
 var W;
@@ -29,7 +31,7 @@ function set_norm_to_use(norm) {
 }
 
 function set_labels(labels) {
-  LABLES = labels;
+  LABELS = labels;
 }
 
 function get_world_triangle(svg_id) {
@@ -55,11 +57,30 @@ function get_world_triangle(svg_id) {
   return wtc_vector;
 }
 
-function render_svg(svg,wtc,d_labels,fs_ratio_to_height) {
-  LABELS = d_labels;
+function vpy(y) { return (-y); }
+function vpx(x) { return (x); }
+
+function rerender_marker(svg,tri_point) {
+  if (tri_point) {
+    // We have to find the current marker and remove it..
+    var x = document.getElementsByClassName("triad-marker");
+    console.log(x);
+    for(var i = 0; i < x.length; i++) {
+      console.log(x[i]);
+      x[i].parentNode.removeChild(x[i]);
+    }
+    let point = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
+    point.setAttributeNS(null, 'cx', vpx(tri_point.x));
+    point.setAttributeNS(null, 'cy', vpy(tri_point.y));
+    point.setAttributeNS(null, 'r', 4);
+    point.setAttributeNS(null,"class","triad-marker");
+    point.ISMARKER = true;
+    svg.appendChild(point);
+  }
+}
+
+function render_svg(svg,wtc,fs_ratio_to_height) {
   let fs = H * fs_ratio_to_height;
-  function vpy(y) { return (-y); }
-  function vpx(x) { return (x); }
 
   function append_text(svg,id,class_name,x,y,dy,text) {
     var newText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -83,17 +104,10 @@ function render_svg(svg,wtc,d_labels,fs_ratio_to_height) {
   polygon.setAttributeNS(null,"id","triad-balance-triangle");  
   svg.appendChild(polygon);
 
-  // These are the vertices....these can be moved out,
-  // as they don't change until the geometry changes.
-  var array = [ [ vpx(wtc[0].x),vpy(wtc[0].y) ], 
-                [ vpx(wtc[1].x),vpy(wtc[1].y) ],
-                [ vpx(wtc[2].x),vpy(wtc[2].y) ] ];
-  
   for (let i = 0; i < 3; i++) {
-    value = array[i];
     var point = svg.createSVGPoint();
-    point.x = value[0];
-    point.y = value[1];
+    point.x = vpx(wtc[i].x);
+    point.y = vpy(wtc[i].y);
     polygon.points.appendItem(point);
   }
 
@@ -102,20 +116,20 @@ function render_svg(svg,wtc,d_labels,fs_ratio_to_height) {
   // HTML and css more profitably.
   // fs is the fontsize in pixels; hopefully we caculate this.
   function render_labels(svg,vertices,d_labels,fs) {
-    append_text(svg,"vertex-0","triad-vertices",
-                vertices[2][0],vertices[2][1],-fs/2,
+    append_text(svg,"vertex-2","triad-vertices",
+                vpx(wtc[2].x),vpy(wtc[2].y),-fs/2,
                 d_labels[2]
                );
-    append_text(svg,"vertex-1","triad-vertices",
-                vertices[0][0],vertices[0][1],fs,
+    append_text(svg,"vertex-0","triad-vertices",
+                vpx(wtc[0].x),vpy(wtc[0].y),fs,
                 d_labels[0]              
                );
-    append_text(svg,"vertex-2","triad-vertices",
-                vertices[1][0],vertices[1][1],fs,
+    append_text(svg,"vertex-1","triad-vertices",
+                vpx(wtc[1].x),vpy(wtc[1].y),fs,
                 d_labels[1]
                );
   }
-  render_labels(svg,array,d_labels,fs);
+  render_labels(svg,wtc,LABELS,fs);
 
 
   // this is the center of the triangle...
@@ -126,17 +140,9 @@ function render_svg(svg,wtc,d_labels,fs_ratio_to_height) {
   origin.setAttributeNS(null,"id","triangle_origin");        
   svg.appendChild(origin);
   
-  function add_point(tri) {
-      let point = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
-      point.setAttributeNS(null, 'cx', vpx(tri.x));
-      point.setAttributeNS(null, 'cy', vpy(tri.y));
-      point.setAttributeNS(null, 'r', 4);
-      point.setAttributeNS(null,"class","triangle_point");              
-      svg.appendChild(point);
-  }
-  if (CUR_POINT)
-    add_point(CUR_POINT);
+  rerender_marker(svg,CUR_POINT);
 }
+
 
 // This is tricky because click events on an SVG
 // depend on which object inside the SVG are hit.
@@ -160,8 +166,7 @@ function clicked(evt,container_id,fs,svg,wtc,labels,click_callback) {
 
   CUR_POINT = invertTriadBalance2to3(vec,wtc,NORM_TO_USE);
   
-  render_svg(svg,wtc,LABELS,fs);
-
+  rerender_marker(svg,CUR_POINT);  
   click_callback(CUR_TRIANGLE_COORDS,CUR_POINT,vec);
 }         
 
@@ -181,7 +186,7 @@ function initialize_triad_diagram(svg_id,wtc,norm_to_use,labels,click_callback,f
   // for this use...
   svg_elt.setAttribute("viewBox", `-${Whalf} -${Hhalf} ${W} ${H}`);   
 
-  render_svg(svg_elt,wtc,labels,fs_ratio_to_height);
+  render_svg(svg_elt,wtc,fs_ratio_to_height);
 
   svg_elt.addEventListener(
     "click",
