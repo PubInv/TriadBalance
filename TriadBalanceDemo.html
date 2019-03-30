@@ -570,9 +570,9 @@ $( document ).ready(function() {
   function set_and_render(cur) {
     CUR_LABELS = cur;
     set_dimension_labels(THREE_DIMENSIONS[cur]);
-    set_labels(THREE_DIMENSIONS[cur]);
-    render_svg(GLOBAL_SVG_ELT,
-               FONT_SIZE_RATIO_TO_HEIGHT);        
+    set_labels(GLOBAL_SVG_ELT,THREE_DIMENSIONS[cur]);
+//    render_svg(GLOBAL_SVG_ELT,
+//               FONT_SIZE_RATIO_TO_HEIGHT);        
   }
 
   $("#MBS").click(() => { set_and_render("MBS");});
@@ -595,7 +595,7 @@ $( document ).ready(function() {
 
     // now recompute with new norm..
     var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);
-    set_norm_to_use(norm_to_use);
+    set_norm_to_use(GLOBAL_SVG_ELT,norm_to_use);
     
     let bal = TriadBalance2to3(triangle_coords_inside_triangle,
                                WORLD_TRIANGLE_COORDS,
