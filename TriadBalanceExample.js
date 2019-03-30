@@ -173,7 +173,7 @@ function initialize_triad_diagram(svg_id,wtc,norm_to_use,labels,click_callback,f
   H = svg_elt.clientHeight;
   Whalf = W/2;
   Hhalf = H/2;
-  LABELS = labels;
+  set_labels(labels);
   set_norm_to_use(norm_to_use);
 
   // This is convenient, but makes it hard for the client to
@@ -186,7 +186,7 @@ function initialize_triad_diagram(svg_id,wtc,norm_to_use,labels,click_callback,f
   svg_elt.addEventListener(
     "click",
     (evt) =>
-      clicked(evt,container_id,fs_ratio_to_height,svg_elt,wtc,labels,click_callback)
+      clicked(evt,svg_id,fs_ratio_to_height,svg_elt,wtc,labels,click_callback)
   );
 }
 
