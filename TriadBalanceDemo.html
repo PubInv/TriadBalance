@@ -512,7 +512,7 @@ Contact me (&lt;read.robert@gmail.com&gt;) with any questions or comments.    </
     <script src="./TriadBalanceMath.js"></script>
     
     <!-- The main() for this page, and examples of using the element -->    
-<script src="./TriadBalanceExample.js"></script>
+<script src="./TriadBalanceDiagram.js"></script>
 
 <script>
 
@@ -571,8 +571,6 @@ $( document ).ready(function() {
     CUR_LABELS = cur;
     set_dimension_labels(THREE_DIMENSIONS[cur]);
     set_labels(GLOBAL_SVG_ELT,THREE_DIMENSIONS[cur]);
-//    render_svg(GLOBAL_SVG_ELT,
-//               FONT_SIZE_RATIO_TO_HEIGHT);        
   }
 
   $("#MBS").click(() => { set_and_render("MBS");});
