@@ -38,11 +38,11 @@
 
 
     <!-- Template of .css elements used to style the TriadBalance widget -->    
-<link rel="stylesheet" type="text/css" href="./TriadBalance.css" />    
+    <link rel="stylesheet" type="text/css" href="./TriadBalance.css" />    
     
 
-  <script src="https://code.jquery.com/jquery-1.12.1.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -50,478 +50,477 @@
     <script src="./js/three.js"></script>
 
     <!-- Prism for typesetting code -->
-	<link href="css/prism.css" rel="stylesheet" />
+    <link href="css/prism.css" rel="stylesheet" />
     
     
     <body>
-    <script src="./js/prism.js"></script>
-  <br>
-  <div class="container">
-    <h1 class="section-title h1">Triad Balance</h1>
-    
-    <h2>The Three Attributes</h2>
-    <div>
-      <button type="button" class="btn btn-primary" id="MBS">Mind/Body/Spirit</button>
-      <button type="button" class="btn btn-secondary" id="HHH">Head/Heart/Hands</button>
-      <button type="button" class="btn btn-success" id="PSM">Physical/Social/Mental</button>
-      <button type="button" class="btn btn-danger" id="SEF">Strength/Endurance/Flexibility</button>
-      <button type="button" class="btn btn-warning" id="FSH">Father/Son/Holy Spirit</button>
-    </div>
-    
+      <script src="./js/prism.js"></script>
+      <br>
+      <div class="container">
+        <h1 class="section-title h1">Triad Balance</h1>
+        
+        <h2>The Three Attributes</h2>
+        <div>
+          <button type="button" class="btn btn-primary" id="MBS">Mind/Body/Spirit</button>
+          <button type="button" class="btn btn-secondary" id="HHH">Head/Heart/Hands</button>
+          <button type="button" class="btn btn-success" id="PSM">Physical/Social/Mental</button>
+          <button type="button" class="btn btn-danger" id="SEF">Strength/Endurance/Flexibility</button>
+          <button type="button" class="btn btn-warning" id="FSH">Father/Son/Holy Spirit</button>
+        </div>
+        
 
 
-    <legend>Attributes Calculated from Triangle Position:</legend>
-    <div style="display: flex; justify-content: space-around; font-size: x-large; font-weight: bold">
-    <div>
-      <label for="d0" id="d0l">Mind: </label>
-    <span type="text" id="d0">0%</span>
-    </div>
-    <div>    
-      <label for="d1" id="d1l">Body: </label>
-    <span type="text" id="d1">0%</span>
-    </div>    
-    <div>    
-      <label for="d2" id="d2l">Spirit: </label>
-    <span type="text" id="d2">0%</span>
-    </div>    
-    </div>
+        <legend>Attributes Calculated from Triangle Position:</legend>
+        <div style="display: flex; justify-content: space-around; font-size: x-large; font-weight: bold">
+          <div>
+            <label for="d0" id="d0l">Mind: </label>
+            <span type="text" id="d0">0%</span>
+          </div>
+          <div>    
+            <label for="d1" id="d1l">Body: </label>
+            <span type="text" id="d1">0%</span>
+          </div>    
+          <div>    
+            <label for="d2" id="d2l">Spirit: </label>
+            <span type="text" id="d2">0%</span>
+          </div>    
+        </div>
 
-</section>
 
-<div style="display:flex; justify-content: center;">
-<div style="display:flex-column; justify-content: center; align-content: center; width: 50vw;">
-        <svg id="create_svg" style="background: silver; width: 50vw; height: 50vw;"  font-size="24px"> </svg>
-    <div>
-      Click to select attributes based on position.
-      </div>
-</div>
-</div>
-    <fieldset>
-    <legend>Balancing Norm to Use:</legend>
-    <div style="display: flex; justify-content: space-around; font-size: large;">
+        <div style="display:flex; justify-content: center;">
+          <div style="display:flex-column; justify-content: center; align-content: center; width: 50vw;">
+            <svg id="create_svg" style="background: silver; width: 50vw; height: 50vw;"  font-size="24px"> </svg>
+            <div>
+              Click to select attributes based on position.
+            </div>
+          </div>
+        </div>
+        <fieldset>
+          <legend>Balancing Norm to Use:</legend>
+          <div style="display: flex; justify-content: space-around; font-size: large;">
 
-    <span>
-      <label for="l1norm">L1 Norm (Absolute Value):</label>
-    <input type="radio" name="norm" id="l1norm" checked="checked">
-    </span>
-    <span>
-    <label for="l2norm">L2 Norm (Sqrt of Squares):</label>
-    <input type="radio" name="norm" id="l2norm">
-    </span>    
-    </div>
-    </fieldset>
+            <span>
+              <label for="l1norm">L1 Norm (Absolute Value):</label>
+              <input type="radio" name="norm" id="l1norm" checked="checked">
+            </span>
+            <span>
+              <label for="l2norm">L2 Norm (Sqrt of Squares):</label>
+              <input type="radio" name="norm" id="l2norm">
+            </span>    
+          </div>
+        </fieldset>
 
-<section>
-  <h1>
-    Triad Balance Diagrams
-</h1>
-    <p>
-    This interactive page presents what may be a new graphical user interface element — the "triad-balance" diagram. The purpose is to use a
-single click on a triangle to enter three values such as "Mind/Body/Sprit" or "Strength/Endurance/Flexibility" that are presumed to in some sense
-be "in balance", or where it is interesting if they are in balance.
-  The Triad Balance widget is fully responsive and stylable in css.
-    </p>
-    <p>
-      This is an <a href="https://github.com/PubInv/TriadBalance">open source demonstration project</a> of <a href="https://pubinv.github.io/PubInv/">Public Invention</a>.
-      This grew out of the project <a href="https://github.com/PubInv/https://github.com/PubInv/SocialTetrahedrons">Social Tetrahedrons</a> instigated by Mark Frazier.
-    Although I searched a good bit, I may have missed a previous implementation. If the triad-balance diagram has been implemented previously please inform me at &lt;read.robert@gmail.com&gt;.
-  </p>
-    <h2>Usage</h2>
-    <p>
-Click near the yellow triangle and a red dot will appear within the triangle and will determine three values. These three values
-will either sum to 100% or the square of the square roots will sum to 100%. 
-The closer to a corner of the triangle, the more strongly that
-  attribute is attributed. The center of the triangle reflects all attributes equally — that is, "perfect balance."
-  The weights of these attributes will be determined by your assertion, and displayed above the
-triangle.
-  </p>
-    <h2>Purpose</h2>
-    <p>
-    Clicking on the triangle gives you a two-dimensional specification. In some cases, that may be all you need.
-    </p>
-    <p>
-    However, if you want to determine, for example, which of two points has the higher "mind" value,
-then calculating a 3-dimensional "balance vector" from the 2-dimensions makes more sense. It is only possible to specify three values
-from a two-dimensional coordinate by assuming the values are in some sense balance and not completely independent of each other.
-    </p>
-    <p> Additionally, to be useful, the function that produces the "balance vector" from a point on the triangle must have an inverse.
-    That is, there must exist code which when given a "balance vector" and the shape of a triangle as input, computes the coordinates
-of the same point you started with. This allows you to, for example, store balance vectors in a database and reconstruct
-points on the GUI at will. Moving back and forth between the model and the view is essential.
-  <h2>L1 Norm vs. L2 Norm</h2>
-  <p>
-    To be able to write algorithms about the similarity or complementarity of,
-    for example, a person to a project, in terms of Mind/Body/Spirit balance,
-    we need a function to translate a position on the triangle into a mathematical
-    object of some kind. We also must be able to invert this function, to
-    obtain a position on the triangle from a mathematical object.
-  </p>
-  <p>
-    The most obvious way to do this is to treat a given assertion as a vector
-    with dimensions labeled, for example, Mind/Body/Spirit. Then a balance attribute
-    vector maybe thought of as any vector of non-negative components of unit length.
-    There are different
-    ways to express the length of a vector. The L1 Norm is simply the sum
-    of the absolute values, so by choosing that, all dimensions sum to 1.0.
-  </p>
-  <p>
-    However, it is also reasonable to use the L2 Norm, which is the "Euclidean distance." This is rather like saying every vector is a point on the surface
-    of a sphere (or an eighth of a sphere) of radius 1.0.  The components of the L2 Norm will usually sum to something
-    greater than 1.0.
-    </p>
-    <h2> Basic Geometric Algorithm</h2>
-    <figure>
-  <img src="./images/Geometry_of_TriadBalance.svg" alt="A diagram of the geometry of the algorithm with variables" style="width:100%">
-  <figcaption>Fig.1 - Geometric quantities represented by variables in the algorithm TriadBalance2to3</figcaption>
-</figure>
-<p>
-    Please refer to the diagram above when considering the algorithm <code class="language-js">TriadBalance2to3</code> below.
-In the algorithm below, I use the <a href="https://threejs.org/">THREE.js</a> library, which provides a few useful vector operations (<code class="language-js">.add,.multiplyScalar,.clampLength</code>). However, these could be easily replaced with a lighter library or those functions could be coded by hand.
-    We should all be grateful to the contributors to THREE.js, but it is coded in an
-imperative, rather than a functional style, which creates extra lines of code and
-a bit of awkwardness in the code below. (I am a fan of purely functional programming whenever possible.)
-    Additionally, I use
-a slight modification of a routine <code class="language-js">GetRayToLineSegmentIntersection</code> <a href="https://stackoverflow.com/questions/14307158/how-do-you-check-for-intersection-between-a-line-segment-and-a-line-ray-emanatin">provided</a>
-    on Stack Overflow by <a href="https://stackoverflow.com/users/71689/ezolotko">ezolotko</a>.
-    </p>
-    <p>
-    The basic geometric algorithm to compute the three values from a point on the triangle is straightforward. The basic insight is that any point specifies an amount of "balance",
-proportionally to how close it is to the center of the triangle,
-represented in the vector <code class="language-js">bal</code> and an amount of imbalance, depending on where a ray
-intersects the edge, represented by the variable
-<code class="language-js">imb</code>. The final result is a linear combination of these two unit-length vectors, which is guaranteed by
-linearity to have a unit-length norm. Note that the function is parametrized by the
-norming function, we can use either the L1 or L2 norm (or any other.)
-</p>
-    <p> Before we begin, let us note that the special case of the input point being precisely
-the origin or a vertex is in fact handled correctly, although this is perhaps not obvious;
-this is tested in our unit test suite.
-    </p>
-    <p> The <code class="language-js">TriadBalance2to3</code> algorithm takes as input a triangle point, three vertices, and
-a selection of which norm to use (L1 and L2 norms are provided).</p>
-    <pre><code class="language-js">
-// tp is a point in the 2-dimensional triangle space
-// wtc are the three vertices of an eqilateral triangle whose centroid is the origin
-// LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
-// return the corresponding 3-vector in the attribute space
-    function Triad Balance2to3(tp,wtc,LXnorm_and_length = L2) {
-        </code></pre>
-            <p> For clarity, we provide a name for the normalization function.</p>
-    <pre><code class="language-js">
-    let LXnormalize = LXnorm_and_length[0];            
-        </code></pre>        
-    <p>
+        <section>
+          <h1>
+            Triad Balance Diagrams
+          </h1>
+          <p>
+            This interactive page presents what may be a new graphical user interface element — the "triad-balance" diagram. The purpose is to use a
+            single click on a triangle to enter three values such as "Mind/Body/Sprit" or "Strength/Endurance/Flexibility" that are presumed to in some sense
+            be "in balance", or where it is interesting if they are in balance.
+            The Triad Balance widget is fully responsive and stylable in css.
+          </p>
+          <p>
+            This is an <a href="https://github.com/PubInv/TriadBalance">open source demonstration project</a> of <a href="https://pubinv.github.io/PubInv/">Public Invention</a>.
+            This grew out of the project <a href="https://github.com/PubInv/https://github.com/PubInv/SocialTetrahedrons">Social Tetrahedrons</a> instigated by Mark Frazier.
+            Although I searched a good bit, I may have missed a previous implementation. If the triad-balance diagram has been implemented previously please inform me at &lt;read.robert@gmail.com&gt;.
+          </p>
+          <h2>Usage</h2>
+          <p>
+            Click near the yellow triangle and a red dot will appear within the triangle and will determine three values. These three values
+            will either sum to 100% or the square of the square roots will sum to 100%. 
+            The closer to a corner of the triangle, the more strongly that
+            attribute is attributed. The center of the triangle reflects all attributes equally — that is, "perfect balance."
+            The weights of these attributes will be determined by your assertion, and displayed above the
+            triangle.
+          </p>
+          <h2>Purpose</h2>
+          <p>
+            Clicking on the triangle gives you a two-dimensional specification. In some cases, that may be all you need.
+          </p>
+          <p>
+            However, if you want to determine, for example, which of two points has the higher "mind" value,
+            then calculating a 3-dimensional "balance vector" from the 2-dimensions makes more sense. It is only possible to specify three values
+            from a two-dimensional coordinate by assuming the values are in some sense balance and not completely independent of each other.
+          </p>
+          <p> Additionally, to be useful, the function that produces the "balance vector" from a point on the triangle must have an inverse.
+            That is, there must exist code which when given a "balance vector" and the shape of a triangle as input, computes the coordinates
+            of the same point you started with. This allows you to, for example, store balance vectors in a database and reconstruct
+            points on the GUI at will. Moving back and forth between the model and the view is essential.
+            <h2>L1 Norm vs. L2 Norm</h2>
+          <p>
+            To be able to write algorithms about the similarity or complementarity of,
+            for example, a person to a project, in terms of Mind/Body/Spirit balance,
+            we need a function to translate a position on the triangle into a mathematical
+            object of some kind. We also must be able to invert this function, to
+            obtain a position on the triangle from a mathematical object.
+          </p>
+          <p>
+            The most obvious way to do this is to treat a given assertion as a vector
+            with dimensions labeled, for example, Mind/Body/Spirit. Then a balance attribute
+            vector maybe thought of as any vector of non-negative components of unit length.
+            There are different
+            ways to express the length of a vector. The L1 Norm is simply the sum
+            of the absolute values, so by choosing that, all dimensions sum to 1.0.
+          </p>
+          <p>
+            However, it is also reasonable to use the L2 Norm, which is the "Euclidean distance." This is rather like saying every vector is a point on the surface
+            of a sphere (or an eighth of a sphere) of radius 1.0.  The components of the L2 Norm will usually sum to something
+            greater than 1.0.
+          </p>
+          <h2> Basic Geometric Algorithm</h2>
+          <figure>
+            <img src="./images/Geometry_of_TriadBalance.svg" alt="A diagram of the geometry of the algorithm with variables" style="width:100%">
+            <figcaption>Fig.1 - Geometric quantities represented by variables in the algorithm TriadBalance2to3</figcaption>
+          </figure>
+          <p>
+            Please refer to the diagram above when considering the algorithm <code class="language-js">TriadBalance2to3</code> below.
+            In the algorithm below, I use the <a href="https://threejs.org/">THREE.js</a> library, which provides a few useful vector operations (<code class="language-js">.add,.multiplyScalar,.clampLength</code>). However, these could be easily replaced with a lighter library or those functions could be coded by hand.
+            We should all be grateful to the contributors to THREE.js, but it is coded in an
+            imperative, rather than a functional style, which creates extra lines of code and
+            a bit of awkwardness in the code below. (I am a fan of purely functional programming whenever possible.)
+            Additionally, I use
+            a slight modification of a routine <code class="language-js">GetRayToLineSegmentIntersection</code> <a href="https://stackoverflow.com/questions/14307158/how-do-you-check-for-intersection-between-a-line-segment-and-a-line-ray-emanatin">provided</a>
+            on Stack Overflow by <a href="https://stackoverflow.com/users/71689/ezolotko">ezolotko</a>.
+          </p>
+          <p>
+            The basic geometric algorithm to compute the three values from a point on the triangle is straightforward. The basic insight is that any point specifies an amount of "balance",
+            proportionally to how close it is to the center of the triangle,
+            represented in the vector <code class="language-js">bal</code> and an amount of imbalance, depending on where a ray
+            intersects the edge, represented by the variable
+            <code class="language-js">imb</code>. The final result is a linear combination of these two unit-length vectors, which is guaranteed by
+            linearity to have a unit-length norm. Note that the function is parametrized by the
+            norming function, we can use either the L1 or L2 norm (or any other.)
+          </p>
+          <p> Before we begin, let us note that the special case of the input point being precisely
+            the origin or a vertex is in fact handled correctly, although this is perhaps not obvious;
+            this is tested in our unit test suite.
+          </p>
+          <p> The <code class="language-js">TriadBalance2to3</code> algorithm takes as input a triangle point, three vertices, and
+            a selection of which norm to use (L1 and L2 norms are provided).</p>
+          <pre><code class="language-js">
+              // tp is a point in the 2-dimensional triangle space
+              // wtc are the three vertices of an eqilateral triangle whose centroid is the origin
+              // LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
+              // return the corresponding 3-vector in the attribute space
+              function Triad Balance2to3(tp,wtc,LXnorm_and_length = L2) {
+          </code></pre>
+          <p> For clarity, we provide a name for the normalization function.</p>
+          <pre><code class="language-js">
+              let LXnormalize = LXnorm_and_length[0];            
+          </code></pre>        
+          <p>
             If the point is the exact center of the triangle, we cannot
-        construct a ray to an edge, and we return a perfectly balanced vector.
-             </p>
-            <pre><code class="language-js">
-    if (near(tp.lengthSq(),0,1e-5)) {
-        return LXnormalize(new THREE.Vector3(1,1,1));
-    }
-        </code></pre>        
-            
-            <p> We then seek the point <code class="language-js">point_on_edge</code> where the line from the center of the triangle through the point <code class="language-js">p</code> intersects a triangle edge.
-              Such a point must exists, and is on one edge or the intersection of two edges. Imagine a ray from the <code class="language-js">origin</code> through
-              point <code class="language-js">p</code> to <code class="language-js">point_on_edge</code>.
-              The point <code class="language-js">point_on_edge</code> is along the ray from <code class="language-js">origin</code> to <code class="language-js">p</code>
-              and length is at most the distance from the origin to the edge along this ray (to keep the point inside the triangle.)
-        </p>
-            <pre><code class="language-js">
-    let p = new THREE.Vector2(tp.x,tp.y);
-    
-    let origin = new THREE.Vector2(0,0);    
-    // Now we want to do a linear interpolation of how far we are from an edge,
-    // but also how far the projection to the edge is between the vertices.
-    // We must first decide which edges the line from the orign to p intersects.
-    // If it intersects two segments, then it is aimed at a vertex.
-    var point_on_edge; 
-    var fe_idx = -1; // index of the first edge we intersect
-    for(var i = 0; i < 3 && fe_idx < 0; i++) {
-        var r = GetRayToLineSegmentIntersection(origin,p,wtc[i],wtc[(i +1) % 3]);
-        if (r != null) { // if null, the ray did not intersect the edge
-            fe_idx = i;
-            point_on_edge = r[0]; // The first comp. of return value is intersection
-        }
-    }
-    // now point_on_edge is a point on edge fe_idx.     
-        </code></pre>        
-            
-  <p>
-    THREE.js provides a function <code class="language-js">clampLength</code> which limits the length of a vector
-    to an input value. Since we know the distance from the <code class="language-js">orign</code> to <code class="language-js">point_on_edge</code>,
-    the act of clamping <code class="language-js">p</code> brings it to the edge of the triangle if it is outside,
-    and leaves it unchanged if inside.
-    Compute the length from <code class="language-js">p</code> to <code class="language-js">point_on_edge</code>, and the total length from
-    <code class="language-js">origin</code> to <code class="language-js">p</code>.
-            </p>
-            <pre><code class="language-js">
-    let total_distance_to_edge = origin.distanceTo(point_on_edge);
-    // If the point is outside the triangle, we clamp (truncate if needed)
-    // it's length so that it is precisely on the edge.
-    p.clampLength(0,total_distance_to_edge);
+            construct a ray to an edge, and we return a perfectly balanced vector.
+          </p>
+          <pre><code class="language-js">
+              if (near(tp.lengthSq(),0,1e-5)) {
+              return LXnormalize(new THREE.Vector3(1,1,1));
+              }
+          </code></pre>        
+          
+          <p> We then seek the point <code class="language-js">point_on_edge</code> where the line from the center of the triangle through the point <code class="language-js">p</code> intersects a triangle edge.
+            Such a point must exists, and is on one edge or the intersection of two edges. Imagine a ray from the <code class="language-js">origin</code> through
+            point <code class="language-js">p</code> to <code class="language-js">point_on_edge</code>.
+            The point <code class="language-js">point_on_edge</code> is along the ray from <code class="language-js">origin</code> to <code class="language-js">p</code>
+            and length is at most the distance from the origin to the edge along this ray (to keep the point inside the triangle.)
+          </p>
+          <pre><code class="language-js">
+                  let p = new THREE.Vector2(tp.x,tp.y);
+                
+                let origin = new THREE.Vector2(0,0);    
+                // Now we want to do a linear interpolation of how far we are from an edge,
+                // but also how far the projection to the edge is between the vertices.
+                // We must first decide which edges the line from the orign to p intersects.
+                // If it intersects two segments, then it is aimed at a vertex.
+                var point_on_edge; 
+                var fe_idx = -1; // index of the first edge we intersect
+                for(var i = 0; i < 3 && fe_idx < 0; i++) {
+                  var r = GetRayToLineSegmentIntersection(origin,p,wtc[i],wtc[(i +1) % 3]);
+                  if (r != null) { // if null, the ray did not intersect the edge
+                    fe_idx = i;
+                    point_on_edge = r[0]; // The first comp. of return value is intersection
+                  }
+                }
+                // now point_on_edge is a point on edge fe_idx.     
+                                               </code></pre>        
+          
+          <p>
+            THREE.js provides a function <code class="language-js">clampLength</code> which limits the length of a vector
+            to an input value. Since we know the distance from the <code class="language-js">orign</code> to <code class="language-js">point_on_edge</code>,
+            the act of clamping <code class="language-js">p</code> brings it to the edge of the triangle if it is outside,
+            and leaves it unchanged if inside.
+            Compute the length from <code class="language-js">p</code> to <code class="language-js">point_on_edge</code>, and the total length from
+            <code class="language-js">origin</code> to <code class="language-js">p</code>.
+          </p>
+          <pre><code class="language-js">
+                let total_distance_to_edge = origin.distanceTo(point_on_edge);
+                // If the point is outside the triangle, we clamp (truncate if needed)
+                // it's length so that it is precisely on the edge.
+                p.clampLength(0,total_distance_to_edge);
 
-    let distance_to_p_o_e = p.distanceTo(point_on_edge);            
-        </code></pre>        
-  <p> Determine the ratio <code class="language-js">ratio_p_to_edge</code>.
-    If this is close to zero, we are close to perfectly balanced; if it is close to 1, we are close to having zero for one attribute.
-    Compute the a balanced vector <code class="language-js">bal</code> with all values the same,
-    scaled by the ratio to the <code class="language-js">ratio_p_to_edge</code>. 
-            </p>
-    <pre><code class="language-js">        
-    var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
-    
-    let bal = LXnormalize(new THREE.Vector3(1,1,1));
-    bal.multiplyScalar(ratio_p_to_edge);
-        </code></pre>
-            <p>
+                let distance_to_p_o_e = p.distanceTo(point_on_edge);            
+          </code></pre>        
+          <p> Determine the ratio <code class="language-js">ratio_p_to_edge</code>.
+            If this is close to zero, we are close to perfectly balanced; if it is close to 1, we are close to having zero for one attribute.
+            Compute the a balanced vector <code class="language-js">bal</code> with all values the same,
+            scaled by the ratio to the <code class="language-js">ratio_p_to_edge</code>. 
+          </p>
+          <pre><code class="language-js">        
+                var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
+                
+                let bal = LXnormalize(new THREE.Vector3(1,1,1));
+                bal.multiplyScalar(ratio_p_to_edge);
+          </code></pre>
+          <p>
             Now to compute the "imbalance", we linearly divide the edge
-        into the distance to the two vertices. Possibly one of these lengths will be zero.
-            </p>
-        <pre><code class="language-js">
-    // Now the remainder of the contribution
-    // to the unit vector should come from the two
-    // points on the edge, in linear proportion.
-    // These coordinates are fe_idx and (fe_idx+1) % 3.
-    var d1 = wtc[fe_idx].distanceTo(point_on_edge);
-    var d2 = wtc[(fe_idx+1) % 3].distanceTo(point_on_edge);
-        </code></pre>
-            <p>We assign these two distances to the corresponding attributes
+            into the distance to the two vertices. Possibly one of these lengths will be zero.
+          </p>
+          <pre><code class="language-js">
+              // Now the remainder of the contribution
+              // to the unit vector should come from the two
+              // points on the edge, in linear proportion.
+              // These coordinates are fe_idx and (fe_idx+1) % 3.
+              var d1 = wtc[fe_idx].distanceTo(point_on_edge);
+              var d2 = wtc[(fe_idx+1) % 3].distanceTo(point_on_edge);
+          </code></pre>
+          <p>We assign these two distances to the corresponding attributes
             in a 3-vector. The remaining one is zero. We then normalize the vector,
-        driving it&#39;s length to one, and then scale it by an amount chosen such
-that by linearity the sum with the balance vector will be one: <code class="language-js">(1 - ratio_p_to_edge)</code>.
-        <pre><code class="language-js">    
-    let vs = [0,0,0];
-    vs[fe_idx] = d2;
-    vs[(fe_idx+1) % 3] = d1;
-    
-    let imb = LXnormalize(new THREE.Vector3(vs[0],vs[1],vs[2]));
-    imb.multiplyScalar(1 - ratio_p_to_edge);
-        </code></pre>            
-    <p>
-Now the vector <code class="language-js">bal</code> and the vector <code class="language-js">imb</code> added together are the return value.
-            </p>
-    <pre><code class="language-js">        
-    // now construct a balanced vector proportional
-    // to the length from the edge to the point p towards the axis
-    // so that this be a unit vector if p is the origin.
-    return new THREE.Vector3().add(imb).add(bal);
-}
-        </code></pre>        
-    <h2> The Inverse Function</h2>
-  <p> The function <code class="language-js">TriadBalance2to3</code> calculates a 3-vector from the clicked point on the triangle;
-    the inverse function <code class="language-js">invertTriadBalance2to3</code> gives you back the clicked point when given the 3-vector.
-    The utility of producing a 3-vector to represent the 3 attributes in balance depends entirely on having such an inverse function;
-    no alternative <code class="language-js">TriadBalance2to3</code> function which does not have an inverse can be useful.
-    </p>
-    <p>
-    The fundamental insight of this algorithm is that since the ray through the triangle point
-touches at most two edges, there is always a component of the attribute vector that
-is purely contributed by the "balance" component, and it is always a minimum of the
-values in the vector. We can therefore find this minimum, construct a balance vector
-with those values, subtract it from the input, and have a vector representing pure
-imbalance which has at least one zero in it. The two non-zero values represent a linear
-interpolation along the edge (or point, if two edges) that the ray strikes. Since
-we constructed the attribute value as a ratio of lengths between the vertices, we can
-use this fact to reconstruct, via linear interpolation, a point on the edge.
-    A second linear interpolation from the point based on the imbalance length gives
-us the point in 2-space.
-    </p>
-    <pre><code class="language-js">
-// vec is a 3-vector in the attribute space
-// wtc are the three vertices of an eqilateral triangle whose centroid is the origin
-// LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
-// return the corresponding 2-vector in the triangle space
-function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
+            driving it&#39;s length to one, and then scale it by an amount chosen such
+            that by linearity the sum with the balance vector will be one: <code class="language-js">(1 - ratio_p_to_edge)</code>.
+            <pre><code class="language-js">    
+                let vs = [0,0,0];
+                vs[fe_idx] = d2;
+                vs[(fe_idx+1) % 3] = d1;
+                
+                let imb = LXnormalize(new THREE.Vector3(vs[0],vs[1],vs[2]));
+                imb.multiplyScalar(1 - ratio_p_to_edge);
+            </code></pre>            
+          <p>
+            Now the vector <code class="language-js">bal</code> and the vector <code class="language-js">imb</code> added together are the return value.
+          </p>
+          <pre><code class="language-js">        
+              // now construct a balanced vector proportional
+              // to the length from the edge to the point p towards the axis
+              // so that this be a unit vector if p is the origin.
+              return new THREE.Vector3().add(imb).add(bal);
+              }
+          </code></pre>        
+          <h2> The Inverse Function</h2>
+          <p> The function <code class="language-js">TriadBalance2to3</code> calculates a 3-vector from the clicked point on the triangle;
+            the inverse function <code class="language-js">invertTriadBalance2to3</code> gives you back the clicked point when given the 3-vector.
+            The utility of producing a 3-vector to represent the 3 attributes in balance depends entirely on having such an inverse function;
+            no alternative <code class="language-js">TriadBalance2to3</code> function which does not have an inverse can be useful.
+          </p>
+          <p>
+            The fundamental insight of this algorithm is that since the ray through the triangle point
+            touches at most two edges, there is always a component of the attribute vector that
+            is purely contributed by the "balance" component, and it is always a minimum of the
+            values in the vector. We can therefore find this minimum, construct a balance vector
+            with those values, subtract it from the input, and have a vector representing pure
+            imbalance which has at least one zero in it. The two non-zero values represent a linear
+            interpolation along the edge (or point, if two edges) that the ray strikes. Since
+            we constructed the attribute value as a ratio of lengths between the vertices, we can
+            use this fact to reconstruct, via linear interpolation, a point on the edge.
+            A second linear interpolation from the point based on the imbalance length gives
+            us the point in 2-space.
+          </p>
+          <pre><code class="language-js">
+  // vec is a 3-vector in the attribute space
+  // wtc are the three vertices of an eqilateral triangle whose centroid is the origin
+  // LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
+  // return the corresponding 2-vector in the triangle space
+  function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
     let length = LXnorm_and_length[1];
     let min = Math.min(Math.min(vec.x,vec.y),vec.z);
     let imb = new THREE.Vector3(vec.x - min, vec.y - min, vec.z - min);
     let bal = vec.clone();
     bal.sub(imb);
-    </code></pre>
-        <p>
-        Now it is the case that by construction, <code class="language-js">imb</code> has has at least one zero
-    (whichever attributes were minimal), and <code class="language-js">bal</code> has all attributes equal.
-        </p>
-    <pre><code class="language-js">    
-    // Now that we have balance, we need to compute it's length,
-    // which is dependent on the norm we chose!
-
-    let imb_r = length(imb);
-    let bal_r = length(bal);
-    console.assert(Math.abs((bal_r+imb_r) - 1) <   1e-5);
-    </code></pre>
-        <p> The ratio computed below is a ratio of values in attribute space;
-    it is not obvious therefore that this can be used to perform a linear
-    interpolation in the <em>triangle</em> coordinate space. However,
-    we intensionally constructed the attribute vector in proportion to
-    the distance in the triangle space, so this works no matter which norm
-    we use in the attribute space.
-        </p>
-    <pre><code class="language-js">        
-    // Now we have the ratios. We need to determine the direction.
-    // This is a function of the imbalance vector. We can determine
-    // which side we are on, and then compute our position along that
-    // to determine a point on the triangle, and then multiply by the imb_r
-    // to obtain the actual point.
-    // At least one value of imb will be zero.
-    var from_v, to_v, ratio;
-    // the points are OPPOSITE the zero
-    // ratio will be the ratio along the triangle edge
-    // it requires a little thought to understand which
-    // of the other points should be the "from_v" and the "to_v"
-    // for the interpolation which occurs later.
-    var s = imb.x + imb.y + imb.z; // one of these is always zero.
-    if (imb.x == 0) {
-        from_v = wtc[2];
-        to_v = wtc[1];
-        ratio = imb.y/s;
-    } else if (imb.y == 0) {
-        from_v = wtc[0];
-        to_v = wtc[2];
-        ratio = imb.z/s;        
-    } else if (imb.z == 0) {
-        from_v = wtc[1];
-        to_v = wtc[0];
-        ratio = imb.x/s;        
-    }
-    </code></pre>
-        <p>The THREE.js library provides is a linear interpolation between
-          two vectors, named <code class="language-js">lerpVectors</code>,
-          out of the box. We use this once
-    to interpolate along the edge, and then once to interpolate from th
-          origin toward this point.
+          </code></pre>
+          <p>
+            Now it is the case that by construction, <code class="language-js">imb</code> has has at least one zero
+            (whichever attributes were minimal), and <code class="language-js">bal</code> has all attributes equal.
           </p>
-    <pre><code class="language-js">        
-    // The point on the triangle is by construction
-    // on one edge of the triangle.
-    var onTriangle = new THREE.Vector2();
-    onTriangle.lerpVectors(from_v,to_v,ratio);
-    // now onTriangle is a point on the triangle
-    // now, having found that we interpolate a ray
-    // to it of length imb_r...
-    let origin = new THREE.Vector2(0,0);
-    let inversion = new THREE.Vector2();
-    inversion.lerpVectors(origin,
-                          onTriangle,
-                          imb_r);
-    return inversion;
-}
-        </code></pre>        
+          <pre><code class="language-js">    
+              // Now that we have balance, we need to compute it's length,
+              // which is dependent on the norm we chose!
 
-    <h2>Alternative Approaches</h2>
-    <p>
-      I am not a user interface expert; nonetheless I offer these comments.
-    </p>
-  <p>The obvious alternative is to use three sliders. However, this at a minimum requires the user to make two clicks. It also does not visually represent the concept of interdependence,
-    so possibly this approach is more intuitive.
-    </p>
-    <p>
-    A possible alternative which may be more attractive and in a sense more elegant is to use a circle, with the same triangle inscribed. This would be similar, but make better use of the screen space corresponding to the bounding box. The math would be slightly different, and probably simpler, than what is presented here.
-    </p>
-    <p>
-    Finally, it might be possible to define a GUI element that allows you to select from not three, but four or more dimensions, such as the four elements of antiquity: Earth/Air/Water/Fire. However, this would necessarily impose an even further constraint than "balance" on what is possible. For example, if any number of elements can be
-arranged radially in a natural way so that being close to one completely excludes being close to those that are two or more elements away, this could be a natural system.
-    </p>
-  <h2>How to Use for Programmers
-</h2>
-  <p>
-  To use the Triad Balance Diagram, you need to include some common
-libraries and files from this <a href="https://github.com/PubInv/TriadBalance">repo</a> into an
-HTML page which has an svg element you designate for the diagram,
-and provide a callback which will return to you the "balance vector" whenever
-the user clicks. These files are:
-  <ol>
-  <li>
-  <a href="./TriadBalanceMath.js">TriadBalanceMath.js</a>, a standalone file that needs only the <code>THREE.js</code> library and contains the math.
-  </li>
-  <li>
-  <a href="./TriadBalanceDiagram.js">TriadBalanceDiagram.js</a>, which loads a diagram into an <code>svg</code> element that you provide.
-  </li>
-  <li>
-  <a href="./TriadBalance.css">TriadBalance.css</a>, which provides a example of styling all the aspects of the diagram which are stylable.
-  </li>
-  </ol>
+              let imb_r = length(imb);
+              let bal_r = length(bal);
+              console.assert(Math.abs((bal_r+imb_r) - 1) <   1e-5);
+                                                             </code></pre>
+          <p> The ratio computed below is a ratio of values in attribute space;
+            it is not obvious therefore that this can be used to perform a linear
+            interpolation in the <em>triangle</em> coordinate space. However,
+            we intensionally constructed the attribute vector in proportion to
+            the distance in the triangle space, so this works no matter which norm
+            we use in the attribute space.
+          </p>
+          <pre><code class="language-js">        
+                  // Now we have the ratios. We need to determine the direction.
+                  // This is a function of the imbalance vector. We can determine
+                  // which side we are on, and then compute our position along that
+                  // to determine a point on the triangle, and then multiply by the imb_r
+                  // to obtain the actual point.
+                  // At least one value of imb will be zero.
+                  var from_v, to_v, ratio;
+                // the points are OPPOSITE the zero
+                // ratio will be the ratio along the triangle edge
+                // it requires a little thought to understand which
+                // of the other points should be the "from_v" and the "to_v"
+                // for the interpolation which occurs later.
+                var s = imb.x + imb.y + imb.z; // one of these is always zero.
+                if (imb.x == 0) {
+                  from_v = wtc[2];
+                  to_v = wtc[1];
+                  ratio = imb.y/s;
+                } else if (imb.y == 0) {
+                  from_v = wtc[0];
+                  to_v = wtc[2];
+                  ratio = imb.z/s;        
+                } else if (imb.z == 0) {
+                  from_v = wtc[1];
+                  to_v = wtc[0];
+                  ratio = imb.x/s;        
+                }
+          </code></pre>
+          <p>The THREE.js library provides is a linear interpolation between
+            two vectors, named <code class="language-js">lerpVectors</code>,
+            out of the box. We use this once
+            to interpolate along the edge, and then once to interpolate from th
+            origin toward this point.
+          </p>
+          <pre><code class="language-js">        
+                  // The point on the triangle is by construction
+                  // on one edge of the triangle.
+                  var onTriangle = new THREE.Vector2();
+                onTriangle.lerpVectors(from_v,to_v,ratio);
+                // now onTriangle is a point on the triangle
+                // now, having found that we interpolate a ray
+                // to it of length imb_r...
+                let origin = new THREE.Vector2(0,0);
+                let inversion = new THREE.Vector2();
+                inversion.lerpVectors(origin,
+                                      onTriangle,
+                                      imb_r);
+                return inversion;
+              }
+          </code></pre>        
+
+          <h2>Alternative Approaches</h2>
+          <p>
+            I am not a user interface expert; nonetheless I offer these comments.
+          </p>
+          <p>The obvious alternative is to use three sliders. However, this at a minimum requires the user to make two clicks. It also does not visually represent the concept of interdependence,
+            so possibly this approach is more intuitive.
+          </p>
+          <p>
+            A possible alternative which may be more attractive and in a sense more elegant is to use a circle, with the same triangle inscribed. This would be similar, but make better use of the screen space corresponding to the bounding box. The math would be slightly different, and probably simpler, than what is presented here.
+          </p>
+          <p>
+            Finally, it might be possible to define a GUI element that allows you to select from not three, but four or more dimensions, such as the four elements of antiquity: Earth/Air/Water/Fire. However, this would necessarily impose an even further constraint than "balance" on what is possible. For example, if any number of elements can be
+            arranged radially in a natural way so that being close to one completely excludes being close to those that are two or more elements away, this could be a natural system.
+          </p>
+          <h2>How to Use for Programmers
+          </h2>
+          <p>
+            To use the Triad Balance Diagram, you need to include some common
+            libraries and files from this <a href="https://github.com/PubInv/TriadBalance">repo</a> into an
+            HTML page which has an svg element you designate for the diagram,
+            and provide a callback which will return to you the "balance vector" whenever
+            the user clicks. These files are:
+            <ol>
+              <li>
+                <a href="./TriadBalanceMath.js">TriadBalanceMath.js</a>, a standalone file that needs only the <code>THREE.js</code> library and contains the math.
+              </li>
+              <li>
+                <a href="./TriadBalanceDiagram.js">TriadBalanceDiagram.js</a>, which loads a diagram into an <code>svg</code> element that you provide.
+              </li>
+              <li>
+                <a href="./TriadBalance.css">TriadBalance.css</a>, which provides a example of styling all the aspects of the diagram which are stylable.
+              </li>
+            </ol>
 
 
-You can see that on this page, or you may prefer
-the somewhat simpler JSFiddle below.  The <a href="https://jsfiddle.net/RobertLRead/o1vnfrh7/">JSFiddle</a> shows how to
-style the diagram (including colors, etc.) in .css.
-  </p>
-<iframe width="100%" height="300" src="//jsfiddle.net/RobertLRead/o1vnfrh7/embedded/js,html,css,result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>  
-  </p>
-  <p> There is a single callback which is called when the user clicks, and returns the balance vector, which is the heart of the diagram.
-  <p>
-  The diagram is responsive; that is, it will change size more or less correctly, you can try it on this page.
-  </p>
-  <p>
-  Additionally, I have tried to give all of the elements clear ids and classes in .css, so that significatn styling may be done entirely in css.
-  However, some actions (such as adding multiple markers on the same diagram) cannot be implemented with styling and would require extensions to the
-current JavaScript code.
+            You can see that on this page, or you may prefer
+            the somewhat simpler JSFiddle below.  The <a href="https://jsfiddle.net/RobertLRead/o1vnfrh7/">JSFiddle</a> shows how to
+            style the diagram (including colors, etc.) in .css.
+          </p>
+          <iframe width="100%" height="300" src="//jsfiddle.net/RobertLRead/o1vnfrh7/embedded/js,html,css,result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>  
+          </p>
+          <p> There is a single callback which is called when the user clicks, and returns the balance vector, which is the heart of the diagram.
+          <p>
+            The diagram is responsive; that is, it will change size more or less correctly, you can try it on this page.
+          </p>
+          <p>
+            Additionally, I have tried to give all of the elements clear ids and classes in .css, so that significatn styling may be done entirely in css.
+            However, some actions (such as adding multiple markers on the same diagram) cannot be implemented with styling and would require extensions to the
+            current JavaScript code.
 
-  </p>
+          </p>
 
-    <h2> How to Best  Contribute </h2>
-  <p>
-    <a href="https://pubinv.github.io/PubInv/">Public Invention</a> is a non-profit promoting the idea of "Inventing in the public, for the public." We are always seeking volunteer Public Inventors and Invention Coaches.
-  Additionally, we always need web designers, artists, programmers and writers, and this project is no exception, although it is at a stable point for what it is.
-  For example, to make this more easily reusable the color and text configuration should be controlled by CSS.
-    </p>
-    <p>
-  This project is contributing JavaScript and math which makes implementing a TriadBalance diagram easy for a JavaScript programmer.
-  However, the 200 lines of code needed to implement the math could easily be translated to some other language.
-  As is, the code should be easy to include on any webpage.
- I would love to have somebody take this 
-code even further make a <a href="https://d3js.org/"> d3</a> or <a href="https://reactjs.org/">React</a> component out of it, so that it could be enjoyed by others as a plug-in as easy using another d3 GUI element, for example.
-</p>
-    <h4>How to Lighten the Footprint</h4>
-    <p>
-To perform vector operations, these algorithms use <a href="https://threejs.org/">THREE.js</a>. One could selectively replace the small number of operations used from that library to make it a pure JavaScript project with a light footprint (a few hundred lines of code at most for the math part.)
-</p>
-<p>
-    The current approach works with any equilateral triangle centered on the origin, using vector math. If you fixed the triangles orientation and size,
-it wold be possible to optimize some of the math so that fewer vector operations were required. This would lower the footprint of the JavaScript code
-that would have to be included to build an interactive diagram.
-  <p>
-    <h4>The Test Suite</h4>
-  <p>
-    The file <a href="./TriadBalanceMath.js">TriadBalanceMath.js</a> contains not only the
-    function <code class="language-js">TriadBalance2to3</code> and its inverse
-    <code class="language-js">invertTriadBalance2to3</code>, but also a number of
-    test functions. Since these functions make the most sense in a browser,
-we normally invoke them from within a browser rather than with Mocha. When
-executed on loading, the will print a <code>red</code> or <code>green</code> message on the console in your browser.
-    The function <code class="language-js">testAllTriadBalance(WORLD_TRIANGLE_COORDS)</code>
-  can be easily invoked from a browser. Any failing tests will provide output to the browser&#39;s
-    JavaScript console. Invoking the test function and receiving no output indicates all the tests passed.
-    </p>
-    
-  <h2>License</h2>
-  <p>
-  You are free to reuse this software under the terms
-  of the GNU General Public License. Although the code is covered
-  by the GPL, the algorithm is not. Please re-code the
-  math and algorithm here and use it as you see fit. 
-  </p>
-  <p>
-Contact me (&lt;read.robert@gmail.com&gt;) with any questions or comments.    </p>
-  <h2> Acknowledgements</h2>
-  <p>Thanks to Mark Frazier for the concept and Sean Johnson for a proofread and code review.</p>
-</section>
+          <h2> How to Best  Contribute </h2>
+          <p>
+            <a href="https://pubinv.github.io/PubInv/">Public Invention</a> is a non-profit promoting the idea of "Inventing in the public, for the public." We are always seeking volunteer Public Inventors and Invention Coaches.
+            Additionally, we always need web designers, artists, programmers and writers, and this project is no exception, although it is at a stable point for what it is.
+            For example, to make this more easily reusable the color and text configuration should be controlled by CSS.
+          </p>
+          <p>
+            This project is contributing JavaScript and math which makes implementing a TriadBalance diagram easy for a JavaScript programmer.
+            However, the 200 lines of code needed to implement the math could easily be translated to some other language.
+            As is, the code should be easy to include on any webpage.
+            I would love to have somebody take this 
+            code even further make a <a href="https://d3js.org/"> d3</a> or <a href="https://reactjs.org/">React</a> component out of it, so that it could be enjoyed by others as a plug-in as easy using another d3 GUI element, for example.
+          </p>
+          <h4>How to Lighten the Footprint</h4>
+          <p>
+            To perform vector operations, these algorithms use <a href="https://threejs.org/">THREE.js</a>. One could selectively replace the small number of operations used from that library to make it a pure JavaScript project with a light footprint (a few hundred lines of code at most for the math part.)
+          </p>
+          <p>
+            The current approach works with any equilateral triangle centered on the origin, using vector math. If you fixed the triangles orientation and size,
+            it wold be possible to optimize some of the math so that fewer vector operations were required. This would lower the footprint of the JavaScript code
+            that would have to be included to build an interactive diagram.
+          <p>
+            <h4>The Test Suite</h4>
+          <p>
+            The file <a href="./TriadBalanceMath.js">TriadBalanceMath.js</a> contains not only the
+            function <code class="language-js">TriadBalance2to3</code> and its inverse
+            <code class="language-js">invertTriadBalance2to3</code>, but also a number of
+            test functions. Since these functions make the most sense in a browser,
+            we normally invoke them from within a browser rather than with Mocha. When
+executed on loading, the will print a <code>RED: SOME TESTS FAILED!</code> or <code>GREEN: TESTS ALL GREEN!</code> message on the console in your browser.
+            The function <code class="language-js">testAllTriadBalance(WORLD_TRIANGLE_COORDS)</code>
+            can be easily invoked from a browser. Any failing tests will provide output to the browser&#39;s
+            JavaScript console. Invoking the test function and receiving no output indicates all the tests passed.
+          </p>
+          
+          <h2>License</h2>
+          <p>
+            You are free to reuse this software under the terms
+            of the GNU General Public License. Although the code is covered
+            by the GPL, the algorithm is not. Please re-code the
+            math and algorithm here and use it as you see fit. 
+          </p>
+          <p>
+            Contact me (&lt;read.robert@gmail.com&gt;) with any questions or comments.    </p>
+          <h2> Acknowledgements</h2>
+          <p>Thanks to Mark Frazier for the concept and Sean Johnson for a proofread and code review.</p>
+        </section>
+      </div>
+
 </div>
 
-</div>
-  
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
 
-    <!-- This is brings in the math and the norm defintions we need -->
-    <script src="./TriadBalanceMath.js"></script>
-    
-    <!-- The main() for this page, and examples of using the element -->    
+<!-- This is brings in the math and the norm defintions we need -->
+<script src="./TriadBalanceMath.js"></script>
+
+<!-- The main() for this page, and examples of using the element -->    
 <script src="./TriadBalanceDiagram.js"></script>
 
 <script>
@@ -561,17 +560,20 @@ $( document ).ready(function() {
   let GLOBAL_CONTAINER_ID = "container_to_have_global_coords_on_svg";
   let GLOBAL_SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
   let FONT_SIZE_RATIO_TO_HEIGHT = 1/20;
-  // 4/5 is generally too high for this!
+  
   // These value look good to me but I am not a web designer.
+  // 4/5 is generally too high for this!
   let SIDE_TO_MIN_BOUND = 7/10;
+  // The percentage to push the origin down to make it look balanced.
   let Y_DISP_PER_CENT = 10;  
 
-  WORLD_TRIANGLE_COORDS = get_world_triangle(GLOBAL_SVG_ID,SIDE_TO_MIN_BOUND);
+  WORLD_TRIANGLE_COORDS = get_world_triangle(GLOBAL_SVG_ELT,
+                                             SIDE_TO_MIN_BOUND);
 
   if (testAllTriadBalance(WORLD_TRIANGLE_COORDS)) {
-    console.log("TESTS ALL GREEN!");
+    console.log("GREEN: TESTS ALL GREEN!");
   } else {
-    console.log("SOME TESTS FAILED!");    
+    console.log("RED: SOME TESTS FAILED!");    
   }
     
 
@@ -619,7 +621,7 @@ $( document ).ready(function() {
     setBalance(bal);    
   }
   var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);  
-  initialize_triad_diagram(GLOBAL_SVG_ID,
+  initialize_triad_diagram(GLOBAL_SVG_ELT,
                            norm_to_use,
                            THREE_DIMENSIONS["MBS"],
                            callback_for_click,
