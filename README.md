@@ -1,6 +1,6 @@
 # TriBalance Interactive GUI Elements
 
-Because this is an interactive demo, please go to [https://pubinv.github.io/TriadBalance/TriadBalanceDemo.html](https://pubinv.github.io/TriadBalance/TriadBalanceDemo.html), which has an extensive demo and a JSFiddle.
+Because this is an interactive demo, please go to [https://pubinv.github.io/TriadBalance/TriadBalanceDemo.html](https://pubinv.github.io/TriadBalance/TriadBalanceDemo.html), which has an extensive demo and a <a href="https://jsfiddle.net/RobertLRead/o1vnfrh7/">JSFiddle</a>.
 
 # Purpose and Status
 <p>
