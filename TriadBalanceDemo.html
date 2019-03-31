@@ -561,8 +561,12 @@ $( document ).ready(function() {
   let GLOBAL_CONTAINER_ID = "container_to_have_global_coords_on_svg";
   let GLOBAL_SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
   let FONT_SIZE_RATIO_TO_HEIGHT = 1/20;
+  // 4/5 is generally too high for this!
+  // These value look good to me but I am not a web designer.
+  let SIDE_TO_MIN_BOUND = 7/10;
+  let Y_DISP_PER_CENT = 10;  
 
-  WORLD_TRIANGLE_COORDS = get_world_triangle(GLOBAL_SVG_ID);
+  WORLD_TRIANGLE_COORDS = get_world_triangle(GLOBAL_SVG_ID,SIDE_TO_MIN_BOUND);
 
   if (testAllTriadBalance(WORLD_TRIANGLE_COORDS)) {
     console.log("TESTS ALL GREEN!");
@@ -619,7 +623,9 @@ $( document ).ready(function() {
                            norm_to_use,
                            THREE_DIMENSIONS["MBS"],
                            callback_for_click,
-                           FONT_SIZE_RATIO_TO_HEIGHT
+                           FONT_SIZE_RATIO_TO_HEIGHT,
+                           SIDE_TO_MIN_BOUND,
+                           Y_DISP_PER_CENT
                           );
 });
 

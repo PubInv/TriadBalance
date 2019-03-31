@@ -22,7 +22,7 @@
 // specifically to make the chance of name collision very small.
 
 class TriadBalanceState {
-  constructor(cb,ctc,w,h,wh,hh,ntu,lbls,twt,fs_r_t_h) {
+  constructor(cb,ctc,w,h,wh,hh,ntu,lbls,twt,fs_r_t_h,ydpc) {
     this.CUR_BALANCE = cb;
     this.CUR_TRIANGLE_COORDS = ctc;
     this.W = w;
@@ -34,6 +34,7 @@ class TriadBalanceState {
     this.LABELS = lbls;
     this.TRIAD_WORLD_TRIANGLE = twt;
     this.FONT_SIZE_RATIO_TO_HEIGHT = fs_r_t_h;
+    this.Y_DISP_PER_CENT = ydpc;
   }
 }
 
@@ -48,7 +49,7 @@ function set_labels(svg,labels) {
   rerender_marker(svg,svg.triad_balance_state.CUR_BALANCE);  
 }
 
-function get_world_triangle(svg_id) {
+function get_world_triangle(svg_id,s_to_m_b = 7/10) {
   var svg = document.getElementById(svg_id);
 
   // Now the question is can we make this work with any width element?
@@ -57,7 +58,7 @@ function get_world_triangle(svg_id) {
   var min = Math.min(W,H);
 
   // This could be a parameter...
-  let SIDE_LENGTH_PIXEL = min * (3/5);
+  let SIDE_LENGTH_PIXEL = min * s_to_m_b;
   
   const TRIANGLE_WIDTH = 1;
   const TRIANGLE_HEIGHT = Math.sqrt(3)/2;
@@ -76,10 +77,10 @@ function vpx(x) { return x; }
 
 function clear_markers(svg) {
   var x = document.getElementsByClassName("triad-marker");
-    for(var i = 0; i < x.length; i++) {
-      x[i].parentNode.removeChild(x[i]);
-      console.log("removed");
-    }
+  for(var i = 0; i < x.length; i++) {
+    x[i].parentNode.removeChild(x[i]);
+    console.log("removed");
+  }
 }
 function rerender_marker(svg,bal_vec) {
   if (bal_vec) {
@@ -131,7 +132,10 @@ function render_svg(svg,fs_ratio_to_height) {
   }
 
   function render_labels(svg,vertices,d_labels,fs) {
-    let vertical_adjustments = [fs,fs,-fs/2];
+    // This is just what looks good to me, perhaps this should be
+    // configurable or stylable.
+    let pa = 4; // pixel_adjustment
+    let vertical_adjustments = [fs+pa,fs+pa,-(fs/2 + pa)];
     for(let i = 0; i < 3; i++) {
       append_text(svg,"triad-vertex-label-"+i,
                   "triad-vertices-labels",
@@ -165,15 +169,16 @@ function clicked(evt,container_id,fs,svg,labels,click_callback) {
   var br = document.getElementById(container_id).getBoundingClientRect();
   var x = evt.clientX - br.left;
   var y = evt.clientY - br.top;
-  // x and y are in the coordinates of the
-  // SVG system; we need to convert them
+  // x and y are in screen coordinates of the
+  // SVG ; we need to convert them
   // to the coordinates of our triangle.
   var xc = x + -svg.triad_balance_state.Whalf;  
-  var yc = -(y + -svg.triad_balance_state.Hhalf);
-  var triangle_coords = 
-
+  var yc = -(y + -svg.triad_balance_state.Hhalf
+             + -svg.triad_balance_state.H * svg.triad_balance_state.Y_DISP_PER_CENT/100.0 );
   // Note, we could balance and invert here to make sure we are inside the triangle!
+  var triangle_coords = 
       svg.triad_balance_state.CUR_TRIANGLE_COORDS = new THREE.Vector2(xc,yc);
+  console.log("Y DISP",svg.triad_balance_state.Y_DISP_PER_CENT/100.0);
   console.log("COORDS",svg.triad_balance_state.CUR_TRIANGLE_COORDS);
   svg.triad_balance_state.CUR_BALANCE =
     TriadBalance2to3(svg.triad_balance_state.CUR_TRIANGLE_COORDS,svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,
@@ -186,7 +191,7 @@ function clicked(evt,container_id,fs,svg,labels,click_callback) {
   click_callback(svg.triad_balance_state.CUR_TRIANGLE_COORDS,CUR_POINT,svg.triad_balance_state.CUR_BALANCE);
 }         
 
-function initialize_triad_diagram(svg_id,norm_to_use,labels,click_callback,fs_ratio_to_height = (1/20)) {
+function initialize_triad_diagram(svg_id,norm_to_use,labels,click_callback,fs_ratio_to_height = (1/20),s_to_m_b = 7/10,ydpc = 10) {
   var svg = document.getElementById(svg_id);
   svg.triad_balance_state = new TriadBalanceState();
   
@@ -196,16 +201,20 @@ function initialize_triad_diagram(svg_id,norm_to_use,labels,click_callback,fs_ra
     let H = svg.triad_balance_state.H = svg.clientHeight;
     let Whalf = svg.triad_balance_state.Whalf = svg.triad_balance_state.W/2;
     let Hhalf = svg.triad_balance_state.Hhalf = svg.triad_balance_state.H/2;
-    svg.triad_balance_state.TRIAD_WORLD_TRIANGLE = get_world_triangle(svg_id);
-  // This is convenient, but makes it hard for the client to
-  // use this svg for their own purposes, which is probably okay
-  // for this use...
-    svg.setAttribute("viewBox", `-${Whalf} -${Hhalf} ${W} ${H}`);
+    svg.triad_balance_state.TRIAD_WORLD_TRIANGLE = get_world_triangle(svg_id,s_to_m_b);
+    // This is convenient, but makes it hard for the client to
+    // use this svg for their own purposes, which is probably okay
+    // for this use...
+    // Here is were we can adjust the Hhalf value to move the triangle
+    // down a bit, I think. However, this will like make us
+    // have to make our inverstion functioon formal.
+    svg.setAttribute("viewBox", `-${Whalf} -${Hhalf+H*ydpc/100.0} ${W} ${H}`);
     render_svg(svg,fs_ratio_to_height);
     rerender_marker(svg,svg.triad_balance_state.CUR_BALANCE);
   }
 
   svg.triad_balance_state.FONT_SIZE_RATIO_TO_HEIGHT = fs_ratio_to_height;
+  svg.triad_balance_state.Y_DISP_PER_CENT = ydpc;  
   svg.triad_balance_state.LABELS = labels;
   svg.triad_balance_state.NORM_TO_USE = norm_to_use;  
 
