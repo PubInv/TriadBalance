@@ -17,7 +17,9 @@
 
 "use strict";
 
-// I think I can put these things in an object and stash it on the SVG.
+// The TriadBalanceState is stashed in the svg element object
+// given us to insure uniqueness. I use the annoying long name "triad_balance_state"
+// specifically to make the chance of name collision very small.
 
 class TriadBalanceState {
   constructor(cb,ctc,w,h,wh,hh,ntu,lbls,twt,fs_r_t_h) {
@@ -25,6 +27,7 @@ class TriadBalanceState {
     this.CUR_TRIANGLE_COORDS = ctc;
     this.W = w;
     this.H = h;
+    // This is a little silly, this could be done with a getter somehow.
     this.Whalf = wh;
     this.Hhalf = hh;
     this.NORM_TO_USE = ntu;
@@ -68,8 +71,8 @@ function get_world_triangle(svg_id) {
   return wtc_vector;
 }
 
-function vpy(y) { return (-y); }
-function vpx(x) { return (x); }
+function vpy(y) { return -y; }
+function vpx(x) { return x; }
 
 function clear_markers(svg) {
   var x = document.getElementsByClassName("triad-marker");
@@ -87,7 +90,7 @@ function rerender_marker(svg,bal_vec) {
     let point = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
     point.setAttributeNS(null, 'cx', vpx(tri_point.x));
     point.setAttributeNS(null, 'cy', vpy(tri_point.y));
-    point.setAttributeNS(null, 'r', 4);
+    point.setAttributeNS(null, 'r', 3);
     point.setAttributeNS(null,"class","triad-marker");
     point.ISMARKER = true;
     svg.appendChild(point);
@@ -127,29 +130,20 @@ function render_svg(svg,fs_ratio_to_height) {
     polygon.points.appendItem(point);
   }
 
-  // These are ugly, they should really be computed from the text.
-  // In fact, since this does not change, the whole thing could go into
-  // HTML and css more profitably.
-  // fs is the fontsize in pixels; hopefully we caculate this.
   function render_labels(svg,vertices,d_labels,fs) {
-    append_text(svg,"vertex-2","triad-vertices",
-                vpx(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[2].x),vpy(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[2].y),-fs/2,
-                d_labels[2]
-               );
-    append_text(svg,"vertex-0","triad-vertices",
-                vpx(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[0].x),vpy(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[0].y),fs,
-                d_labels[0]              
-               );
-    append_text(svg,"vertex-1","triad-vertices",
-                vpx(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[1].x),vpy(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[1].y),fs,
-                d_labels[1]
-               );
+    let vertical_adjustments = [fs,fs,-fs/2];
+    for(let i = 0; i < 3; i++) {
+      append_text(svg,"triad-vertex-label-"+i,
+                  "triad-vertices-labels",
+                  vpx(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i].x),
+                  vpy(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i].y),
+                  vertical_adjustments[i],
+                  d_labels[i]
+                 );
+    }
   }
-  if (!fs) {
-    debugger;
-  }
-  render_labels(svg,svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,svg.triad_balance_state.LABELS,fs);
 
+  render_labels(svg,svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,svg.triad_balance_state.LABELS,fs);
 
   // this is the center of the triangle...
   let origin = document.createElementNS("http://www.w3.org/2000/svg", 'circle');

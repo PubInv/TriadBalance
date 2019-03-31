@@ -22,33 +22,32 @@
     fill: lemonchiffon;
 }
 
-.triad-vertices {
+.triad-vertices-labels {
     fill: blue;
     text-anchor: middle;
 }
-#vertex-0 {
+
+#triad-vertex-label-0 {
     fill: green;
 }
-#vertex-1 {
-    fill: red;
+
+#triad-vertex-label-1 {
+    fill: blue;
 }
-#vertex-2 {
+
+#triad-vertex-label-2 {
     fill: red;
 }
 
 #triangle_origin {
     fill: black;
     stroke: black;
-    stroke-width: 1px;    
-}
-
-.triangle_point {
-    fill: red;
-    stroke: red;
     stroke-width: 1px;
 }
+
 .triad-marker {
     fill: red;
     stroke: red;
     stroke-width: 1px;
+    r: 3px;
 }

@@ -135,18 +135,6 @@ The closer to a corner of the triangle, the more strongly that
   The weights of these attributes will be determined by your assertion, and displayed above the
 triangle.
   </p>
-  <h2>How to Use for Programmers
-</h2>
-  <p>
-  To use the Triad Balance Diagram, you need to include some common
-libraries and the files from this <a href="https://github.com/PubInv/TriadBalance">repo</a> into an
-HTML page which has an svg element you designate for the diagram,
-and provide a callback which will return to you the "balance vector" whenever
-the user clicks. You can see that on this page, or you may prefer
-the somewhat simpler JSFiddle below.  The <a href="https://jsfiddle.net/RobertLRead/o1vnfrh7/">JSFiddle</a> shows how to
-style the diagram (including colors, etc.) in .css.
-  </p>
-<iframe width="100%" height="300" src="//jsfiddle.net/RobertLRead/o1vnfrh7/embedded/js,html,css,result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>  
     <h2>Purpose</h2>
     <p>
     Clicking on the triangle gives you a two-dimensional specification. In some cases, that may be all you need.
@@ -434,34 +422,42 @@ function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
     Finally, it might be possible to define a GUI element that allows you to select from not three, but four or more dimensions, such as the four elements of antiquity: Earth/Air/Water/Fire. However, this would necessarily impose an even further constraint than "balance" on what is possible. For example, if any number of elements can be
 arranged radially in a natural way so that being close to one completely excludes being close to those that are two or more elements away, this could be a natural system.
     </p>
-  <h2> Usage on Your Own Page </h2>
+  <h2>How to Use for Programmers
+</h2>
   <p>
-    The file TriadBalanceMath.js has everything you need (including tests.) The simplest way to use this is include this file in include this file
-    in a script tag, and also include three.js. Then in your code create an equilateral triangle as demonstrated on this page (TriadBalanceDemo.html). This page uses
-SVG but it could also be done with a canvas. Code to create an equilateral triangle is of edge length 300 that fits nicely onto a 500 by 500 pixel SVG is exemplified:
-    <pre><code class="language-js">
-var WORLD_TRIANGLE_COORDS;
-const W = 500;
-const H = 500;
+  To use the Triad Balance Diagram, you need to include some common
+libraries and files from this <a href="https://github.com/PubInv/TriadBalance">repo</a> into an
+HTML page which has an svg element you designate for the diagram,
+and provide a callback which will return to you the "balance vector" whenever
+the user clicks. These files are:
+  <ol>
+  <li>
+  <a href="./TriadBalanceMath.js">TriadBalanceMath.js</a>, a standalone file that needs only the <code>THREE.js</code> library and contains the math.
+  </li>
+  <li>
+  <a href="./TriadBalanceDiagram.js">TriadBalanceDiagram.js</a>, which loads a diagram into an <code>svg</code> element that you provide.
+  </li>
+  <li>
+  <a href="./TriadBalance.css">TriadBalance.css</a>, which provides a example of styling all the aspects of the diagram which are stylable.
+  </li>
+  </ol>
 
-const TRIANGLE_WIDTH = 1;
-const TRIANGLE_HEIGHT = Math.sqrt(3)/2;
-const SIDE_LENGTH_PIXEL = 300;
-const SIDE_LENGTH_HEIGHT = SIDE_LENGTH_PIXEL * TRIANGLE_HEIGHT;
-const BASE = -(1/3) * SIDE_LENGTH_HEIGHT;
 
-function get_world_triangle() {
-    let wtc_vector = [new THREE.Vector2(-SIDE_LENGTH_PIXEL/2,BASE),
-               new THREE.Vector2(SIDE_LENGTH_PIXEL/2,BASE),
-               new THREE.Vector2(0,BASE+SIDE_LENGTH_HEIGHT)];
-    return wtc_vector;
-}
+You can see that on this page, or you may prefer
+the somewhat simpler JSFiddle below.  The <a href="https://jsfiddle.net/RobertLRead/o1vnfrh7/">JSFiddle</a> shows how to
+style the diagram (including colors, etc.) in .css.
+  </p>
+<iframe width="100%" height="300" src="//jsfiddle.net/RobertLRead/o1vnfrh7/embedded/js,html,css,result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>  
+  </p>
+  <p> There is a single callback which is called when the user clicks, and returns the balance vector, which is the heart of the diagram.
+  <p>
+  The diagram is responsive; that is, it will change size more or less correctly, you can try it on this page.
+  </p>
+  <p>
+  Additionally, I have tried to give all of the elements clear ids and classes in .css, so that significatn styling may be done entirely in css.
+  However, some actions (such as adding multiple markers on the same diagram) cannot be implemented with styling and would require extensions to the
+current JavaScript code.
 
-// These function convert my abstract coordinates
-// to svg coordinates.
-function vph(h,y) { return (-y); }
-function vpw(w,x) { return (x); }
-</code></pre>
   </p>
 
     <h2> How to Best  Contribute </h2>
@@ -492,7 +488,8 @@ that would have to be included to build an interactive diagram.
     function <code class="language-js">TriadBalance2to3</code> and its inverse
     <code class="language-js">invertTriadBalance2to3</code>, but also a number of
     test functions. Since these functions make the most sense in a browser,
-    we normally invoke them from within a browser rather than with Mocha or something.
+we normally invoke them from within a browser rather than with Mocha. When
+executed on loading, the will print a <code>red</code> or <code>green</code> message on the console in your browser.
     The function <code class="language-js">testAllTriadBalance(WORLD_TRIANGLE_COORDS)</code>
   can be easily invoked from a browser. Any failing tests will provide output to the browser&#39;s
     JavaScript console. Invoking the test function and receiving no output indicates all the tests passed.
