@@ -94,6 +94,163 @@ function near(x,y,e = 1e-4) {
   return Math.abs(x - y) < e;
 }
 
+// Under assumption of an upward facing
+// equilateral triangle, return the edge
+// intersected by the ray from the origin to tp,
+// without dependence on vector libraries.
+// The return value is an array:
+// empty iff tp is the origin
+// containing two values if it is a vertex
+// containing one value otherwise.
+// The edges are numbered anticlockwise,
+// with the zeroeth edge at the bottom.
+// If two edges are returned, this routine
+// returns them in sorted order.
+function eqEdgeAlgebraically(wtc,tp) {
+  let xp = tp.x;
+  let yp = tp.y;
+  if (near(xp,0)) {
+    if (near(yp,0)) {
+      return [];
+    } else if (yp > 0) {
+      return [1,2];
+    } else {
+      return [0];
+    }
+  } else {
+    let m = yp/xp;
+    let m1 = -Math.sqrt(3)/3;
+    let m2 = Math.sqrt(3)/3;
+    if ((xp > 0) && (near(m,m1))) return [0,1];
+    if ((xp > 0) && (m > m1)) return [1];
+    if ((xp > 0) && (m < m1)) return [0];
+    
+    if ((xp < 0) && (near(m,m2))) return [0,2];    
+    if ((xp < 0) && (m < m2)) return [2];
+    if ((xp < 0) && (m > m2)) return [0];
+  }
+}
+
+function test_eqEdgeAlebraically(wtc) {
+  let ro = new THREE.Vector2(0,0);
+  var rof = eqEdgeAlgebraically(wtc,ro);
+  console.assert(rof.length == 0);
+
+  var r0 = eqEdgeAlgebraically(wtc,wtc[0]);
+  console.assert(r0.length == 2);
+  
+  var r1 = eqEdgeAlgebraically(wtc,wtc[1]);
+  console.assert(r1.length == 2);
+  
+  var r2 = eqEdgeAlgebraically(wtc,wtc[2]);
+  console.assert(r2.length == 2);
+
+  // slope of 1
+  var one = new THREE.Vector2(1,1);
+  var rone = eqEdgeAlgebraically(wtc,one);
+  console.assert(rone.length == 1);
+  console.assert(rone[0] == 1);
+
+  var neg_one = new THREE.Vector2(-1,1);
+  var rneg_one = eqEdgeAlgebraically(wtc,neg_one);
+  console.assert(rneg_one.length == 1);
+  console.assert(rneg_one[0] == 2);
+
+  var down = new THREE.Vector2(0.01,-1);
+  var rdown = eqEdgeAlgebraically(wtc,down);
+  console.assert(rdown.length == 1);
+  console.assert(rdown[0] == 0);
+  return true;
+}
+
+// Here we return the point on the edge
+// where the ray from the origin to tp intersects
+// the triangle.
+// The math here is created on the assumption
+// of the triangle being perfectly equilateral with
+// the centroid at the origin. This allows us to
+// solve simultaneous equations to find the points.
+// This is an alternative to vector-based methods
+// that are of course in the end simlar, but we take
+// advantage of known slopes to make it faster and simpler.
+function eqPointOnEdgeAlgebraically(wtc,tp) {
+  // we should probably check equilaterality and orientation here
+  let es = eqEdgeAlgebraically(wtc,tp);
+  if (es.length == 0) return null; // tp is the origin
+  if (es.length == 2) { // we hit a vertex, but which one?
+    if ((es[0] == 0) && (es[1] == 1)) {
+      return wtc[1];
+    } else
+    if ((es[0] == 0) && (es[1] == 2)) {
+      return wtc[0];
+    } else
+    if ((es[0] == 1) && (es[1] == 2)) {
+      return wtc[2];
+    } 
+  } else { // now we do a case split
+    let xp = tp.x;
+    let yp = tp.y;
+    let a = wtc[0].distanceTo(wtc[1]);
+    let B = a * Math.sqrt(3)/6;    
+    if (near(xp,0)) {
+      return (yp > 0) ? wtc[2] : new THREE.Vector2(0,-B);
+    }
+    let m = yp/xp;
+    if (es[0] == 0) {
+      return new THREE.Vector2(-B/m,-B);
+    } else if (es[0] == 1) {
+      let y = a / (3 *(1/Math.sqrt(3) + 1/m));
+      let x = y / m;
+      return new THREE.Vector2(x,y);      
+    } else if (es[0] == 2) {
+      let y = a / (3 *(1/Math.sqrt(3) - 1/m));
+      let x = y / m;
+      return new THREE.Vector2(x,y);            
+    }
+  }
+}
+
+function pointsNear(a,b) {
+  return near(a.x,b.x) && near(a.y,b.y);
+}
+
+function collinear(a,b,c) {
+  var ar = a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (b.y - c.y);
+  return near(ar,0);
+}
+
+function test_eqPointOnAlgebraically(wtc) {
+  let ro = new THREE.Vector2(0,0);
+  var rof = eqPointOnEdgeAlgebraically(wtc,ro);
+  console.assert(rof == null);
+
+  var r0 = eqPointOnEdgeAlgebraically(wtc,wtc[0].clone().multiplyScalar(1/2));
+  console.assert(pointsNear(r0,wtc[0]));
+  
+  var r1 = eqPointOnEdgeAlgebraically(wtc,wtc[1]);
+  console.assert(pointsNear(r1,wtc[1]));
+  
+  var r2 = eqPointOnEdgeAlgebraically(wtc,wtc[2]);
+  console.assert(pointsNear(r2,wtc[2]));
+
+  // slope of 1
+  var one = new THREE.Vector2(1,1);
+  var rone = eqPointOnEdgeAlgebraically(wtc,one);
+  console.assert(collinear(rone,wtc[1],wtc[2]));
+
+  var neg_one = new THREE.Vector2(-1,1);
+  var rneg_one = eqPointOnEdgeAlgebraically(wtc,neg_one);
+  console.assert(collinear(rneg_one,wtc[0],wtc[2]));  
+
+
+  var down = new THREE.Vector2(0.01,-1);
+  var rdown = eqPointOnEdgeAlgebraically(wtc,down);
+  console.assert(collinear(rdown,wtc[0],wtc[1]));  
+
+  return true;
+}
+
+
 // tp is a point in the 2-dimensional triangle space
 // wtc are the three vertices of an eqilateral triangle whose centroid is the origin
 // LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
@@ -110,15 +267,31 @@ function TriadBalance2to3(tp,wtc,LXnorm_and_length = L2) {
   // but also how far the projection to the edge is between the vertices.
   // We must first decide which edges the line from the orign to p intersects.
   // If it intersects two segments, then it is aimed at a vertex.
+
+  let USE_ALGEBRAIC_STRATEGY = 1;
   var point_on_edge; 
   var fe_idx = -1; // index of the first edge we intersect
-  for(var i = 0; i < 3 && fe_idx < 0; i++) {
-    var r = GetRayToLineSegmentIntersection(origin,p,wtc[i],wtc[(i +1) % 3]);
-    if (r != null) { // if null, the ray did not intersect the edge
-      fe_idx = i;
-      point_on_edge = r[0]; // The first comp. of return value is intersection
-    }
+  console.log("XXXX",tp);
+  if (USE_ALGEBRAIC_STRATEGY)
+  {
+     // this may return two, but we can just take the first
+  fe_idx = eqEdgeAlgebraically(wtc,tp)[0];
+  point_on_edge = eqPointOnEdgeAlgebraically(wtc,tp);
+  console.log(fe_idx,point_on_edge.x,point_on_edge.y);
   }
+  else
+  {
+    fe_idx = -1;
+    for(var i = 0; i < 3 && fe_idx < 0; i++) {
+      var r = GetRayToLineSegmentIntersection(origin,p,wtc[i],wtc[(i +1) % 3]);
+      if (r != null) { // if null, the ray did not intersect the edge
+        fe_idx = i;
+        point_on_edge = r[0]; // The first comp. of return value is intersection
+      }
+    }
+    console.log(fe_idx,point_on_edge.x,point_on_edge.y);    
+  }
+
   // now point_on_edge is a point on edge fe_idx.     
 
   let total_distance_to_edge = origin.distanceTo(point_on_edge);
@@ -168,7 +341,10 @@ function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
 
   let imb_r = length(imb);
   let bal_r = length(bal);
-  console.assert(Math.abs((bal_r+imb_r) - 1) <   1e-5);
+  console.assert(near(bal_r+imb_r,1));
+  if (!near(bal_r+imb_r,1)) {
+    debugger;
+  }
 
   // Now we have the ratios. We need to determine the direction.
   // This is a function of the imbalance vector. We can determine
@@ -341,15 +517,26 @@ function testInversionWithACircle(wtc,NORM) {
       var vp_inv = invertTriadBalance2to3(vp,wtc,NORM);
       var vpyc = vp_inv.clone();
       vpyc.sub(p);
-      console.assert(vpyc.length() < 1e-4);
+      console.assert(near(vpyc.length(),0));
+      if (!near(vpyc.length(),0)) {
+        debugger;
+      }
     }
   }
   return true;  
 }
 
 // wtc is the WORLD_TRIANGLE_COORDS, an array of three Vector2 objects.
+
+function testEquilateralFunctions(wtc) {
+  var allTrue = 1;
+  allTrue &= test_eqEdgeAlebraically(wtc);
+  allTrue &= test_eqPointOnAlgebraically(wtc);
+  return allTrue;
+}
 function testAllTriadBalance(wtc) {
   var allTrue = 1;
+  allTrue &= testEquilateralFunctions(wtc);
   allTrue &= testOriginAndVertices(wtc);    
   allTrue &= testGetRayToLineSegmentIntersection(wtc);
   allTrue &= testTriadBalance2to3(wtc);
