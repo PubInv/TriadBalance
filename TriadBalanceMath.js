@@ -17,7 +17,7 @@
 "use strict";
 
 
-function GetRayToLineSegmentIntersection(rayOrigin,rayDirection,point1,point2)
+function GetRayToLineSegmentIntersectionOld(rayOrigin,rayDirection,point1,point2)
 {
   // This code from here: https://stackoverflow.com/questions/14307158/how-do-you-check-for-intersection-between-a-line-segment-and-a-line-ray-emanatin
   // Note this routine seems to depend on the chirality of the points; possibly it only counts an approach from one side.
@@ -44,6 +44,41 @@ function GetRayToLineSegmentIntersection(rayOrigin,rayDirection,point1,point2)
   if (t1 >= 0.0 && (t2 >= 0.0 && t2 <= 1.0)) {
     rd.multiplyScalar(t1);
     return [ro.add(rd),t1];
+  }
+  return null;
+}
+
+// BRANCH specific: This is my attempt to use vec-la-fp
+function GetRayToLineSegmentIntersection(rayOrigin,rayDirection,point1,point2)
+{
+  // This code from here: https://stackoverflow.com/questions/14307158/how-do-you-check-for-intersection-between-a-line-segment-and-a-line-ray-emanatin
+  // Note this routine seems to depend on the chirality of the points; possibly it only counts an approach from one side.
+
+  const ro = [rayOrigin.x,rayOrigin.y];
+  const rd = [rayDirection.x,rayDirection.y];  
+  const rdn = vec.norm(rd);
+  const p1 = [point1.x,point1.y];    
+  const p2 = [point2.x,point2.y];      
+  const v1 = vec.sub(ro,p1);
+  const v2 = vec.sub(p2,p1);  
+
+  const v3 = [-rdn[1],rdn[0]];        
+  const dot = vec.dot(v2,v3);
+
+  if (Math.abs(dot) < 0.000001)
+    return null;
+
+  // TODO: Possibly this (the perp dot product) could be added to vec-la-fp
+  function ccross(v1,v2)
+  {
+    return (v1[0]*v2[1]) - (v1[1]*v2[0]);
+  }
+  const t1 = ccross(v2,v1) / dot;
+  const t2 = vec.dot(v1,v3) / dot
+
+  if (t1 >= 0.0 && (t2 >= 0.0 && t2 <= 1.0)) {
+    const r = vec.add(ro,vec.scale(t1,rd));
+    return [new THREE.Vector2(r[0],r[1]),t1];
   }
   return null;
 }
@@ -304,6 +339,7 @@ function TriadBalance2to3(tp,wtc,LXnorm_and_length = L2) {
   var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
   
   let bal = LXnormalize(new THREE.Vector3(1,1,1));
+
   bal.multiplyScalar(ratio_p_to_edge);
 
   // Now the remainder of the contribution
