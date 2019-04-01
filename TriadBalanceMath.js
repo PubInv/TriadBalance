@@ -17,50 +17,27 @@
 "use strict";
 
 
-function GetRayToLineSegmentIntersectionOld(rayOrigin,rayDirection,point1,point2)
+// BRANCH specific: This is my attempt to use vec-la-fp
+// TODO: Possibly this (the perp dot product) could be added to vec-la-fp
+function perpdot(v1,v2)
 {
-  // This code from here: https://stackoverflow.com/questions/14307158/how-do-you-check-for-intersection-between-a-line-segment-and-a-line-ray-emanatin
-  // Note this routine seems to depend on the chirality of the points; possibly it only counts an approach from one side.
-
-  var ro = new THREE.Vector2(rayOrigin.x,rayOrigin.y);
-  var rd = new THREE.Vector2(rayDirection.x,rayDirection.y);
-  rd.normalize();
-  var p1 = new THREE.Vector2(point1.x,point1.y);
-  var p2 = new THREE.Vector2(point2.x,point2.y);
-  var v1 = new THREE.Vector2().subVectors(ro,p1);
-  var v2 = new THREE.Vector2().subVectors(p2,p1);    
-
-  // This is construct a perpendicular.
-  var v3 = new THREE.Vector2(-rd.y,rd.x);
-  var dot = v2.dot(v3);
-
-  if (Math.abs(dot) < 0.000001)
-    return null;
-
-  var t1 = v2.cross(v1) / dot;
-  
-  var t2 = v1.dot(v3) /dot;    
-
-  if (t1 >= 0.0 && (t2 >= 0.0 && t2 <= 1.0)) {
-    rd.multiplyScalar(t1);
-    return [ro.add(rd),t1];
-  }
-  return null;
+  return (v1[0]*v2[1]) - (v1[1]*v2[0]);
+}
+// This is a candidate for entry.
+function collinear(a,b,c) {
+  var ar = a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (b[1] - c[1]);
+  return near(ar,0);
 }
 
-// BRANCH specific: This is my attempt to use vec-la-fp
+
 function GetRayToLineSegmentIntersection(rayOrigin,rayDirection,point1,point2)
 {
   // This code from here: https://stackoverflow.com/questions/14307158/how-do-you-check-for-intersection-between-a-line-segment-and-a-line-ray-emanatin
   // Note this routine seems to depend on the chirality of the points; possibly it only counts an approach from one side.
 
-  const ro = [rayOrigin.x,rayOrigin.y];
-  const rd = [rayDirection.x,rayDirection.y];  
-  const rdn = vec.norm(rd);
-  const p1 = [point1.x,point1.y];    
-  const p2 = [point2.x,point2.y];      
-  const v1 = vec.sub(ro,p1);
-  const v2 = vec.sub(p2,p1);  
+  const rdn = vec.norm(rayDirection);
+  const v1 = vec.sub(rayOrigin,point1);
+  const v2 = vec.sub(point2,point1);  
 
   const v3 = [-rdn[1],rdn[0]];        
   const dot = vec.dot(v2,v3);
@@ -68,17 +45,11 @@ function GetRayToLineSegmentIntersection(rayOrigin,rayDirection,point1,point2)
   if (Math.abs(dot) < 0.000001)
     return null;
 
-  // TODO: Possibly this (the perp dot product) could be added to vec-la-fp
-  function ccross(v1,v2)
-  {
-    return (v1[0]*v2[1]) - (v1[1]*v2[0]);
-  }
-  const t1 = ccross(v2,v1) / dot;
+  const t1 = perpdot(v2,v1) / dot;
   const t2 = vec.dot(v1,v3) / dot
 
   if (t1 >= 0.0 && (t2 >= 0.0 && t2 <= 1.0)) {
-    const r = vec.add(ro,vec.scale(t1,rd));
-    return [new THREE.Vector2(r[0],r[1]),t1];
+    return [vec.add(rayOrigin,vec.scale(t1,rayDirection)),t1];
   }
   return null;
 }
@@ -141,9 +112,7 @@ function near(x,y,e = 1e-4) {
 // with the zeroeth edge at the bottom.
 // If two edges are returned, this routine
 // returns them in sorted order.
-function eqEdgeAlgebraically(wtc,tp) {
-  let xp = tp.x;
-  let yp = tp.y;
+function eqEdgeAlgebraically(wtc,xp,yp) {
   if (near(xp,0)) {
     if (near(yp,0)) {
       return [];
@@ -167,32 +136,28 @@ function eqEdgeAlgebraically(wtc,tp) {
 }
 
 function test_eqEdgeAlebraically(wtc) {
-  let ro = new THREE.Vector2(0,0);
-  var rof = eqEdgeAlgebraically(wtc,ro);
+  var rof = eqEdgeAlgebraically(wtc,0,0);
   console.assert(rof.length == 0);
 
-  var r0 = eqEdgeAlgebraically(wtc,wtc[0]);
+  var r0 = eqEdgeAlgebraically(wtc,wtc[0].x,wtc[0].y);
   console.assert(r0.length == 2);
   
-  var r1 = eqEdgeAlgebraically(wtc,wtc[1]);
+  var r1 = eqEdgeAlgebraically(wtc,wtc[1].x,wtc[1].y);
   console.assert(r1.length == 2);
   
-  var r2 = eqEdgeAlgebraically(wtc,wtc[2]);
+  var r2 = eqEdgeAlgebraically(wtc,wtc[2].x,wtc[2].y);
   console.assert(r2.length == 2);
 
   // slope of 1
-  var one = new THREE.Vector2(1,1);
-  var rone = eqEdgeAlgebraically(wtc,one);
+  var rone = eqEdgeAlgebraically(wtc,1,1);
   console.assert(rone.length == 1);
   console.assert(rone[0] == 1);
 
-  var neg_one = new THREE.Vector2(-1,1);
-  var rneg_one = eqEdgeAlgebraically(wtc,neg_one);
+  var rneg_one = eqEdgeAlgebraically(wtc,-1,1);
   console.assert(rneg_one.length == 1);
   console.assert(rneg_one[0] == 2);
 
-  var down = new THREE.Vector2(0.01,-1);
-  var rdown = eqEdgeAlgebraically(wtc,down);
+  var rdown = eqEdgeAlgebraically(wtc,0.01,-1);
   console.assert(rdown.length == 1);
   console.assert(rdown[0] == 0);
   return true;
@@ -210,77 +175,78 @@ function test_eqEdgeAlebraically(wtc) {
 // advantage of known slopes to make it faster and simpler.
 function eqPointOnEdgeAlgebraically(wtc,tp) {
   // we should probably check equilaterality and orientation here
-  let es = eqEdgeAlgebraically(wtc,tp);
+  let es = eqEdgeAlgebraically(wtc,tp[0],tp[1]);
   if (es.length == 0) return null; // tp is the origin
   if (es.length == 2) { // we hit a vertex, but which one?
     if ((es[0] == 0) && (es[1] == 1)) {
-      return wtc[1];
+      return [wtc[1].x,wtc[1].y];
     } else
     if ((es[0] == 0) && (es[1] == 2)) {
-      return wtc[0];
+      return [wtc[0].x,wtc[0].y];
     } else
     if ((es[0] == 1) && (es[1] == 2)) {
-      return wtc[2];
+      return [wtc[2].x,wtc[2].y];
     } 
   } else { // now we do a case split
-    let xp = tp.x;
-    let yp = tp.y;
+    let xp = tp[0];
+    let yp = tp[1];
     let a = wtc[0].distanceTo(wtc[1]);
     let B = a * Math.sqrt(3)/6;    
     if (near(xp,0)) {
-      return (yp > 0) ? wtc[2] : new THREE.Vector2(0,-B);
+      return (yp > 0) ? [wtc[2].x,wtc[2].y] : [0,-B];
     }
     let m = yp/xp;
     if (es[0] == 0) {
-      return new THREE.Vector2(-B/m,-B);
+      return [-B/m,-B];
     } else if (es[0] == 1) {
       let y = a / (3 *(1/Math.sqrt(3) + 1/m));
       let x = y / m;
-      return new THREE.Vector2(x,y);      
+      return [x,y];      
     } else if (es[0] == 2) {
       let y = a / (3 *(1/Math.sqrt(3) - 1/m));
       let x = y / m;
-      return new THREE.Vector2(x,y);            
+      return [x,y];            
     }
   }
 }
 
 function pointsNear(a,b) {
-  return near(a.x,b.x) && near(a.y,b.y);
+  return near(a[0],b[0]) && near(a[1],b[1]);
 }
 
 function collinear(a,b,c) {
-  var ar = a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (b.y - c.y);
+  var ar = a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (b[1] - c[1]);
   return near(ar,0);
 }
 
 function test_eqPointOnAlgebraically(wtc) {
-  let ro = new THREE.Vector2(0,0);
+  let ro = [0,0];
   var rof = eqPointOnEdgeAlgebraically(wtc,ro);
   console.assert(rof == null);
 
-  var r0 = eqPointOnEdgeAlgebraically(wtc,wtc[0].clone().multiplyScalar(1/2));
-  console.assert(pointsNear(r0,wtc[0]));
+  const halfvert = vec.scale(1/2,[wtc[0].x,wtc[0].y]);
+  var r0 = eqPointOnEdgeAlgebraically(wtc,halfvert);
+  console.assert(pointsNear(r0,[wtc[0].x,wtc[0].y]));
   
-  var r1 = eqPointOnEdgeAlgebraically(wtc,wtc[1]);
-  console.assert(pointsNear(r1,wtc[1]));
+  var r1 = eqPointOnEdgeAlgebraically(wtc,[wtc[1].x,wtc[1].y]);
+  console.assert(pointsNear(r1,[wtc[1].x,wtc[1].y]));
   
-  var r2 = eqPointOnEdgeAlgebraically(wtc,wtc[2]);
-  console.assert(pointsNear(r2,wtc[2]));
+  var r2 = eqPointOnEdgeAlgebraically(wtc,[wtc[2].x,wtc[2].y]);
+  console.assert(pointsNear(r2,[wtc[2].x,wtc[2].y]));
 
   // slope of 1
-  var one = new THREE.Vector2(1,1);
+  var one = [1,1];
   var rone = eqPointOnEdgeAlgebraically(wtc,one);
-  console.assert(collinear(rone,wtc[1],wtc[2]));
+  console.assert(collinear(rone,[wtc[1].x,wtc[1].y],[wtc[2].x,wtc[2].y]));
 
-  var neg_one = new THREE.Vector2(-1,1);
+  var neg_one = [-1,1];
   var rneg_one = eqPointOnEdgeAlgebraically(wtc,neg_one);
-  console.assert(collinear(rneg_one,wtc[0],wtc[2]));  
+  console.assert(collinear(rneg_one,[wtc[0].x,wtc[0].y],[wtc[2].x,wtc[2].y]));  
 
 
-  var down = new THREE.Vector2(0.01,-1);
+  var down = [0.01,-1];
   var rdown = eqPointOnEdgeAlgebraically(wtc,down);
-  console.assert(collinear(rdown,wtc[0],wtc[1]));  
+  console.assert(collinear(rdown,[wtc[0].x,wtc[0].y],[wtc[1].x,wtc[1].y]));  
 
   return true;
 }
@@ -295,9 +261,11 @@ function TriadBalance2to3(tp,wtc,LXnorm_and_length = L2) {
   if (near(tp.lengthSq(),0,1e-5)) {
     return LXnormalize(new THREE.Vector3(1,1,1));
   }
-  let p = new THREE.Vector2(tp.x,tp.y);
+//  let p = new THREE.Vector2(tp.x,tp.y);
+  const p = [tp.x,tp.y];
   
-  let origin = new THREE.Vector2(0,0);    
+//  let origin = new THREE.Vector2(0,0);
+  const origin = [0,0];
   // Now we want to do a linear interpolation of how far we are from an edge,
   // but also how far the projection to the edge is between the vertices.
   // We must first decide which edges the line from the orign to p intersects.
@@ -309,10 +277,10 @@ function TriadBalance2to3(tp,wtc,LXnorm_and_length = L2) {
   console.log("XXXX",tp);
   if (USE_ALGEBRAIC_STRATEGY)
   {
-     // this may return two, but we can just take the first
-  fe_idx = eqEdgeAlgebraically(wtc,tp)[0];
-  point_on_edge = eqPointOnEdgeAlgebraically(wtc,tp);
-  console.log(fe_idx,point_on_edge.x,point_on_edge.y);
+    // this may return two, but we can just take the first
+    fe_idx = eqEdgeAlgebraically(wtc,tp.x,tp.y)[0];
+    point_on_edge = eqPointOnEdgeAlgebraically(wtc,[tp.x,tp.y]);
+//    point_on_edge = new THREE.Vector2(poe[0],poe[1]);
   }
   else
   {
@@ -324,17 +292,29 @@ function TriadBalance2to3(tp,wtc,LXnorm_and_length = L2) {
         point_on_edge = r[0]; // The first comp. of return value is intersection
       }
     }
-    console.log(fe_idx,point_on_edge.x,point_on_edge.y);    
   }
 
   // now point_on_edge is a point on edge fe_idx.     
 
-  let total_distance_to_edge = origin.distanceTo(point_on_edge);
+  //  let total_distance_to_edge = origin.distanceTo(point_on_edge);
+  const total_distance_to_edge = vec.dist(origin,point_on_edge);
+  
   // If the point is outside the triangle, we clamp (truncate if needed)
   // it's length so that it is precisely on the edge.
-  p.clampLength(0,total_distance_to_edge);
+  //  p.clampLength(0,total_distance_to_edge);
+  function clampLength(min,max,v) {
+    const d = vec.mag(v);
+    if (d < min)
+      return vec.scale(min/d,v);
+    else if (d > max)
+      return vec.scale(max/d,v);
+    else
+      return v;
+  }
+  const pc = clampLength(0,total_distance_to_edge,p);
 
-  let distance_to_p_o_e = p.distanceTo(point_on_edge);
+  //  let distance_to_p_o_e = p.distanceTo(point_on_edge);
+  const distance_to_p_o_e = vec.dist(pc,point_on_edge);
   
   var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
   
@@ -346,8 +326,10 @@ function TriadBalance2to3(tp,wtc,LXnorm_and_length = L2) {
   // to the unit vector should come from the two
   // points on the edge, in linear proportion.
   // These coordinates are fe_idx and (fe_idx+1) % 3.
-  var d1 = wtc[fe_idx].distanceTo(point_on_edge);
-  var d2 = wtc[(fe_idx+1) % 3].distanceTo(point_on_edge);
+  //  var d1 = wtc[fe_idx].distanceTo(point_on_edge);
+  const d1 = vec.dist([wtc[fe_idx].x,wtc[fe_idx].y],point_on_edge);
+  //  var d2 = wtc[(fe_idx+1) % 3].distanceTo(point_on_edge);
+  const d2 = vec.dist([wtc[(fe_idx+1) % 3].x,wtc[(fe_idx+1) % 3].y],point_on_edge);  
   
   let vs = [0,0,0];
   vs[fe_idx] = d2;
@@ -366,11 +348,11 @@ function TriadBalance2to3(tp,wtc,LXnorm_and_length = L2) {
 // wtc are the three vertices of an eqilateral triangle whose centroid is the origin
 // LXnorm_and_length is a pair of functions to to normalize a vector and compute the length
 // return the corresponding 2-vector in the triangle space
-function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
+function invertTriadBalance2to3(v,wtc,LXnorm_and_length = L2) {
   let length = LXnorm_and_length[1];
-  let min = Math.min(Math.min(vec.x,vec.y),vec.z);
-  let imb = new THREE.Vector3(vec.x - min, vec.y - min, vec.z - min);
-  let bal = vec.clone();
+  let min = Math.min(Math.min(v.x,v.y),v.z);
+  let imb = new THREE.Vector3(v.x - min, v.y - min, v.z - min);
+  let bal = v.clone();
   bal.sub(imb);
   // Now that we have balance, we need to compute it's length,
   // which is dependent on the norm we chose!
@@ -409,35 +391,41 @@ function invertTriadBalance2to3(vec,wtc,LXnorm_and_length = L2) {
     ratio = imb.x/s;        
   }
 
+  const from_vv = [from_v.x,from_v.y];
+  const to_vv = [to_v.x,to_v.y];  
   // The point on the triangle is by construction
   // on one edge of the triangle.
-  var onTriangle = new THREE.Vector2();
-  onTriangle.lerpVectors(from_v,to_v,ratio);
+//  var onTriangle = new THREE.Vector2();
+  //  onTriangle.lerpVectors(from_v,to_v,ratio);
+  const onTriangle = vec.lerp(from_vv,to_vv,ratio);
   // now onTriangle is a point on the triangle
   // now, having found that we interpolate a ray
   // to it of length imb_r...
-  let origin = new THREE.Vector2(0,0);
-  let inversion = new THREE.Vector2();
-  inversion.lerpVectors(origin,
-                        onTriangle,
-                        imb_r);
-  return inversion;
+//  let origin = new THREE.Vector2(0,0);
+//  let inversion = new THREE.Vector2();
+//  inversion.lerpVectors(origin,
+//                        onTriangle,
+  //                        imb_r);
+  const origin = [0,0];
+  const inversion = vec.lerp(origin,onTriangle,imb_r);
+  
+  return new THREE.Vector2(inversion[0],inversion[1]);
 }
 
 function testGetRayToLineSegmentIntersection(wtc) {
-  let ro = new THREE.Vector2(0,0);
-  let rd = new THREE.Vector2(1,1);
-  let p1 = new THREE.Vector2(0,10);
-  let p2 = new THREE.Vector2(10,0);
+  let ro = [0,0];
+  let rd = [1,1];
+  let p1 = [0,10];
+  let p2 = [10,0];
   var r = GetRayToLineSegmentIntersection(ro,rd,p1,p2)[0];
-  console.assert(r.x == r.y);
+  console.assert(r[0] == r[1]);
   var r = GetRayToLineSegmentIntersection(ro,rd,p2,p1)[0];
-  console.assert(r.x == r.y);
+  console.assert(r[0] == r[1]);
 
-  var rd1 = new THREE.Vector2(94.1015625,-36.36328125);
-  let c0 = new THREE.Vector2(wtc[0].x,wtc[0].y);
-  let c1 = new THREE.Vector2(wtc[1].x,wtc[1].y);
-  let c2 = new THREE.Vector2(wtc[2].x,wtc[2].y);        
+  var rd1 = [94.1015625,-36.36328125];
+  let c0 = [wtc[0].x,wtc[0].y];
+  let c1 = [wtc[1].x,wtc[1].y];
+  let c2 = [wtc[2].x,wtc[2].y];        
 
   var r12 = GetRayToLineSegmentIntersection(ro,rd1,c1,c2);
   console.assert(r12 != null);
