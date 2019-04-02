@@ -31,8 +31,6 @@
 
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-    <script src="./js/three.js"></script>
-    
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
@@ -47,7 +45,6 @@
 
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="./js/three.js"></script>
 
     <!-- Prism for typesetting code -->
     <link href="css/prism.css" rel="stylesheet" />
@@ -550,9 +547,9 @@ var CUR_BAL;
 // norm_to_use should be a parameter here
 function setBalance(bal) {
   CUR_BAL = bal;
-  $( "#d0" ).text( (CUR_BAL.x * 100).toFixed(0) +  "%" );
-  $( "#d1" ).text( (CUR_BAL.y * 100).toFixed(0) +  "%" );
-  $( "#d2" ).text( (CUR_BAL.z * 100).toFixed(0) +  "%" );
+  $( "#d0" ).text( (CUR_BAL[0] * 100).toFixed(0) +  "%" );
+  $( "#d1" ).text( (CUR_BAL[1] * 100).toFixed(0) +  "%" );
+  $( "#d2" ).text( (CUR_BAL[2] * 100).toFixed(0) +  "%" );
 }
 
 

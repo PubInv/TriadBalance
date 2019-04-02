@@ -28,7 +28,41 @@ function collinear(a,b,c) {
   var ar = a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (b[1] - c[1]);
   return near(ar,0);
 }
+// This is a tiny set of routines inspired by vec-la-fp, which
+// does not currently handle 3d vectors...a real hero would
+// fully extend that package to support 2d and 3d vectors.
 
+let v3Add = function v3Add(a,b) {
+  return [a[0]+b[0],a[1]+b[1],a[2]+b[2]];
+}
+let v3Sub = function v3Sub(a,b) {
+  return [a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+}
+let v3ManhattanDistance = function v3ManhattanDistance(a,b) {
+  return Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]) + Math.abs(a[2]-b[2]);  
+}
+let v3dist = function v3dist(a,b) {
+  return Math.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2);  
+}
+let v3mag = function v3mag(v) {
+  return Math.sqrt((v[0])**2 + (v[1])**2 + (v[2])**2);  
+}
+let v3scale = function v3scale(sc,v) {
+  return [sc*v[0],sc*v[1],sc*v[2]];  
+}
+let v3normalize = function normalize(v) {
+  return v3scale( 1/v3c.mag(v),v);
+}
+
+var v3c = {
+  add: v3Add,
+  sub: v3Sub,  
+  manhattan: v3ManhattanDistance,
+  dist: v3dist,
+  mag: v3mag,
+  scale: v3scale,
+  normalize: v3normalize
+}
 
 function GetRayToLineSegmentIntersection(rayOrigin,rayDirection,point1,point2)
 {
@@ -79,18 +113,18 @@ function GetRayToLineSegmentIntersection(rayOrigin,rayDirection,point1,point2)
 // It is essential that this function be invertible.
 
 function L1NORM(v) {
-  let r = new THREE.Vector3(0,0,0).manhattanDistanceTo(v);
-  return v.divideScalar(r);
+  let s = v3c.manhattan([0,0,0],v);
+  return v3c.scale(1/s,v);
 }
 function L2NORM(v) {
-  return v.normalize();
+  return v3c.normalize(v);
 }
 function L1LENGTH(v) {
-  let r = new THREE.Vector3(0,0,0).manhattanDistanceTo(v);
-  return r;
+  return v3c.manhattan([0,0,0],v);
 }
 function L2LENGTH(v) {
-  return v.length();
+  //  return v.length();
+  return v3c.mag(v);
 }
 
 var L1 = [L1NORM,L1LENGTH];
@@ -259,7 +293,7 @@ function test_eqPointOnAlgebraically(wtc) {
 function TriadBalance2to3(p,wtc,LXnorm_and_length = L2) {
   let LXnormalize = LXnorm_and_length[0];
   if (near(vec.mag(p),0,1e-5)) {
-    return LXnormalize(new THREE.Vector3(1,1,1));
+    return LXnormalize([1,1,1]);    
   }
   //  const p = [tp[0],tp[1]];
   
@@ -312,9 +346,9 @@ function TriadBalance2to3(p,wtc,LXnorm_and_length = L2) {
   
   var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
   
-  let bal = LXnormalize(new THREE.Vector3(1,1,1));
+  let ubal = LXnormalize([1,1,1]);
 
-  bal.multiplyScalar(ratio_p_to_edge);
+  let bal =v3c.scale(ratio_p_to_edge,ubal);
 
   // Now the remainder of the contribution
   // to the unit vector should come from the two
@@ -327,13 +361,13 @@ function TriadBalance2to3(p,wtc,LXnorm_and_length = L2) {
   vs[fe_idx] = d2;
   vs[(fe_idx+1) % 3] = d1;
   
-  let imb = LXnormalize(new THREE.Vector3(vs[0],vs[1],vs[2]));
-  imb.multiplyScalar(1 - ratio_p_to_edge);
+  let imb = v3c.scale(1 - ratio_p_to_edge,LXnormalize(vs));  
   
   // now construct a balanced vector proportional
   // to the length from the edge to the point p towards the axis
   // so that this be a unit vector if p is the origin.
-  return new THREE.Vector3().add(imb).add(bal);
+ return v3c.add(imb,bal);
+
 }
 
 // vec is a 3-vector in the attribute space
@@ -342,10 +376,11 @@ function TriadBalance2to3(p,wtc,LXnorm_and_length = L2) {
 // return the corresponding 2-vector in the triangle space
 function invertTriadBalance2to3(v,wtc,LXnorm_and_length = L2) {
   let length = LXnorm_and_length[1];
-  let min = Math.min(Math.min(v.x,v.y),v.z);
-  let imb = new THREE.Vector3(v.x - min, v.y - min, v.z - min);
-  let bal = v.clone();
-  bal.sub(imb);
+  let min = Math.min(Math.min(v[0],v[1]),v[2]);  
+  let imb = [v[0] - min,v[1] - min,v[2] - min];  
+  let bal = v3c.sub(v,imb);
+//  v.clone();
+//  bal.sub(imb);
   // Now that we have balance, we need to compute it's length,
   // which is dependent on the norm we chose!
 
@@ -368,19 +403,19 @@ function invertTriadBalance2to3(v,wtc,LXnorm_and_length = L2) {
   // it requires a little thought to understand which
   // of the other points should be the "from_v" and the "to_v"
   // for the interpolation which occurs later.
-  var s = imb.x + imb.y + imb.z; // one of these is always zero.
-  if (imb.x == 0) {
+  var s = imb[0] + imb[1] + imb[2]; // one of these is always zero.
+  if (imb[0] == 0) {
     from_v = wtc[2];
     to_v = wtc[1];
-    ratio = imb.y/s;
-  } else if (imb.y == 0) {
+    ratio = imb[1]/s;
+  } else if (imb[1] == 0) {
     from_v = wtc[0];
     to_v = wtc[2];
-    ratio = imb.z/s;        
-  } else if (imb.z == 0) {
+    ratio = imb[2]/s;        
+  } else if (imb[2] == 0) {
     from_v = wtc[1];
     to_v = wtc[0];
-    ratio = imb.x/s;        
+    ratio = imb[0]/s;        
   }
 
   const from_vv = [from_v[0],from_v[1]];
@@ -430,27 +465,27 @@ function testOriginAndVertices(wtc) {
   // The origin should return a perfectly balanced vector
   let o = [0,0];
   let ov = TriadBalance2to3(o,wtc,L1);
-  console.assert(near(ov.x,1/3));
-  console.assert(near(ov.y,1/3));
-  console.assert(near(ov.z,1/3));    
+  console.assert(near(ov[0],1/3));
+  console.assert(near(ov[1],1/3));
+  console.assert(near(ov[2],1/3));    
 
   // A vertex should return a vector with a 1 in exactly 1 position
   {
     let p = [wtc[0][0],wtc[0][1]];
     let pv = TriadBalance2to3(p,wtc,L1);
-    console.assert(near(pv.x,1));
+    console.assert(near(pv[0],1));
   }
 
   {
     let p = [wtc[1][0],wtc[1][1]];
     let pv = TriadBalance2to3(p,wtc,L1);
-    console.assert(near(pv.y,1));
+    console.assert(near(pv[1],1));
   }
 
   {
     let p = [wtc[2][0],wtc[2][1]];
     let pv = TriadBalance2to3(p,wtc,L1);
-    console.assert(near(pv.z,1));
+    console.assert(near(pv[2],1));
   }
   return true;  
 }
@@ -548,14 +583,13 @@ function testAllTriadBalance(wtc) {
   allTrue &= testInversion(wtc);
   allTrue &= testInversionNegativeY(wtc);
   allTrue &= testInversionOutside(wtc);
-
-  let wtcp = new THREE.Vector2(wtc[1][0],
-                               wtc[1][1]);
+  let wtcp = wtc[1];
   
-  let small_radius = wtcp.length()/3;    
+
+  let small_radius = vec.mag(wtcp)/3;    
   allTrue &= testInversionWithACircle(wtc,L1,small_radius);
   allTrue &= testInversionWithACircle(wtc,L2,small_radius);    
-  let large_radius = wtcp.length()*3;    
+  let large_radius = vec.mag(wtcp)*3;    
   allTrue &= testInversionWithACircle(wtc,L1,large_radius);
   allTrue &= testInversionWithACircle(wtc,L2,large_radius);
   return allTrue;
