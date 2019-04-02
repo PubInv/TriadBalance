@@ -82,9 +82,9 @@ function get_world_triangle(svg,s_to_m_b = 7/10) {
   const SIDE_LENGTH_HEIGHT = SIDE_LENGTH_PIXEL * TRIANGLE_HEIGHT;
   const BASE = -(1/3) * SIDE_LENGTH_HEIGHT;  
 
-  let wtc_vector = [new THREE.Vector2(-SIDE_LENGTH_PIXEL/2,BASE),
-                    new THREE.Vector2(SIDE_LENGTH_PIXEL/2,BASE),
-                    new THREE.Vector2(0,BASE+SIDE_LENGTH_HEIGHT)];
+  let wtc_vector = [[-SIDE_LENGTH_PIXEL/2,BASE],
+                    [SIDE_LENGTH_PIXEL/2,BASE],
+                    [0,BASE+SIDE_LENGTH_HEIGHT]];
   return wtc_vector;
 }
 
@@ -111,8 +111,8 @@ function rerender_marker(svg,bal_vec) {
                                            svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,
                                            svg.triad_balance_state.NORM_TO_USE);
     let point = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
-    point.setAttributeNS(null, 'cx', vpx(tri_point.x));
-    point.setAttributeNS(null, 'cy', vpy(tri_point.y));
+    point.setAttributeNS(null, 'cx', vpx(tri_point[0]));
+    point.setAttributeNS(null, 'cy', vpy(tri_point[1]));
     // This value can be overridden in CSS
     point.setAttributeNS(null, 'r', 3);
     point.setAttributeNS(null,"class","triad-marker");
@@ -150,8 +150,8 @@ function render_svg(svg,fs_ratio_to_height) {
 
   for (let i = 0; i < 3; i++) {
     var point = svg.createSVGPoint();
-    point.x = vpx(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i].x);
-    point.y = vpy(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i].y);
+    point.x = vpx(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i][0]);
+    point.y = vpy(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i][1]);
     polygon.points.appendItem(point);
   }
 
@@ -163,8 +163,8 @@ function render_svg(svg,fs_ratio_to_height) {
     for(let i = 0; i < 3; i++) {
       append_text(svg,"triad-vertex-label-"+i,
                   "triad-vertices-labels",
-                  vpx(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i].x),
-                  vpy(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i].y),
+                  vpx(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i][0]),
+                  vpy(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i][1]),
                   vertical_adjustments[i],
                   d_labels[i]
                  );
@@ -209,10 +209,11 @@ function clicked(evt,fs,svg,labels,click_callback) {
              + -svg.triad_balance_state.H * svg.triad_balance_state.Y_DISP_PER_CENT/100.0 );
   // Note, we balance and invert here to make sure we are inside the triangle!
   var triangle_coords = 
-      svg.triad_balance_state.CUR_TRIANGLE_COORDS = new THREE.Vector2(xc,yc);
+      svg.triad_balance_state.CUR_TRIANGLE_COORDS = [xc,yc];
+  var tc = [triangle_coords[0],triangle_coords[1]];
 
   svg.triad_balance_state.CUR_BALANCE =
-    TriadBalance2to3(svg.triad_balance_state.CUR_TRIANGLE_COORDS,svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,
+    TriadBalance2to3(tc,svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,
                      svg.triad_balance_state.NORM_TO_USE);
 
   var tri_point = invertTriadBalance2to3(svg.triad_balance_state.CUR_BALANCE,svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,svg.triad_balance_state.NORM_TO_USE);
