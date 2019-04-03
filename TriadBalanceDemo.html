@@ -51,7 +51,7 @@
     
     
     <body>
-      <script src="./js/prism.js"></script>
+  <script src="./js/prism.js"></script>
       <br>
       <div class="container">
         <h1 class="section-title h1">Triad Balance</h1>
@@ -103,6 +103,21 @@
             <span>
               <label for="l2norm">L2 Norm (Sqrt of Squares):</label>
               <input type="radio" name="norm" id="l2norm">
+            </span>    
+          </div>
+  </fieldset>
+  
+        <fieldset>
+          <legend>Triangle Orientation:</legend>
+          <div style="display: flex; justify-content: space-around; font-size: large;">
+
+            <span>
+              <label for="upwards">Upwards:</label>
+              <input type="radio" name="orientation" id="upwards" checked="checked">
+            </span>
+            <span>
+              <label for="downwards">Downwards:</label>
+              <input type="radio" name="orientation" id="downwards">
             </span>    
           </div>
         </fieldset>
@@ -532,6 +547,7 @@ var THREE_DIMENSIONS = { "MBS": ["Mind","Body","Spirit"],
                        };
 var CUR_LABELS = "MBS";
 
+
 function getRadioValue(name) {
   var rates = document.getElementsByName(name);
   var rate_value;
@@ -552,9 +568,11 @@ function setBalance(bal) {
   $( "#d2" ).text( (CUR_BAL[2] * 100).toFixed(0) +  "%" );
 }
 
+var UPWARDS_TRIANGLES;
+var DOWNWARDS_TRIANGLES;
 
 $( document ).ready(function() {
-
+  var GLOBAL_POINT_UP = false;
   let GLOBAL_SVG_ID = "create_svg";
   let GLOBAL_CONTAINER_ID = "container_to_have_global_coords_on_svg";
   let GLOBAL_SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
@@ -566,15 +584,21 @@ $( document ).ready(function() {
   // The percentage to push the origin down to make it look balanced.
   let Y_DISP_PER_CENT = 10;  
 
-  WORLD_TRIANGLE_COORDS = get_world_triangle(GLOBAL_SVG_ELT,
-                                             SIDE_TO_MIN_BOUND);
+  UPWARDS_TRIANGLES = get_triangle(true,GLOBAL_SVG_ELT,
+                                   SIDE_TO_MIN_BOUND);
+  
+  DOWNWARDS_TRIANGLES = get_triangle(false,GLOBAL_SVG_ELT,
+                                     SIDE_TO_MIN_BOUND);
 
-  if (testAllTriadBalance(WORLD_TRIANGLE_COORDS)) {
+  if (testAllTriadBalance(true,UPWARDS_TRIANGLES)
+      && testAllTriadBalance(false,DOWNWARDS_TRIANGLES))
+  {
     console.log("GREEN: TESTS ALL GREEN!");
   } else {
     console.log("RED: SOME TESTS FAILED!");    
   }
-    
+  WORLD_TRIANGLE_COORDS = GLOBAL_POINT_UP ?
+    UPWARDS_TRIANGLES : DOWNWARDS_TRIANGLES;
 
   function set_dimension_labels(labels) {
     $("#d0l").text(labels[0] + ":");
@@ -616,6 +640,21 @@ $( document ).ready(function() {
     setBalance(bal);
   });
 
+
+  $(':radio[name="orientation"]').change(function() {
+    var triangle_coords_inside_triangle =
+        invertTriadBalance2to3(CUR_BAL,WORLD_TRIANGLE_COORDS,
+                               norm_to_use);
+
+    // now recompute with new norm..
+    GLOBAL_POINT_UP = (getRadioValue("orientation") == 0 ? true : false);
+    
+    let bal = TriadBalance2to3(triangle_coords_inside_triangle,
+                               WORLD_TRIANGLE_COORDS,
+                               norm_to_use);
+    setBalance(bal);
+  });
+  
   function callback_for_click(tp,tpi,bal) {
     setBalance(bal);    
   }
@@ -624,9 +663,11 @@ $( document ).ready(function() {
                            norm_to_use,
                            THREE_DIMENSIONS["MBS"],
                            callback_for_click,
+                           GLOBAL_POINT_UP,
                            FONT_SIZE_RATIO_TO_HEIGHT,
                            SIDE_TO_MIN_BOUND,
-                           Y_DISP_PER_CENT
+                           (GLOBAL_POINT_UP ?
+                            Y_DISP_PER_CENT : -Y_DISP_PER_CENT)
                           );
 });
 

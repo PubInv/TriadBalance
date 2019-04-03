@@ -22,7 +22,7 @@
 // specifically to make the chance of name collision very small.
 
 class TriadBalanceState {
-  constructor(cb,ctc,w,h,wh,hh,ntu,lbls,twt,fs_r_t_h,ydpc) {
+  constructor(cb,ctc,w,h,wh,hh,ntu,lbls,twt,fs_r_t_h,ydpc,pu) {
     // The most recent "balance vector", a 3-attribute vector
     this.CUR_BALANCE = cb;
     // The most click point in 2-dimensional space of the SVG triangle   
@@ -41,6 +41,8 @@ class TriadBalanceState {
     this.FONT_SIZE_RATIO_TO_HEIGHT = fs_r_t_h;
     // The percent of the height to lower the orign to create a balanced appearance
     this.Y_DISP_PER_CENT = ydpc;
+    // Whether the triangle points up or not;
+    this.POINTS_UPWARDS = pu;
   }
   get Hhalf() {
     return this.H/2;
@@ -67,33 +69,37 @@ function set_labels(svg,labels) {
 
 // svg is the HTML Element.
 // labels is an array of three strings
-function get_world_triangle(svg,s_to_m_b = 7/10) {
+// Create an upward pointing triangle
+
+function get_triangle(upward,svg,s_to_m_b = 7/10) {
   let W = svg.clientWidth;
   let H = svg.clientHeight;
   // we compute against whichever dimension is smaller
   var min = Math.min(W,H);
+  
+  const TRIANGLE_WIDTH = 1;
+  const TRIANGLE_HEIGHT = Math.sqrt(3)/2;
 
   // This could be a parameter...
   let SIDE_LENGTH_PIXEL = min * s_to_m_b;
   
-  const TRIANGLE_WIDTH = 1;
-  const TRIANGLE_HEIGHT = Math.sqrt(3)/2;
-  
   const SIDE_LENGTH_HEIGHT = SIDE_LENGTH_PIXEL * TRIANGLE_HEIGHT;
-  const BASE = -(1/3) * SIDE_LENGTH_HEIGHT;  
+  const BASE = -(1/3) * SIDE_LENGTH_HEIGHT;
 
-  let wtc_vector = [[-SIDE_LENGTH_PIXEL/2,BASE],
-                    [SIDE_LENGTH_PIXEL/2,BASE],
-                    [0,BASE+SIDE_LENGTH_HEIGHT]];
+  const UF = upward ? 1 : -1;
+
+  let wtc_vector = [[-SIDE_LENGTH_PIXEL/2,BASE*UF],
+                    [SIDE_LENGTH_PIXEL/2,BASE*UF],
+                    [0,(BASE+SIDE_LENGTH_HEIGHT)*UF]];
+// This is the "shield" formation (Scutum Fidei).  
   return wtc_vector;
 }
 
 // remove the markers from the svg element (there may be only one or none.)
 function clear_markers(svg) {
   var x = document.getElementsByClassName("triad-marker");
-  for(var i = 0; i < x.length; i++) {
+  for(var i = x.length -1; i >= 0; i--) {
     x[i].parentNode.removeChild(x[i]);
-    console.log("removed");
   }
 }
 
@@ -165,7 +171,7 @@ function render_svg(svg,fs_ratio_to_height) {
                   "triad-vertices-labels",
                   vpx(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i][0]),
                   vpy(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i][1]),
-                  vertical_adjustments[i],
+                  svg.triad_balance_state.POINTS_UPWARDS ? vertical_adjustments[i] : -vertical_adjustments[i]+fs/2,
                   d_labels[i]
                  );
     }
@@ -208,15 +214,16 @@ function clicked(evt,fs,svg,labels,click_callback) {
   var yc = -(y + -svg.triad_balance_state.Hhalf
              + -svg.triad_balance_state.H * svg.triad_balance_state.Y_DISP_PER_CENT/100.0 );
   // Note, we balance and invert here to make sure we are inside the triangle!
-  var triangle_coords = 
-      svg.triad_balance_state.CUR_TRIANGLE_COORDS = [xc,yc];
-  var tc = [triangle_coords[0],triangle_coords[1]];
+  svg.triad_balance_state.CUR_TRIANGLE_COORDS = [xc,yc];
 
   svg.triad_balance_state.CUR_BALANCE =
-    TriadBalance2to3(tc,svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,
+    TriadBalance2to3(svg.triad_balance_state.CUR_TRIANGLE_COORDS,
+                     svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,
                      svg.triad_balance_state.NORM_TO_USE);
 
-  var tri_point = invertTriadBalance2to3(svg.triad_balance_state.CUR_BALANCE,svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,svg.triad_balance_state.NORM_TO_USE);
+  var tri_point = invertTriadBalance2to3(svg.triad_balance_state.CUR_BALANCE,
+                                         svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,
+                                         svg.triad_balance_state.NORM_TO_USE);
   
   rerender_marker(svg,svg.triad_balance_state.CUR_BALANCE);
   
@@ -233,12 +240,13 @@ function clicked(evt,fs,svg,labels,click_callback) {
 // ydpc  is the Y displacement percent (downward) to make it look balanced
 function initialize_triad_diagram(svg,norm_to_use,labels,
                                   click_callback,
+                                  point_upwards = true,
                                   fs_ratio_to_height = (1/20),
                                   s_to_m_b = 7/10,
                                   ydpc = 10) {
   svg.triad_balance_state = new TriadBalanceState();
-  
 
+  svg.triad_balance_state.POINTS_UPWARDS = point_upwards;
   svg.triad_balance_state.FONT_SIZE_RATIO_TO_HEIGHT = fs_ratio_to_height;
   svg.triad_balance_state.Y_DISP_PER_CENT = ydpc;  
   svg.triad_balance_state.LABELS = labels;
@@ -250,7 +258,8 @@ function initialize_triad_diagram(svg,norm_to_use,labels,
     let H = svg.triad_balance_state.H = svg.clientHeight;
     let Whalf = svg.triad_balance_state.Whalf;
     let Hhalf = svg.triad_balance_state.Hhalf;
-    svg.triad_balance_state.TRIAD_WORLD_TRIANGLE = get_world_triangle(svg,s_to_m_b);
+    svg.triad_balance_state.TRIAD_WORLD_TRIANGLE =
+      get_triangle(point_upwards,svg,s_to_m_b);
     // This is convenient, but makes it hard for the client to
     // use this svg for their own purposes, which is probably okay
     // for this use...
