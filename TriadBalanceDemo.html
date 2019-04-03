@@ -35,9 +35,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
 
-    <!-- Template of .css elements used to style the TriadBalance widget -->    
-    <link rel="stylesheet" type="text/css" href="./src/TriadBalance.css" />    
-    
+    <!-- Template of .css elements used to style the TriadBalance widget -->
+    <link rel="stylesheet" type="text/css" href="./src/TriadBalance.css" />
+
 
     <script src="https://code.jquery.com/jquery-1.12.1.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -48,14 +48,14 @@
 
     <!-- Prism for typesetting code -->
     <link href="css/prism.css" rel="stylesheet" />
-    
-    
+
+
     <body>
   <script src="./js/prism.js"></script>
       <br>
       <div class="container">
         <h1 class="section-title h1">Triad Balance</h1>
-        
+
         <h2>The Three Attributes</h2>
         <div>
           <button type="button" class="btn btn-primary" id="MBS">Mind/Body/Spirit</button>
@@ -64,7 +64,7 @@
           <button type="button" class="btn btn-danger" id="SEF">Strength/Endurance/Flexibility</button>
           <button type="button" class="btn btn-warning" id="FSH">Father/Son/Holy Spirit</button>
         </div>
-        
+
 
 
         <legend>Attributes Calculated from Triangle Position:</legend>
@@ -73,14 +73,14 @@
             <label for="d0" id="d0l">Mind: </label>
             <span type="text" id="d0">0%</span>
           </div>
-          <div>    
+          <div>
             <label for="d1" id="d1l">Body: </label>
             <span type="text" id="d1">0%</span>
-          </div>    
-          <div>    
+          </div>
+          <div>
             <label for="d2" id="d2l">Spirit: </label>
             <span type="text" id="d2">0%</span>
-          </div>    
+          </div>
         </div>
 
 
@@ -103,10 +103,10 @@
             <span>
               <label for="l2norm">L2 Norm (Sqrt of Squares):</label>
               <input type="radio" name="norm" id="l2norm">
-            </span>    
+            </span>
           </div>
   </fieldset>
-  
+
         <fieldset>
           <legend>Triangle Orientation:</legend>
           <div style="display: flex; justify-content: space-around; font-size: large;">
@@ -118,7 +118,7 @@
             <span>
               <label for="downwards">Downwards:</label>
               <input type="radio" name="orientation" id="downwards">
-            </span>    
+            </span>
           </div>
         </fieldset>
 
@@ -140,7 +140,7 @@
           <h2>Usage</h2>
           <p>
             Click near the yellow triangle and a red dot will appear within the triangle and will determine three values. These three values
-            will either sum to 100% or the square of the square roots will sum to 100%. 
+            will either sum to 100% or the square of the square roots will sum to 100%.
             The closer to a corner of the triangle, the more strongly that
             attribute is attributed. The center of the triangle reflects all attributes equally — that is, "perfect balance."
             The weights of these attributes will be determined by your assertion, and displayed above the
@@ -219,8 +219,8 @@
           </code></pre>
           <p> For clarity, we provide a name for the normalization function.</p>
           <pre><code class="language-js">
-              let LXnormalize = LXnorm_and_length[0];            
-          </code></pre>        
+              let LXnormalize = LXnorm_and_length[0];
+          </code></pre>
           <p>
             If the point is the exact center of the triangle, we cannot
             construct a ray to an edge, and we return a perfectly balanced vector.
@@ -229,8 +229,8 @@
               if (near(tp.lengthSq(),0,1e-5)) {
               return LXnormalize(new THREE.Vector3(1,1,1));
               }
-          </code></pre>        
-          
+          </code></pre>
+
           <p> We then seek the point <code class="language-js">point_on_edge</code> where the line from the center of the triangle through the point <code class="language-js">p</code> intersects a triangle edge.
             Such a point must exists, and is on one edge or the intersection of two edges. Imagine a ray from the <code class="language-js">origin</code> through
             point <code class="language-js">p</code> to <code class="language-js">point_on_edge</code>.
@@ -239,13 +239,13 @@
           </p>
           <pre><code class="language-js">
                   let p = new THREE.Vector2(tp.x,tp.y);
-                
-                let origin = new THREE.Vector2(0,0);    
+
+                let origin = new THREE.Vector2(0,0);
                 // Now we want to do a linear interpolation of how far we are from an edge,
                 // but also how far the projection to the edge is between the vertices.
                 // We must first decide which edges the line from the orign to p intersects.
                 // If it intersects two segments, then it is aimed at a vertex.
-                var point_on_edge; 
+                var point_on_edge;
                 var fe_idx = -1; // index of the first edge we intersect
                 for(var i = 0; i < 3 && fe_idx < 0; i++) {
                   var r = GetRayToLineSegmentIntersection(origin,p,wtc[i],wtc[(i +1) % 3]);
@@ -254,9 +254,9 @@
                     point_on_edge = r[0]; // The first comp. of return value is intersection
                   }
                 }
-                // now point_on_edge is a point on edge fe_idx.     
-                                               </code></pre>        
-          
+                // now point_on_edge is a point on edge fe_idx.
+                                               </code></pre>
+
           <p>
             THREE.js provides a function <code class="language-js">clampLength</code> which limits the length of a vector
             to an input value. Since we know the distance from the <code class="language-js">orign</code> to <code class="language-js">point_on_edge</code>,
@@ -271,16 +271,16 @@
                 // it's length so that it is precisely on the edge.
                 p.clampLength(0,total_distance_to_edge);
 
-                let distance_to_p_o_e = p.distanceTo(point_on_edge);            
-          </code></pre>        
+                let distance_to_p_o_e = p.distanceTo(point_on_edge);
+          </code></pre>
           <p> Determine the ratio <code class="language-js">ratio_p_to_edge</code>.
             If this is close to zero, we are close to perfectly balanced; if it is close to 1, we are close to having zero for one attribute.
             Compute the a balanced vector <code class="language-js">bal</code> with all values the same,
-            scaled by the ratio to the <code class="language-js">ratio_p_to_edge</code>. 
+            scaled by the ratio to the <code class="language-js">ratio_p_to_edge</code>.
           </p>
-          <pre><code class="language-js">        
+          <pre><code class="language-js">
                 var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
-                
+
                 let bal = LXnormalize(new THREE.Vector3(1,1,1));
                 bal.multiplyScalar(ratio_p_to_edge);
           </code></pre>
@@ -300,24 +300,24 @@
             in a 3-vector. The remaining one is zero. We then normalize the vector,
             driving it&#39;s length to one, and then scale it by an amount chosen such
             that by linearity the sum with the balance vector will be one: <code class="language-js">(1 - ratio_p_to_edge)</code>.
-            <pre><code class="language-js">    
+            <pre><code class="language-js">
                 let vs = [0,0,0];
                 vs[fe_idx] = d2;
                 vs[(fe_idx+1) % 3] = d1;
-                
+
                 let imb = LXnormalize(new THREE.Vector3(vs[0],vs[1],vs[2]));
                 imb.multiplyScalar(1 - ratio_p_to_edge);
-            </code></pre>            
+            </code></pre>
           <p>
             Now the vector <code class="language-js">bal</code> and the vector <code class="language-js">imb</code> added together are the return value.
           </p>
-          <pre><code class="language-js">        
+          <pre><code class="language-js">
               // now construct a balanced vector proportional
               // to the length from the edge to the point p towards the axis
               // so that this be a unit vector if p is the origin.
               return new THREE.Vector3().add(imb).add(bal);
               }
-          </code></pre>        
+          </code></pre>
           <h2> The Inverse Function</h2>
           <p> The function <code class="language-js">TriadBalance2to3</code> calculates a 3-vector from the clicked point on the triangle;
             the inverse function <code class="language-js">invertTriadBalance2to3</code> gives you back the clicked point when given the 3-vector.
@@ -353,7 +353,7 @@
             Now it is the case that by construction, <code class="language-js">imb</code> has has at least one zero
             (whichever attributes were minimal), and <code class="language-js">bal</code> has all attributes equal.
           </p>
-          <pre><code class="language-js">    
+          <pre><code class="language-js">
               // Now that we have balance, we need to compute it's length,
               // which is dependent on the norm we chose!
 
@@ -368,7 +368,7 @@
             the distance in the triangle space, so this works no matter which norm
             we use in the attribute space.
           </p>
-          <pre><code class="language-js">        
+          <pre><code class="language-js">
                   // Now we have the ratios. We need to determine the direction.
                   // This is a function of the imbalance vector. We can determine
                   // which side we are on, and then compute our position along that
@@ -389,11 +389,11 @@
                 } else if (imb.y == 0) {
                   from_v = wtc[0];
                   to_v = wtc[2];
-                  ratio = imb.z/s;        
+                  ratio = imb.z/s;
                 } else if (imb.z == 0) {
                   from_v = wtc[1];
                   to_v = wtc[0];
-                  ratio = imb.x/s;        
+                  ratio = imb.x/s;
                 }
           </code></pre>
           <p>The THREE.js library provides is a linear interpolation between
@@ -402,7 +402,7 @@
             to interpolate along the edge, and then once to interpolate from th
             origin toward this point.
           </p>
-          <pre><code class="language-js">        
+          <pre><code class="language-js">
                   // The point on the triangle is by construction
                   // on one edge of the triangle.
                   var onTriangle = new THREE.Vector2();
@@ -417,7 +417,7 @@
                                       imb_r);
                 return inversion;
               }
-          </code></pre>        
+          </code></pre>
 
           <h2>Alternative Approaches</h2>
           <p>
@@ -458,7 +458,7 @@
             the somewhat simpler JSFiddle below.  The <a href="https://jsfiddle.net/RobertLRead/o1vnfrh7/">JSFiddle</a> shows how to
             style the diagram (including colors, etc.) in .css.
           </p>
-          <iframe width="100%" height="300" src="//jsfiddle.net/RobertLRead/o1vnfrh7/embedded/js,html,css,result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>  
+          <iframe width="100%" height="300" src="//jsfiddle.net/RobertLRead/o1vnfrh7/embedded/js,html,css,result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
           </p>
           <p> There is a single callback which is called when the user clicks, and returns the balance vector, which is the heart of the diagram.
           <p>
@@ -481,7 +481,7 @@
             This project is contributing JavaScript and math which makes implementing a TriadBalance diagram easy for a JavaScript programmer.
             However, the 200 lines of code needed to implement the math could easily be translated to some other language.
             As is, the code should be easy to include on any webpage.
-            I would love to have somebody take this 
+            I would love to have somebody take this
             code even further make a <a href="https://d3js.org/"> d3</a> or <a href="https://reactjs.org/">React</a> component out of it, so that it could be enjoyed by others as a plug-in as easy using another d3 GUI element, for example.
           </p>
           <h4>How to Lighten the Footprint</h4>
@@ -505,13 +505,13 @@ executed on loading, the will print failed assertions on our browser console or 
             can be easily invoked from a browser. Any failing tests will provide output to the browser&#39;s
             JavaScript console. Invoking the test function and receiving no output indicates all the tests passed.
           </p>
-          
+
           <h2>License</h2>
           <p>
             You are free to reuse this software under the terms
             of the GNU General Public License. Although the code is covered
             by the GPL, the algorithm is not. Please re-code the
-            math and algorithm here and use it as you see fit. 
+            math and algorithm here and use it as you see fit.
           </p>
           <p>
             Contact me (&lt;read.robert@gmail.com&gt;) with any questions or comments.    </p>
@@ -528,7 +528,7 @@ executed on loading, the will print failed assertions on our browser console or 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
-<!-- This is experimental; this is my attempt to use vec-la-fp -->
+<!-- I uses a slight extension of the vec-la-fp library by Francis Stokes. -->
 <script src="./js/vec.window.js"></script>
 
 <!-- This is brings in the math and the norm defintions we need -->
@@ -539,7 +539,7 @@ executed on loading, the will print failed assertions on our browser console or 
 <script src="./test/TriadBalanceTest.js"></script>
 
 
-<!-- The main() for this page, and examples of using the element -->    
+<!-- The main() for this page, and examples of using the element -->
 <script src="./src/TriadBalanceDiagram.js"></script>
 
 <script>
@@ -573,37 +573,38 @@ function setBalance(bal) {
   $( "#d2" ).text( (CUR_BAL[2] * 100).toFixed(0) +  "%" );
 }
 
-var UPWARDS_TRIANGLES;
-var DOWNWARDS_TRIANGLES;
 
-$( document ).ready(function() {
-  var GLOBAL_POINT_UP = true;
+// THIS IS AN EXAMPLE OF INITIALIZING THE TRIAD DIAGRAM
+var TBS;
+function init() {
+  // HERE IS THE INITIALIZATION of the object
   let GLOBAL_SVG_ID = "create_svg";
-  let GLOBAL_CONTAINER_ID = "container_to_have_global_coords_on_svg";
-  let GLOBAL_SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
-  let FONT_SIZE_RATIO_TO_HEIGHT = 1/20;
-  
+  TBS = new TriadBalanceState();
+  TBS.SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
+  TBS.POINTS_UPWARD = true;
+  TBS.FONT_SIZE_RATIO_TO_HEIGHT = 1/20;
   // These value look good to me but I am not a web designer.
   // 4/5 is generally too high for this!
-  let SIDE_TO_MIN_BOUND = 7/10;
+  TBS.SIDE_TO_MIN_BOUND = 7/10;
   // The percentage to push the origin down to make it look balanced.
-  let Y_DISP_PER_CENT = 10;  
+  TBS.Y_DISP_PER_CENT = 10;
+  TBS.CLICK_CALLBACK = ((tp,tpi,bal) => setBalance(bal));
+  TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? L1 :L2);
+  TBS.LABELS = THREE_DIMENSIONS[CUR_LABELS];
 
-  UPWARDS_TRIANGLES = get_triangle(true,GLOBAL_SVG_ELT,
-                                   SIDE_TO_MIN_BOUND);
-  
-  DOWNWARDS_TRIANGLES = get_triangle(false,GLOBAL_SVG_ELT,
-                                     SIDE_TO_MIN_BOUND);
+  initialize_triad_diagram(TBS);
+}
 
-  if (testAllTriadBalance(true,UPWARDS_TRIANGLES)
-      && testAllTriadBalance(false,DOWNWARDS_TRIANGLES))
-  {
-    console.log("GREEN: TESTS ALL GREEN!");
-  } else {
-    console.log("RED: SOME TESTS FAILED!");    
-  }
-  WORLD_TRIANGLE_COORDS = GLOBAL_POINT_UP ?
-    UPWARDS_TRIANGLES : DOWNWARDS_TRIANGLES;
+
+
+$( document ).ready(function() {
+
+  $("#MBS").click(() => { set_and_render("MBS");});
+  $("#HHH").click(() => { set_and_render("HHH");});
+  $("#PSM").click(() => { set_and_render("PSM");});
+  $("#SEF").click(() => { set_and_render("SEF");});
+  $("#FSH").click(() => { set_and_render("FSH");});
+
 
   function set_dimension_labels(labels) {
     $("#d0l").text(labels[0] + ":");
@@ -614,14 +615,8 @@ $( document ).ready(function() {
   function set_and_render(cur) {
     CUR_LABELS = cur;
     set_dimension_labels(THREE_DIMENSIONS[cur]);
-    set_labels(GLOBAL_SVG_ELT,THREE_DIMENSIONS[cur]);
+    set_labels(TBS.SVG_ELT,THREE_DIMENSIONS[cur]);
   }
-
-  $("#MBS").click(() => { set_and_render("MBS");});
-  $("#HHH").click(() => { set_and_render("HHH");});
-  $("#PSM").click(() => { set_and_render("PSM");});
-  $("#SEF").click(() => { set_and_render("SEF");});
-  $("#FSH").click(() => { set_and_render("FSH");});
 
   // Catch the norm change and recompute...
   $(':radio[name="norm"]').change(function() {
@@ -632,63 +627,55 @@ $( document ).ready(function() {
     // First we get the triangle point by inverting using
     // the old norm..
     var triangle_coords_inside_triangle =
-        invertTriadBalance2to3(CUR_BAL,WORLD_TRIANGLE_COORDS,
-                               norm_to_use);
+        invertTriadBalance2to3(CUR_BAL,TBS.TRIAD_WORLD_TRIANGLE,
+                               TBS.NORM_TO_USE);
 
     // now recompute with new norm..
-    var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);
-    set_norm_to_use(GLOBAL_SVG_ELT,norm_to_use);
-    
+    TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? L1 :L2);
+    set_norm_to_use(TBS.SVG_ELT,TBS.NORM_TO_USE);
+
     let bal = TriadBalance2to3(triangle_coords_inside_triangle,
-                               WORLD_TRIANGLE_COORDS,
-                               norm_to_use);
+                               TBS.TRIAD_WORLD_TRIANGLE,
+                               TBS.NORM_TO_USE);
     setBalance(bal);
   });
 
 
   $(':radio[name="orientation"]').change(function() {
+    TBS.POINTS_UPWARD
+      = (getRadioValue("orientation") == 0 ? true : false);
 
-    GLOBAL_POINT_UP = (getRadioValue("orientation") == 0 ? true : false);
-    WORLD_TRIANGLE_COORDS = GLOBAL_POINT_UP ?
-      UPWARDS_TRIANGLES : DOWNWARDS_TRIANGLES;
-    
-    var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);  
-    initialize_triad_diagram(GLOBAL_SVG_ELT,
-                           norm_to_use,
-                           THREE_DIMENSIONS[CUR_LABELS],
-                           callback_for_click,
-                           GLOBAL_POINT_UP,
-                           FONT_SIZE_RATIO_TO_HEIGHT,
-                           SIDE_TO_MIN_BOUND,
-                           (GLOBAL_POINT_UP ?
-                            Y_DISP_PER_CENT : -Y_DISP_PER_CENT)
-                            );
+    initialize_triad_diagram(TBS);
 
     var triangle_coords_inside_triangle =
-        invertTriadBalance2to3(CUR_BAL,WORLD_TRIANGLE_COORDS,
-                               norm_to_use);
+        invertTriadBalance2to3(CUR_BAL,TBS.TRIAD_WORLD_TRIANGLE,
+                               TBS.NORM_TO_USE);
 
     let bal = TriadBalance2to3(triangle_coords_inside_triangle,
-                               WORLD_TRIANGLE_COORDS,
-                               norm_to_use);
+                               TBS.TRIAD_WORLD_TRIANGLE,
+                               TBS.NORM_TO_USE);
     setBalance(bal);
-    
+
   });
-  
-  function callback_for_click(tp,tpi,bal) {
-    setBalance(bal);    
+
+  init();
+
+  // NOW WE EXECUTE OUR TEST SUITE
+
+  var UPWARD_TRIANGLES = get_triangle(true,TBS.SVG_ELT,
+                                   TBS.SIDE_TO_MIN_BOUND);
+
+  var DOWNWARD_TRIANGLES = get_triangle(false,TBS.SVG_ELT,
+                                     TBS.SIDE_TO_MIN_BOUND);
+
+  if (testAllTriadBalance(true,UPWARD_TRIANGLES)
+      && testAllTriadBalance(false,DOWNWARD_TRIANGLES))
+  {
+    console.log("GREEN: TESTS ALL GREEN!");
+  } else {
+    console.log("RED: SOME TESTS FAILED!");
   }
-  var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);  
-  initialize_triad_diagram(GLOBAL_SVG_ELT,
-                           norm_to_use,
-                           THREE_DIMENSIONS[CUR_LABELS],
-                           callback_for_click,
-                           GLOBAL_POINT_UP,
-                           FONT_SIZE_RATIO_TO_HEIGHT,
-                           SIDE_TO_MIN_BOUND,
-                           (GLOBAL_POINT_UP ?
-                            Y_DISP_PER_CENT : -Y_DISP_PER_CENT)
-                          );
+
 });
 
     </script>
