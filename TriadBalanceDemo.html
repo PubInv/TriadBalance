@@ -247,7 +247,33 @@ attributes.
     stroke-width: 1px;
     r: 3px;
 }
-  </code></pre>
+</code></pre>
+
+Other aspects of configuration are done in JavaScript, although they are relative
+to the size of the SVG elment, which will resize itself correctly. The user
+doe not have to specify the size of the diagram, other than to design and the control
+the size of the svg element which contains it (probably in .css). The responsive of the
+diagram is demonstrated by this page.
+<pre><code class="language-js">
+function init() {
+  // HERE IS THE INITIALIZATION of the object
+  let GLOBAL_SVG_ID = "create_svg";
+  TBS = new TriadBalanceState();
+  TBS.SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
+  TBS.POINTS_UPWARD = true;
+  TBS.FONT_SIZE_RATIO_TO_HEIGHT = 1/20;
+  // These value look good to me but I am not a web designer.
+  // 4/5 is generally too high for this!
+  TBS.SIDE_TO_MIN_BOUND = 7/10;
+  // The percentage to push the origin down to make it look balanced.
+  TBS.Y_DISP_PER_CENT = 10;
+  TBS.CLICK_CALLBACK = ((tp,tpi,bal) => setBalance(bal));
+  TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? L1 :L2);
+  TBS.LABELS = THREE_DIMENSIONS[CUR_LABELS];
+
+  initialize_triad_diagram(TBS);
+}
+</code></pre>
   The <a href="https://jsfiddle.net/RobertLRead/o1vnfrh7/">JSFiddle</a> allows you to play with
     manipulating
             style the diagram (including colors, etc.) in .css.
@@ -546,8 +572,13 @@ a test suite that tests the math in <a href="./src/TriadBalanceMath.js">./src/Tr
 Since these functions make the most sense in a browser,
             we normally invoke <code class="language-js">testAllTriadBalance(WORLD_TRIANGLE_COORDS)</code> them from within a browser rather than with Mocha. When
 executed on loading, the will print failed assertions on your browser console or <code>GREEN: TESTS ALL GREEN!</code> message on the console in your browser.
-          </p>
-
+  </p>
+  <h4>A Weakness</h4>
+  The code sets the viewport of the SVG so that the center of the triangle is the center of the
+world coordinates. This might make it hard for a programmer to insert additional elments into
+the SVG, unless they are willing to do so relative to the center of the triangle, not the
+center of the bounding box. This would be a consideration if one wanted a richer graphical
+presentation, exemplifed by the <a href="https://en.wikipedia.org/wiki/Shield_of_the_Trinity">Scutum Fidei</a>.
           <h2>License</h2>
           <p>
             You are free to reuse this software under the terms
