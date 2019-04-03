@@ -188,7 +188,6 @@ function render_svg(svg,fs_ratio_to_height) {
   origin.setAttributeNS(null, 'r', 2);
   origin.setAttributeNS(null,"id","triangle_origin");        
   svg.appendChild(origin);
-  
 }
 
 

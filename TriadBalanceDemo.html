@@ -532,7 +532,12 @@ executed on loading, the will print failed assertions on our browser console or 
 <script src="./js/vec.window.js"></script>
 
 <!-- This is brings in the math and the norm defintions we need -->
-<script src="./TriadBalanceMath.js"></script>
+  <script src="./TriadBalanceMath.js"></script>
+
+  <!-- Unit tests (executable in browser). If not testing, this is not needed.
+  -->
+<script src="./TriadBalanceTest.js"></script>
+
 
 <!-- The main() for this page, and examples of using the element -->    
 <script src="./TriadBalanceDiagram.js"></script>
@@ -572,7 +577,7 @@ var UPWARDS_TRIANGLES;
 var DOWNWARDS_TRIANGLES;
 
 $( document ).ready(function() {
-  var GLOBAL_POINT_UP = false;
+  var GLOBAL_POINT_UP = true;
   let GLOBAL_SVG_ID = "create_svg";
   let GLOBAL_CONTAINER_ID = "container_to_have_global_coords_on_svg";
   let GLOBAL_SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
@@ -642,17 +647,32 @@ $( document ).ready(function() {
 
 
   $(':radio[name="orientation"]').change(function() {
+
+    GLOBAL_POINT_UP = (getRadioValue("orientation") == 0 ? true : false);
+    WORLD_TRIANGLE_COORDS = GLOBAL_POINT_UP ?
+      UPWARDS_TRIANGLES : DOWNWARDS_TRIANGLES;
+    
+    var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);  
+    initialize_triad_diagram(GLOBAL_SVG_ELT,
+                           norm_to_use,
+                           THREE_DIMENSIONS[CUR_LABELS],
+                           callback_for_click,
+                           GLOBAL_POINT_UP,
+                           FONT_SIZE_RATIO_TO_HEIGHT,
+                           SIDE_TO_MIN_BOUND,
+                           (GLOBAL_POINT_UP ?
+                            Y_DISP_PER_CENT : -Y_DISP_PER_CENT)
+                            );
+
     var triangle_coords_inside_triangle =
         invertTriadBalance2to3(CUR_BAL,WORLD_TRIANGLE_COORDS,
                                norm_to_use);
 
-    // now recompute with new norm..
-    GLOBAL_POINT_UP = (getRadioValue("orientation") == 0 ? true : false);
-    
     let bal = TriadBalance2to3(triangle_coords_inside_triangle,
                                WORLD_TRIANGLE_COORDS,
                                norm_to_use);
     setBalance(bal);
+    
   });
   
   function callback_for_click(tp,tpi,bal) {
@@ -661,7 +681,7 @@ $( document ).ready(function() {
   var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);  
   initialize_triad_diagram(GLOBAL_SVG_ELT,
                            norm_to_use,
-                           THREE_DIMENSIONS["MBS"],
+                           THREE_DIMENSIONS[CUR_LABELS],
                            callback_for_click,
                            GLOBAL_POINT_UP,
                            FONT_SIZE_RATIO_TO_HEIGHT,

@@ -124,7 +124,7 @@ function GetRayToLineSegmentIntersection(rayOrigin,rayDirection,point1,point2)
   const v3 = [-rdn[1],rdn[0]];
   const dot = vec.dot(v2,v3);
 
-  if (Math.abs(dot) < 0.000001)
+  if (near(dot,0))
     return null;
 
   const t1 = perpdot(v2,v1) / dot;
@@ -213,33 +213,6 @@ function eqEdgeAlgebraically(wtc,p) {
   }
 }
 
-function test_eqEdgeAlebraically(wtc) {
-  var rof = eqEdgeAlgebraically(wtc,[0,0]);
-  console.assert(rof.length == 0);
-
-  var r0 = eqEdgeAlgebraically(wtc,wtc[0]);
-  console.assert(r0.length == 2);
-
-  var r1 = eqEdgeAlgebraically(wtc,wtc[1]);
-  console.assert(r1.length == 2);
-
-  var r2 = eqEdgeAlgebraically(wtc,wtc[2]);
-  console.assert(r2.length == 2);
-
-  // slope of 1
-  var rone = eqEdgeAlgebraically(wtc,[1,1]);
-  console.assert(rone.length == 1);
-  console.assert(rone[0] == 1);
-
-  var rneg_one = eqEdgeAlgebraically(wtc,[-1,1]);
-  console.assert(rneg_one.length == 1);
-  console.assert(rneg_one[0] == 2);
-
-  var rdown = eqEdgeAlgebraically(wtc,[0.01,-1]);
-  console.assert(rdown.length == 1);
-  console.assert(rdown[0] == 0);
-  return true;
-}
 
 // Here we return the point on the edge
 // where the ray from the origin to tp intersects
@@ -288,49 +261,19 @@ function eqPointOnEdgeAlgebraically(wtc,tp) {
   }
 }
 
-function test_eqPointOnAlgebraically(wtc) {
-  var rof = eqPointOnEdgeAlgebraically(wtc,[0,0]);
-  console.assert(rof == null);
-
-  const halfvert = vec.scale(1/2,wtc[0]);
-  var r0 = eqPointOnEdgeAlgebraically(wtc,halfvert);
-  console.assert(pointsNear(r0,wtc[0]));
-
-  var r1 = eqPointOnEdgeAlgebraically(wtc,wtc[1]);
-  console.assert(pointsNear(r1,wtc[1]));
-
-  var r2 = eqPointOnEdgeAlgebraically(wtc,wtc[2]);
-  console.assert(pointsNear(r2,wtc[2]));
-
-  // slope of 1
-  var rone = eqPointOnEdgeAlgebraically(wtc,[1,1]);
-  console.assert(collinear(wtc[1],wtc[2],rone));
-
-  // slope of -1
-  var rneg_one = eqPointOnEdgeAlgebraically(wtc,[-1,1]);
-  console.assert(collinear(wtc[0],wtc[2],rneg_one));
-
-  // almost straight down
-  var rdown = eqPointOnEdgeAlgebraically(wtc,[0.01,-1]);
-  console.assert(collinear(rdown,wtc[0],wtc[1]));
-
-  return true;
-}
-
-
 
 function getEdgeAndPoint(wtc,p) {
 
   // If we are centered, vertical, pointing up, and equilateral,
   // we can use the more efficient algorithm.
-  // if (isCenteredEquilateral(wtc))
-  // {
-  //   // this may return two, but we can just take the first
-  //   return [eqEdgeAlgebraically(wtc,p)[0],
-  //           eqPointOnEdgeAlgebraically(wtc,p)];
-  // }
-  // else
-  // {
+  if (isCenteredEquilateral(wtc))
+  {
+    // this may return two, but we can just take the first
+    return [eqEdgeAlgebraically(wtc,p)[0],
+            eqPointOnEdgeAlgebraically(wtc,p)];
+  }
+  else
+  {
     var point_on_edge;
     var fe_idx = -1; // index of the first edge we intersect
     for(var i = 0; i < 3 && fe_idx < 0; i++) {
@@ -341,7 +284,7 @@ function getEdgeAndPoint(wtc,p) {
       }
     }
     return [fe_idx,point_on_edge];    
-//  }
+  }
 }
 
 
@@ -355,23 +298,21 @@ function TriadBalance2to3(p,wtc,LXnorm_and_length = L2) {
     return LXnormalize([1,1,1]);
   }
 
-  const origin = [0,0];
   // Now we want to do a linear interpolation of how far we are from an edge,
   // but also how far the projection to the edge is between the vertices.
   // We must first decide which edges the line from the orign to p intersects.
   // If it intersects two segments, then it is aimed at a vertex.
-  let g_e_and_p = getEdgeAndPoint(wtc,p);
-  let fe_idx = g_e_and_p[0]; // index of the first edge we intersect  
-  let point_on_edge = g_e_and_p[1];
+  let [fe_idx,point_on_edge] = getEdgeAndPoint(wtc,p);
   
   // now point_on_edge is a point on edge fe_idx.
-  const total_distance_to_edge = vec.dist(origin,point_on_edge);
+  const total_distance_to_edge = vec.dist([0,0],point_on_edge);
 
   // If the point is outside the triangle, we clamp (truncate if needed)
   // it's length so that it is precisely on the edge.
   const pc = clampLength(0,total_distance_to_edge,p);
   const distance_to_p_o_e = vec.dist(pc,point_on_edge);
   var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
+  
   let bal = v3c.scale(ratio_p_to_edge,
                       LXnormalize([1,1,1]));
 
@@ -420,7 +361,7 @@ function invertTriadBalance2to3(v,wtc,LXnorm_and_length = L2) {
   // it requires a little thought to understand which
   // of the other points should be the "from_v" and the "to_v"
   // for the interpolation which occurs later.
-  var s = imb[0] + imb[1] + imb[2]; // one of these is always zero.
+  let s = imb[0] + imb[1] + imb[2]; // one of these is always zero.
   if (imb[0] == 0) {
     from_v = wtc[2];
     to_v = wtc[1];
@@ -443,6 +384,64 @@ function invertTriadBalance2to3(v,wtc,LXnorm_and_length = L2) {
   // to it of length imb_r...
   return vec.lerp([0,0],onTriangle,imb_r);
 }
+
+function test_eqPointOnAlgebraically(wtc) {
+  var rof = eqPointOnEdgeAlgebraically(wtc,[0,0]);
+  console.assert(rof == null);
+
+  const halfvert = vec.scale(1/2,wtc[0]);
+  var r0 = eqPointOnEdgeAlgebraically(wtc,halfvert);
+  console.assert(pointsNear(r0,wtc[0]));
+
+  var r1 = eqPointOnEdgeAlgebraically(wtc,wtc[1]);
+  console.assert(pointsNear(r1,wtc[1]));
+
+  var r2 = eqPointOnEdgeAlgebraically(wtc,wtc[2]);
+  console.assert(pointsNear(r2,wtc[2]));
+
+  // slope of 1
+  var rone = eqPointOnEdgeAlgebraically(wtc,[1,1]);
+  console.assert(collinear(wtc[1],wtc[2],rone));
+
+  // slope of -1
+  var rneg_one = eqPointOnEdgeAlgebraically(wtc,[-1,1]);
+  console.assert(collinear(wtc[0],wtc[2],rneg_one));
+
+  // almost straight down
+  var rdown = eqPointOnEdgeAlgebraically(wtc,[0.01,-1]);
+  console.assert(collinear(rdown,wtc[0],wtc[1]));
+
+  return true;
+}
+
+function test_eqEdgeAlebraically(wtc) {
+  var rof = eqEdgeAlgebraically(wtc,[0,0]);
+  console.assert(rof.length == 0);
+
+  var r0 = eqEdgeAlgebraically(wtc,wtc[0]);
+  console.assert(r0.length == 2);
+
+  var r1 = eqEdgeAlgebraically(wtc,wtc[1]);
+  console.assert(r1.length == 2);
+
+  var r2 = eqEdgeAlgebraically(wtc,wtc[2]);
+  console.assert(r2.length == 2);
+
+  // slope of 1
+  var rone = eqEdgeAlgebraically(wtc,[1,1]);
+  console.assert(rone.length == 1);
+  console.assert(rone[0] == 1);
+
+  var rneg_one = eqEdgeAlgebraically(wtc,[-1,1]);
+  console.assert(rneg_one.length == 1);
+  console.assert(rneg_one[0] == 2);
+
+  var rdown = eqEdgeAlgebraically(wtc,[0.01,-1]);
+  console.assert(rdown.length == 1);
+  console.assert(rdown[0] == 0);
+  return true;
+}
+
 
 function testGetRayToLineSegmentIntersection(wtc) {
   let ro = [0,0];
@@ -494,111 +493,4 @@ function testOriginAndVertices(wtc) {
   return true;
 }
 
-// It is extremely valuable to be able to compute the
-// inverse of the TriadBalance algorithm for testing,
-// although this is not quite a true invesion because
-// points outside the triangle are brought to the triangle
-// edge.
-function computeFinverseF(wtc,norm,p) {
-   return invertTriadBalance2to3(
-     TriadBalance2to3(p,wtc,norm),
-     wtc,
-     norm);
-}
 
-function testInversion(wtc) {
-  // This insures we are within the triangle
-  let d = vec.dist(wtc[0],wtc[1]);
-  let p = [d/8,d/8];
-
-  let vpc = vec.sub(
-    computeFinverseF(wtc,L1,p),
-    p);
-  console.assert(near(vec.mag(vpc),0));
-
-  let py = [0,wtc[2][1]];
-  let vpyc = vec.sub(
-    computeFinverseF(wtc,L1,py),    
-    py);
-  console.assert(near(vec.mag(vpyc),0));
-  return true;
-}
-
-function testInversionOutside(wtc) {
-  // This insures we are outside the triangle
-  let d = vec.dist(wtc[0],wtc[1]);
-//  var vp = TriadBalance2to3([d,d],wtc,L1);
-//  var vp_inv = invertTriadBalance2to3(vp,wtc,L1);
-  var vp_inv = computeFinverseF(wtc,L1,[d,d]);    
-  // we now want to test that the invesion has a slope of 1
-  console.assert(near(vp_inv[1]/vp_inv[0],1));
-  console.assert(vp_inv[1] > 0);
-  return true;
-}
-
-function testInversionNegativeY(wtc) {
-  // This insures we are within the triangle
-  let d = vec.dist(wtc[0],wtc[1]);
-  let p = [0,-d/4];
-  var vp = TriadBalance2to3(p,wtc,L1);
-  var vp_inv = invertTriadBalance2to3(vp,wtc,L1);
-  // test length here
-  var vpc = vec.sub(vp_inv,p);
-  console.assert(near(vec.mag(vpc),0));
-  return true;
-}
-
-// Test via a circle completely within the triangle,
-// thus exercising all angles (instigated by a bug.)
-function testInversionWithACircle(wtc,NORM) {
-
-  let wtcp = wtc[1];
-  let radius = vec.mag(wtcp)/3;
-  let n = 10;
-  let one_thirteenth = 2 * Math.PI / 13;
-  for(var i = 0; i < n; i++) {
-    let x = Math.sin(i*one_thirteenth);
-    let y = Math.cos(i*one_thirteenth);
-    // now x,y is a point on a circle within the trinagle
-    // we will make sure the balance function inverts
-    // to give the function back to us.
-    {
-      let p = [x,y];
-      vec.scale(radius,p);
-      var vp_inv =  computeFinverseF(wtc,NORM,p);
-      var vpyc = vec.sub(vp_inv,p);
-      console.assert(near(vec.mag(vpyc),0));
-    }
-  }
-  return true;
-}
-
-// wtc is the WORLD_TRIANGLE_COORDS, an array of three Vector2 objects.
-function testEquilateralFunctions(wtc) {
-  var allTrue = 1;
-  allTrue &= test_eqEdgeAlebraically(wtc);
-  allTrue &= test_eqPointOnAlgebraically(wtc);
-  return allTrue;
-}
-function testAllTriadBalance(upward,wtc) {
-  var allTrue = 1;
-  if (upward) {
-    allTrue &= testEquilateralFunctions(wtc);
-    allTrue &= testGetRayToLineSegmentIntersection(wtc);
-  }
-  allTrue &= testOriginAndVertices(wtc);  
-  allTrue &= testTriadBalance2to3(wtc);
-  allTrue &= testInversion(wtc);
-  allTrue &= testInversionNegativeY(wtc);
-  allTrue &= testInversionOutside(wtc);
-  let wtcp = wtc[1];
-
-
-  let small_radius = vec.mag(wtcp)/3;
-  allTrue &= testInversionWithACircle(wtc,L1,small_radius);
-  allTrue &= testInversionWithACircle(wtc,L2,small_radius);
-  let large_radius = vec.mag(wtcp)*3;
-  allTrue &= testInversionWithACircle(wtc,L1,large_radius);
-  allTrue &= testInversionWithACircle(wtc,L2,large_radius);
-  return allTrue;
-}
