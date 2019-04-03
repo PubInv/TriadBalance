@@ -1,8 +1,27 @@
+// Copyright 2019, Robert L. Read
+// This file is part of TriadBalance.
+//
+// TriadBalance is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TriadBalance is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TriadBalance.  If not, see <https://www.gnu.org/licenses/>.
+
 // It is extremely valuable to be able to compute the
 // inverse of the TriadBalance algorithm for testing,
 // although this is not quite a true invesion because
 // points outside the triangle are brought to the triangle
 // edge.
+
+"use strict";
+
 function computeFinverseF(wtc,norm,p) {
    return invertTriadBalance2to3(
      TriadBalance2to3(p,wtc,norm),
@@ -10,32 +29,31 @@ function computeFinverseF(wtc,norm,p) {
      norm);
 }
 
-
 function test_eqPointOnAlgebraically(wtc) {
   var rof = eqPointOnEdgeAlgebraically(wtc,[0,0]);
   console.assert(rof == null);
 
   const halfvert = vec.scale(1/2,wtc[0]);
   var r0 = eqPointOnEdgeAlgebraically(wtc,halfvert);
-  console.assert(pointsNear(r0,wtc[0]));
+  console.assert(vec.near(1e-5,r0,wtc[0]));
 
   var r1 = eqPointOnEdgeAlgebraically(wtc,wtc[1]);
-  console.assert(pointsNear(r1,wtc[1]));
+  console.assert(vec.near(1e-5,r1,wtc[1]));
 
   var r2 = eqPointOnEdgeAlgebraically(wtc,wtc[2]);
-  console.assert(pointsNear(r2,wtc[2]));
+  console.assert(vec.near(1e-5,r2,wtc[2]));
 
   // slope of 1
   var rone = eqPointOnEdgeAlgebraically(wtc,[1,1]);
-  console.assert(collinear(wtc[1],wtc[2],rone));
+  console.assert(vec.colinear(wtc[1],wtc[2],rone));
 
   // slope of -1
   var rneg_one = eqPointOnEdgeAlgebraically(wtc,[-1,1]);
-  console.assert(collinear(wtc[0],wtc[2],rneg_one));
+  console.assert(vec.colinear(wtc[0],wtc[2],rneg_one));
 
   // almost straight down
   var rdown = eqPointOnEdgeAlgebraically(wtc,[0.01,-1]);
-  console.assert(collinear(rdown,wtc[0],wtc[1]));
+  console.assert(vec.colinear(rdown,wtc[0],wtc[1]));
 
   return true;
 }
@@ -89,7 +107,7 @@ function testGetRayToLineSegmentIntersection(wtc) {
 
   {
     var down = GetRayToLineSegmentIntersection(ro,[0,-4999],c0,c1);
-    console.assert(near(down[0][1],wtc[0][1])); 
+    console.assert(vec.scalarNear(1e-5,down[0][1],wtc[0][1]));
   }
   return true;
 }
@@ -97,24 +115,24 @@ function testGetRayToLineSegmentIntersection(wtc) {
 
 function testTriadBalance2to3(wtc) {
   let pv = TriadBalance2to3([30000,30],wtc,L1);
-  console.assert(near(L1LENGTH(pv),1));
-  
+  console.assert(vec.scalarNear(1e-5,L1LENGTH(pv),1));
+
   let pyv = TriadBalance2to3([0,wtc[2][1]],wtc,L1);
-  console.assert(near(L1LENGTH(pyv),1));
+  console.assert(vec.scalarNear(1e-5,L1LENGTH(pyv),1));
   return true;
 }
 
 function testOriginAndVertices(wtc) {
   // The origin should return a perfectly balanced vector
   let ov = TriadBalance2to3([0,0],wtc,L1);
-  console.assert(near(ov[0],1/3));
-  console.assert(near(ov[1],1/3));
-  console.assert(near(ov[2],1/3));
+  console.assert(vec.scalarNear(1e-5,ov[0],1/3));
+  console.assert(vec.scalarNear(1e-5,ov[1],1/3));
+  console.assert(vec.scalarNear(1e-5,ov[2],1/3));
 
   // A vertex should return a vector with a 1 in exactly 1 position
-  console.assert(near(TriadBalance2to3(wtc[0],wtc,L1)[0],1));
-  console.assert(near(TriadBalance2to3(wtc[1],wtc,L1)[1],1));
-  console.assert(near(TriadBalance2to3(wtc[2],wtc,L1)[2],1));    
+  console.assert(vec.scalarNear(1e-5,TriadBalance2to3(wtc[0],wtc,L1)[0],1));
+  console.assert(vec.scalarNear(1e-5,TriadBalance2to3(wtc[1],wtc,L1)[1],1));
+  console.assert(vec.scalarNear(1e-5,TriadBalance2to3(wtc[2],wtc,L1)[2],1));
 
   return true;
 }
@@ -139,24 +157,23 @@ function testInversion(wtc) {
   let vpc = vec.sub(
     computeFinverseF(wtc,L1,p),
     p);
-  console.assert(near(vec.mag(vpc),0));
+  console.assert(vec.scalarNear(1e-5,vec.mag(vpc),0));
 
   let py = [0,wtc[2][1]];
   let vpyc = vec.sub(
-    computeFinverseF(wtc,L1,py),    
+    computeFinverseF(wtc,L1,py),
     py);
-  console.assert(near(vec.mag(vpyc),0));
+  console.assert(vec.scalarNear(1e-5,vec.mag(vpyc),0));
   return true;
 }
 
 function testInversionOutside(wtc) {
   // This insures we are outside the triangle
   let d = vec.dist(wtc[0],wtc[1]);
-//  var vp = TriadBalance2to3([d,d],wtc,L1);
-//  var vp_inv = invertTriadBalance2to3(vp,wtc,L1);
-  var vp_inv = computeFinverseF(wtc,L1,[d,d]);    
+
+  var vp_inv = computeFinverseF(wtc,L1,[d,d]);
   // we now want to test that the invesion has a slope of 1
-  console.assert(near(vp_inv[1]/vp_inv[0],1));
+  console.assert(vec.scalarNear(1e-5,vp_inv[1]/vp_inv[0],1));
   console.assert(vp_inv[1] > 0);
   return true;
 }
@@ -165,11 +182,10 @@ function testInversionNegativeY(wtc) {
   // This insures we are within the triangle
   let d = vec.dist(wtc[0],wtc[1]);
   let p = [0,-d/4];
-  var vp = TriadBalance2to3(p,wtc,L1);
-  var vp_inv = invertTriadBalance2to3(vp,wtc,L1);
+  var vp_inv = computeFinverseF(wtc,L1,p);
   // test length here
   var vpc = vec.sub(vp_inv,p);
-  console.assert(near(vec.mag(vpc),0));
+  console.assert(vec.scalarNear(1e-5,vec.mag(vpc),0));
   return true;
 }
 
@@ -192,7 +208,7 @@ function testInversionWithACircle(wtc,NORM) {
       vec.scale(radius,p);
       var vp_inv =  computeFinverseF(wtc,NORM,p);
       var vpyc = vec.sub(vp_inv,p);
-      console.assert(near(vec.mag(vpyc),0));
+      console.assert(vec.scalarNear(1e-5,vec.mag(vpyc),0));
     }
   }
   return true;
@@ -211,7 +227,7 @@ function testAllTriadBalance(upward,wtc) {
     allTrue &= testEquilateralFunctions(wtc);
     allTrue &= testGetRayToLineSegmentIntersection(wtc);
   }
-  allTrue &= testOriginAndVertices(wtc);  
+  allTrue &= testOriginAndVertices(wtc);
   allTrue &= testTriadBalance2to3(wtc);
   allTrue &= testInversion(wtc);
   allTrue &= testInversionNegativeY(wtc);

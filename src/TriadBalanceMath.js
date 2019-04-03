@@ -17,48 +17,9 @@
 "use strict";
 
 
-// BRANCH specific: This is my attempt to use vec-la-fp
-// TODO: Possibly this (the perp dot product) could be added to vec-la-fp
-function perpdot(v1,v2)
-{
-  return (v1[0]*v2[1]) - (v1[1]*v2[0]);
-}
-// This is a candidate for entry.
-// function collinear(a,b,c) {
-//   var ar = a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (b[1] - c[1]);
-//   return near(ar,0);
-// }
-
-  function clampLength(min,max,v) {
-    const d = vec.mag(v);
-    if (d < min)
-      return vec.scale(min/d,v);
-    else if (d > max)
-      return vec.scale(max/d,v);
-    else
-      return v;
-  }
-function near(x,y,e = 1e-4) {
-  return Math.abs(x - y) < e;
-}
-
-// Maybe this should be called "manhattan near"?
-function pointsNear(a,b) {
-  return near(a[0],b[0]) && near(a[1],b[1]);
-}
-
-function triangle_area(a,b,c) {
-  return a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (b[1] - c[1]);
-}
-
-function collinear(a,b,c) {
-  return (near(triangle_area(a,b,c),0) || near(triangle_area(a,c,b),0));
-}
-
-
-// TODO: This needs to be scaled!!! 
-function centroid(wtc) {
-  return vec.addAll(wtc);
+// TODO: This needs to be scaled!!!
+function mean(wtc) {
+  return vec.scale(wtc.length,vec.addAll(wtc));
 }
 
 // Test that the point is vertically oriented, origin-centered equilateral triangle.
@@ -66,12 +27,12 @@ function isCenteredEquilateral(wtc) {
   let d0 = vec.dist(wtc[0],wtc[1]);
   let d1 = vec.dist(wtc[1],wtc[2]);
   let d2 = vec.dist(wtc[2],wtc[0]);
-  
-  return pointsNear([0,0],centroid(wtc))
+
+  return vec.near(1e-5,[0,0],mean(wtc))
   // Third point vertical..
     && ((wtc[2][0] == 0) && (wtc[2][1] > 0))
   // equilateral
-    && near(d0,d1) && near(d1,d2) && near(d2,d1);
+    && vec.scalarNear(1e-5,d0,d1) && vec.scalarNear(1e-5,d1,d2) && vec.scalarNear(1e-5,d2,d1);
 }
 
 
@@ -127,12 +88,12 @@ function GetRayToLineSegmentIntersection(rayOrigin,rayDirection,point1,point2)
   const v3 = [-rdn[1],rdn[0]];
   const dot = vec.dot(v2,v3);
 
-  if (near(dot,0))
+  if (vec.scalarNear(1e-5,dot,0))
     return null;
 
-  const t1 = perpdot(v2,v1) / dot;
+  const t1 = vec.perpdot(v2,v1) / dot;
   const t2 = vec.dot(v1,v3) / dot;
-  
+
   if (t1 >= 0.0 && (t2 >= 0.0 && t2 <= 1.0)) {
     return [vec.add(rayOrigin,vec.scale(t1,rdn)),t1];
   }
@@ -194,8 +155,8 @@ var L2 = [L2NORM,L2LENGTH];
 // If two edges are returned, this routine
 // returns them in sorted order.
 function eqEdgeAlgebraically(wtc,p) {
-  if (near(p[0],0)) {
-    if (near(p[1],0)) {
+  if (vec.scalarNear(1e-5,p[0],0)) {
+    if (vec.scalarNear(1e-5,p[1],0)) {
       return [];
     } else if (p[1] > 0) {
       return [1,2];
@@ -206,11 +167,11 @@ function eqEdgeAlgebraically(wtc,p) {
     let m = p[1]/p[0];
     let m1 = -SQRT3/3;
     let m2 = SQRT3/3;
-    if ((p[0] > 0) && (near(m,m1))) return [0,1];
+    if ((p[0] > 0) && (vec.scalarNear(1e-5,m,m1))) return [0,1];
     if ((p[0] > 0) && (m > m1)) return [1];
     if ((p[0] > 0) && (m < m1)) return [0];
 
-    if ((p[0] < 0) && (near(m,m2))) return [0,2];
+    if ((p[0] < 0) && (vec.scalarNear(1e-5,m,m2))) return [0,2];
     if ((p[0] < 0) && (m < m2)) return [2];
     if ((p[0] < 0) && (m > m2)) return [0];
   }
@@ -246,7 +207,7 @@ function eqPointOnEdgeAlgebraically(wtc,tp) {
     let yp = tp[1];
     let a = vec.dist(wtc[0],wtc[1]);
     let B = a * SQRT3/6;
-    if (near(xp,0)) {
+    if (vec.scalarNear(1e-5,xp,0)) {
       return (yp > 0) ? wtc[2] : [0,-B];
     }
     let m = yp/xp;
@@ -286,7 +247,7 @@ function getEdgeAndPoint(wtc,p) {
         point_on_edge = r[0]; // The first comp. of return value is intersection
       }
     }
-    return [fe_idx,point_on_edge];    
+    return [fe_idx,point_on_edge];
   }
 }
 
@@ -297,7 +258,8 @@ function getEdgeAndPoint(wtc,p) {
 // return the corresponding 3-vector in the attribute space
 function TriadBalance2to3(p,wtc,LXnorm_and_length = L2) {
   let LXnormalize = LXnorm_and_length[0];
-  if (near(vec.mag(p),0,1e-5)) {
+
+  if (vec.scalarNear(1e-5,vec.mag(p),0)) {
     return LXnormalize([1,1,1]);
   }
 
@@ -306,16 +268,16 @@ function TriadBalance2to3(p,wtc,LXnorm_and_length = L2) {
   // We must first decide which edges the line from the orign to p intersects.
   // If it intersects two segments, then it is aimed at a vertex.
   let [fe_idx,point_on_edge] = getEdgeAndPoint(wtc,p);
-  
+
   // now point_on_edge is a point on edge fe_idx.
   const total_distance_to_edge = vec.dist([0,0],point_on_edge);
 
   // If the point is outside the triangle, we clamp (truncate if needed)
   // it's length so that it is precisely on the edge.
-  const pc = clampLength(0,total_distance_to_edge,p);
+  const pc = vec.clampMag(0,total_distance_to_edge,p);
   const distance_to_p_o_e = vec.dist(pc,point_on_edge);
   var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
-  
+
   let bal = v3c.scale(ratio_p_to_edge,
                       LXnormalize([1,1,1]));
 
@@ -341,9 +303,9 @@ function TriadBalance2to3(p,wtc,LXnorm_and_length = L2) {
 // return the corresponding 2-vector in the triangle space
 function invertTriadBalance2to3(v,wtc,LXnorm_and_length = L2) {
   let length = LXnorm_and_length[1];
-  
+
   let min = Math.min(Math.min(v[0],v[1]),v[2]);
-  
+
   let imb = [v[0] - min,v[1] - min,v[2] - min];
   let bal = v3c.sub(v,imb);
   // Now that we have balance, we need to compute it's length,
@@ -387,6 +349,3 @@ function invertTriadBalance2to3(v,wtc,LXnorm_and_length = L2) {
   // to it of length imb_r...
   return vec.lerp([0,0],onTriangle,imb_r);
 }
-
-
-
