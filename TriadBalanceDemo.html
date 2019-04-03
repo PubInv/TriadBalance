@@ -31,14 +31,12 @@
 
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-    <script src="./js/three.js"></script>
-    
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
 
     <!-- Template of .css elements used to style the TriadBalance widget -->    
-    <link rel="stylesheet" type="text/css" href="./TriadBalance.css" />    
+    <link rel="stylesheet" type="text/css" href="./src/TriadBalance.css" />    
     
 
     <script src="https://code.jquery.com/jquery-1.12.1.js"></script>
@@ -47,14 +45,13 @@
 
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="./js/three.js"></script>
 
     <!-- Prism for typesetting code -->
     <link href="css/prism.css" rel="stylesheet" />
     
     
     <body>
-      <script src="./js/prism.js"></script>
+  <script src="./js/prism.js"></script>
       <br>
       <div class="container">
         <h1 class="section-title h1">Triad Balance</h1>
@@ -106,6 +103,21 @@
             <span>
               <label for="l2norm">L2 Norm (Sqrt of Squares):</label>
               <input type="radio" name="norm" id="l2norm">
+            </span>    
+          </div>
+  </fieldset>
+  
+        <fieldset>
+          <legend>Triangle Orientation:</legend>
+          <div style="display: flex; justify-content: space-around; font-size: large;">
+
+            <span>
+              <label for="upwards">Upwards:</label>
+              <input type="radio" name="orientation" id="upwards" checked="checked">
+            </span>
+            <span>
+              <label for="downwards">Downwards:</label>
+              <input type="radio" name="orientation" id="downwards">
             </span>    
           </div>
         </fieldset>
@@ -516,11 +528,19 @@ executed on loading, the will print failed assertions on our browser console or 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
+<!-- This is experimental; this is my attempt to use vec-la-fp -->
+<script src="./js/vec.window.js"></script>
+
 <!-- This is brings in the math and the norm defintions we need -->
-<script src="./TriadBalanceMath.js"></script>
+  <script src="./src/TriadBalanceMath.js"></script>
+
+  <!-- Unit tests (executable in browser). If not testing, this is not needed.
+  -->
+<script src="./test/TriadBalanceTest.js"></script>
+
 
 <!-- The main() for this page, and examples of using the element -->    
-<script src="./TriadBalanceDiagram.js"></script>
+<script src="./src/TriadBalanceDiagram.js"></script>
 
 <script>
 
@@ -531,6 +551,7 @@ var THREE_DIMENSIONS = { "MBS": ["Mind","Body","Spirit"],
                          "FSH": ["Father","Son","Holy Spirit"]
                        };
 var CUR_LABELS = "MBS";
+
 
 function getRadioValue(name) {
   var rates = document.getElementsByName(name);
@@ -547,14 +568,16 @@ var CUR_BAL;
 // norm_to_use should be a parameter here
 function setBalance(bal) {
   CUR_BAL = bal;
-  $( "#d0" ).text( (CUR_BAL.x * 100).toFixed(0) +  "%" );
-  $( "#d1" ).text( (CUR_BAL.y * 100).toFixed(0) +  "%" );
-  $( "#d2" ).text( (CUR_BAL.z * 100).toFixed(0) +  "%" );
+  $( "#d0" ).text( (CUR_BAL[0] * 100).toFixed(0) +  "%" );
+  $( "#d1" ).text( (CUR_BAL[1] * 100).toFixed(0) +  "%" );
+  $( "#d2" ).text( (CUR_BAL[2] * 100).toFixed(0) +  "%" );
 }
 
+var UPWARDS_TRIANGLES;
+var DOWNWARDS_TRIANGLES;
 
 $( document ).ready(function() {
-
+  var GLOBAL_POINT_UP = true;
   let GLOBAL_SVG_ID = "create_svg";
   let GLOBAL_CONTAINER_ID = "container_to_have_global_coords_on_svg";
   let GLOBAL_SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
@@ -566,15 +589,21 @@ $( document ).ready(function() {
   // The percentage to push the origin down to make it look balanced.
   let Y_DISP_PER_CENT = 10;  
 
-  WORLD_TRIANGLE_COORDS = get_world_triangle(GLOBAL_SVG_ELT,
-                                             SIDE_TO_MIN_BOUND);
+  UPWARDS_TRIANGLES = get_triangle(true,GLOBAL_SVG_ELT,
+                                   SIDE_TO_MIN_BOUND);
+  
+  DOWNWARDS_TRIANGLES = get_triangle(false,GLOBAL_SVG_ELT,
+                                     SIDE_TO_MIN_BOUND);
 
-  if (testAllTriadBalance(WORLD_TRIANGLE_COORDS)) {
+  if (testAllTriadBalance(true,UPWARDS_TRIANGLES)
+      && testAllTriadBalance(false,DOWNWARDS_TRIANGLES))
+  {
     console.log("GREEN: TESTS ALL GREEN!");
   } else {
     console.log("RED: SOME TESTS FAILED!");    
   }
-    
+  WORLD_TRIANGLE_COORDS = GLOBAL_POINT_UP ?
+    UPWARDS_TRIANGLES : DOWNWARDS_TRIANGLES;
 
   function set_dimension_labels(labels) {
     $("#d0l").text(labels[0] + ":");
@@ -616,17 +645,49 @@ $( document ).ready(function() {
     setBalance(bal);
   });
 
+
+  $(':radio[name="orientation"]').change(function() {
+
+    GLOBAL_POINT_UP = (getRadioValue("orientation") == 0 ? true : false);
+    WORLD_TRIANGLE_COORDS = GLOBAL_POINT_UP ?
+      UPWARDS_TRIANGLES : DOWNWARDS_TRIANGLES;
+    
+    var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);  
+    initialize_triad_diagram(GLOBAL_SVG_ELT,
+                           norm_to_use,
+                           THREE_DIMENSIONS[CUR_LABELS],
+                           callback_for_click,
+                           GLOBAL_POINT_UP,
+                           FONT_SIZE_RATIO_TO_HEIGHT,
+                           SIDE_TO_MIN_BOUND,
+                           (GLOBAL_POINT_UP ?
+                            Y_DISP_PER_CENT : -Y_DISP_PER_CENT)
+                            );
+
+    var triangle_coords_inside_triangle =
+        invertTriadBalance2to3(CUR_BAL,WORLD_TRIANGLE_COORDS,
+                               norm_to_use);
+
+    let bal = TriadBalance2to3(triangle_coords_inside_triangle,
+                               WORLD_TRIANGLE_COORDS,
+                               norm_to_use);
+    setBalance(bal);
+    
+  });
+  
   function callback_for_click(tp,tpi,bal) {
     setBalance(bal);    
   }
   var norm_to_use = (getRadioValue("norm") == 0 ? L1 :L2);  
   initialize_triad_diagram(GLOBAL_SVG_ELT,
                            norm_to_use,
-                           THREE_DIMENSIONS["MBS"],
+                           THREE_DIMENSIONS[CUR_LABELS],
                            callback_for_click,
+                           GLOBAL_POINT_UP,
                            FONT_SIZE_RATIO_TO_HEIGHT,
                            SIDE_TO_MIN_BOUND,
-                           Y_DISP_PER_CENT
+                           (GLOBAL_POINT_UP ?
+                            Y_DISP_PER_CENT : -Y_DISP_PER_CENT)
                           );
 });
 
