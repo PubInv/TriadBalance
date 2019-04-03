@@ -24,10 +24,10 @@ function perpdot(v1,v2)
   return (v1[0]*v2[1]) - (v1[1]*v2[0]);
 }
 // This is a candidate for entry.
-function collinear(a,b,c) {
-  var ar = a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (b[1] - c[1]);
-  return near(ar,0);
-}
+// function collinear(a,b,c) {
+//   var ar = a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (b[1] - c[1]);
+//   return near(ar,0);
+// }
 
   function clampLength(min,max,v) {
     const d = vec.mag(v);
@@ -42,6 +42,7 @@ function near(x,y,e = 1e-4) {
   return Math.abs(x - y) < e;
 }
 
+// Maybe this should be called "manhattan near"?
 function pointsNear(a,b) {
   return near(a[0],b[0]) && near(a[1],b[1]);
 }
@@ -54,6 +55,8 @@ function collinear(a,b,c) {
   return (near(triangle_area(a,b,c),0) || near(triangle_area(a,c,b),0));
 }
 
+
+// TODO: This needs to be scaled!!! 
 function centroid(wtc) {
   return vec.addAll(wtc);
 }
@@ -385,112 +388,5 @@ function invertTriadBalance2to3(v,wtc,LXnorm_and_length = L2) {
   return vec.lerp([0,0],onTriangle,imb_r);
 }
 
-function test_eqPointOnAlgebraically(wtc) {
-  var rof = eqPointOnEdgeAlgebraically(wtc,[0,0]);
-  console.assert(rof == null);
-
-  const halfvert = vec.scale(1/2,wtc[0]);
-  var r0 = eqPointOnEdgeAlgebraically(wtc,halfvert);
-  console.assert(pointsNear(r0,wtc[0]));
-
-  var r1 = eqPointOnEdgeAlgebraically(wtc,wtc[1]);
-  console.assert(pointsNear(r1,wtc[1]));
-
-  var r2 = eqPointOnEdgeAlgebraically(wtc,wtc[2]);
-  console.assert(pointsNear(r2,wtc[2]));
-
-  // slope of 1
-  var rone = eqPointOnEdgeAlgebraically(wtc,[1,1]);
-  console.assert(collinear(wtc[1],wtc[2],rone));
-
-  // slope of -1
-  var rneg_one = eqPointOnEdgeAlgebraically(wtc,[-1,1]);
-  console.assert(collinear(wtc[0],wtc[2],rneg_one));
-
-  // almost straight down
-  var rdown = eqPointOnEdgeAlgebraically(wtc,[0.01,-1]);
-  console.assert(collinear(rdown,wtc[0],wtc[1]));
-
-  return true;
-}
-
-function test_eqEdgeAlebraically(wtc) {
-  var rof = eqEdgeAlgebraically(wtc,[0,0]);
-  console.assert(rof.length == 0);
-
-  var r0 = eqEdgeAlgebraically(wtc,wtc[0]);
-  console.assert(r0.length == 2);
-
-  var r1 = eqEdgeAlgebraically(wtc,wtc[1]);
-  console.assert(r1.length == 2);
-
-  var r2 = eqEdgeAlgebraically(wtc,wtc[2]);
-  console.assert(r2.length == 2);
-
-  // slope of 1
-  var rone = eqEdgeAlgebraically(wtc,[1,1]);
-  console.assert(rone.length == 1);
-  console.assert(rone[0] == 1);
-
-  var rneg_one = eqEdgeAlgebraically(wtc,[-1,1]);
-  console.assert(rneg_one.length == 1);
-  console.assert(rneg_one[0] == 2);
-
-  var rdown = eqEdgeAlgebraically(wtc,[0.01,-1]);
-  console.assert(rdown.length == 1);
-  console.assert(rdown[0] == 0);
-  return true;
-}
-
-
-function testGetRayToLineSegmentIntersection(wtc) {
-  let ro = [0,0];
-  let rd = [1,1];
-  let p1 = [0,10];
-  let p2 = [10,0];
-  var r = GetRayToLineSegmentIntersection(ro,rd,p1,p2)[0];
-  console.assert(r[0] == r[1]);
-  var r = GetRayToLineSegmentIntersection(ro,rd,p2,p1)[0];
-  console.assert(r[0] == r[1]);
-
-  var rd1 = [94.1015625,-36.36328125];
-  let c0 = wtc[0];
-  let c1 = wtc[1];
-  let c2 = wtc[2];
-
-  var r12 = GetRayToLineSegmentIntersection(ro,rd1,c1,c2);
-  console.assert(r12 != null);
-
-  {
-    var down = GetRayToLineSegmentIntersection(ro,[0,-4999],c0,c1);
-    console.assert(near(down[0][1],wtc[0][1])); 
-  }
-  return true;
-}
-
-
-function testTriadBalance2to3(wtc) {
-  let pv = TriadBalance2to3([30000,30],wtc,L1);
-  console.assert(near(L1LENGTH(pv),1));
-  
-  let pyv = TriadBalance2to3([0,wtc[2][1]],wtc,L1);
-  console.assert(near(L1LENGTH(pyv),1));
-  return true;
-}
-
-function testOriginAndVertices(wtc) {
-  // The origin should return a perfectly balanced vector
-  let ov = TriadBalance2to3([0,0],wtc,L1);
-  console.assert(near(ov[0],1/3));
-  console.assert(near(ov[1],1/3));
-  console.assert(near(ov[2],1/3));
-
-  // A vertex should return a vector with a 1 in exactly 1 position
-  console.assert(near(TriadBalance2to3(wtc[0],wtc,L1)[0],1));
-  console.assert(near(TriadBalance2to3(wtc[1],wtc,L1)[1],1));
-  console.assert(near(TriadBalance2to3(wtc[2],wtc,L1)[2],1));    
-
-  return true;
-}
 
 

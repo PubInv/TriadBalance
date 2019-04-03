@@ -171,6 +171,8 @@ function render_svg(svg,fs_ratio_to_height) {
                   "triad-vertices-labels",
                   vpx(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i][0]),
                   vpy(svg.triad_balance_state.TRIAD_WORLD_TRIANGLE[i][1]),
+
+                  // WARNING: This is somewhat arbitrary.
                   svg.triad_balance_state.POINTS_UPWARDS ? vertical_adjustments[i] : -vertical_adjustments[i]+fs/2,
                   d_labels[i]
                  );
