@@ -16,6 +16,8 @@
 
 "use strict";
 
+var vecBig = require("../js/vec.module.js");
+var vec = vecBig.vec;
 
 // TODO: This needs to be scaled!!!
 function mean(wtc) {
@@ -275,6 +277,7 @@ function TriadBalance2to3(p,wtc,LXnorm_and_length = L2) {
   // If the point is outside the triangle, we clamp (truncate if needed)
   // it's length so that it is precisely on the edge.
   const pc = vec.clampMag(0,total_distance_to_edge,p);
+
   const distance_to_p_o_e = vec.dist(pc,point_on_edge);
   var ratio_p_to_edge =  distance_to_p_o_e/total_distance_to_edge;
 
@@ -349,3 +352,14 @@ function invertTriadBalance2to3(v,wtc,LXnorm_and_length = L2) {
   // to it of length imb_r...
   return vec.lerp([0,0],onTriangle,imb_r);
 }
+
+module.exports = {
+  TriadBalance2to3: TriadBalance2to3,
+  invertTriadBalance2to3: invertTriadBalance2to3,
+  eqPointOnEdgeAlgebraically: eqPointOnEdgeAlgebraically,
+  eqEdgeAlgebraically: eqEdgeAlgebraically,
+  GetRayToLineSegmentIntersection : GetRayToLineSegmentIntersection,
+  L1LENGTH: L1LENGTH,
+  L2LENGTH: L2LENGTH,
+  L1: L1,
+  L2: L2};

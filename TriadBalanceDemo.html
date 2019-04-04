@@ -39,10 +39,6 @@
     <link rel="stylesheet" type="text/css" href="./src/TriadBalance.css" />
 
 
-    <script src="https://code.jquery.com/jquery-1.12.1.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
@@ -602,18 +598,21 @@ presentation, exemplifed by the <a href="https://en.wikipedia.org/wiki/Shield_of
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
 <!-- I uses a slight extension of the vec-la-fp library by Francis Stokes. -->
-<script src="./js/vec.window.js"></script>
+<!-- <script src="./js/vec.window.js"></script> -->
 
 <!-- This is brings in the math and the norm defintions we need -->
-  <script src="./src/TriadBalanceMath.js"></script>
+<!--  <script src="./src/TriadBalanceMath.js"></script> -->
 
   <!-- Unit tests (executable in browser). If not testing, this is not needed.
   -->
-<script src="./test/TriadBalanceTest.js"></script>
+<!-- <script src="./test/TriadBalanceTest.js"></script> -->
 
 
 <!-- The main() for this page, and examples of using the element -->
-<script src="./src/TriadBalanceDiagram.js"></script>
+  <!-- <script src="./src/TriadBalanceDiagram.js"></script> -->
+
+  <script src="./dist/TriadBalance.js"></script>
+  <script src="./dist/TriadBalanceTest.js"></script>
 
 <script>
 
@@ -652,7 +651,7 @@ var TBS;
 function init() {
   // HERE IS THE INITIALIZATION of the object
   let GLOBAL_SVG_ID = "create_svg";
-  TBS = new TriadBalanceState();
+  TBS = new triadb.TriadBalanceState();
   TBS.SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
   TBS.POINTS_UPWARD = true;
   TBS.FONT_SIZE_RATIO_TO_HEIGHT = 1/20;
@@ -662,13 +661,13 @@ function init() {
   // The percentage to push the origin down to make it look balanced.
   TBS.Y_DISP_PER_CENT = 10;
   TBS.CLICK_CALLBACK = ((tp,tpi,bal) => setBalance(bal));
-  TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? L1 :L2);
+  TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? triadb.L1 : triadb.L2);
   TBS.LABELS = THREE_DIMENSIONS[CUR_LABELS];
 
-  initialize_triad_diagram(TBS);
+  triadb.initialize_triad_diagram(TBS);
 }
 
-
+var vec = triadb.vec;
 
 $( document ).ready(function() {
 
@@ -688,7 +687,7 @@ $( document ).ready(function() {
   function set_and_render(cur) {
     CUR_LABELS = cur;
     set_dimension_labels(THREE_DIMENSIONS[cur]);
-    set_labels(TBS.SVG_ELT,THREE_DIMENSIONS[cur]);
+    triadb.set_labels(TBS.SVG_ELT,THREE_DIMENSIONS[cur]);
   }
 
   // Catch the norm change and recompute...
@@ -700,14 +699,14 @@ $( document ).ready(function() {
     // First we get the triangle point by inverting using
     // the old norm..
     var triangle_coords_inside_triangle =
-        invertTriadBalance2to3(CUR_BAL,TBS.TRIAD_WORLD_TRIANGLE,
+        triadb.invertTriadBalance2to3(CUR_BAL,TBS.TRIAD_WORLD_TRIANGLE,
                                TBS.NORM_TO_USE);
 
     // now recompute with new norm..
     TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? L1 :L2);
-    set_norm_to_use(TBS.SVG_ELT,TBS.NORM_TO_USE);
+    triadb.set_norm_to_use(TBS.SVG_ELT,TBS.NORM_TO_USE);
 
-    let bal = TriadBalance2to3(triangle_coords_inside_triangle,
+    let bal = triadb.TriadBalance2to3(triangle_coords_inside_triangle,
                                TBS.TRIAD_WORLD_TRIANGLE,
                                TBS.NORM_TO_USE);
     setBalance(bal);
@@ -721,10 +720,10 @@ $( document ).ready(function() {
     initialize_triad_diagram(TBS);
 
     var triangle_coords_inside_triangle =
-        invertTriadBalance2to3(CUR_BAL,TBS.TRIAD_WORLD_TRIANGLE,
+        triadb.invertTriadBalance2to3(CUR_BAL,TBS.TRIAD_WORLD_TRIANGLE,
                                TBS.NORM_TO_USE);
 
-    let bal = TriadBalance2to3(triangle_coords_inside_triangle,
+    let bal = triadb.TriadBalance2to3(triangle_coords_inside_triangle,
                                TBS.TRIAD_WORLD_TRIANGLE,
                                TBS.NORM_TO_USE);
     setBalance(bal);
@@ -735,14 +734,14 @@ $( document ).ready(function() {
 
   // NOW WE EXECUTE OUR TEST SUITE
 
-  var UPWARD_TRIANGLES = get_triangle(true,TBS.SVG_ELT,
+  var UPWARD_TRIANGLES = triadb.get_triangle(true,TBS.SVG_ELT,
                                    TBS.SIDE_TO_MIN_BOUND);
 
-  var DOWNWARD_TRIANGLES = get_triangle(false,TBS.SVG_ELT,
+  var DOWNWARD_TRIANGLES = triadb.get_triangle(false,TBS.SVG_ELT,
                                      TBS.SIDE_TO_MIN_BOUND);
 
-  if (testAllTriadBalance(true,UPWARD_TRIANGLES)
-      && testAllTriadBalance(false,DOWNWARD_TRIANGLES))
+  if (triadbtest.testAllTriadBalance(true,UPWARD_TRIANGLES)
+      && triadbtest.testAllTriadBalance(false,DOWNWARD_TRIANGLES))
   {
     console.log("GREEN: TESTS ALL GREEN!");
   } else {

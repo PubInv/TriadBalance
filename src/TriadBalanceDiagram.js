@@ -17,6 +17,9 @@
 
 "use strict";
 
+var m = require("./TriadBalanceMath.js");
+var vec = require("../js/vec.module.js");
+
 // The TriadBalanceState is stashed in the svg element object
 // given us to insure uniqueness. I use the annoying long name "triad_balance_state"
 // specifically to make the chance of name collision very small.
@@ -117,7 +120,7 @@ function rerender_marker(svg,bal_vec) {
   if (bal_vec) {
     // We have to find the current marker and remove it..
     clear_markers(svg);
-    let tri_point = invertTriadBalance2to3(bal_vec,
+    let tri_point = m.invertTriadBalance2to3(bal_vec,
                                            svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,
                                            svg.triad_balance_state.NORM_TO_USE);
     let point = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
@@ -227,11 +230,11 @@ function clicked(evt,fs,svg,labels,click_callback) {
   svg.triad_balance_state.CUR_TRIANGLE_COORDS = [xc,yc];
 
   svg.triad_balance_state.CUR_BALANCE =
-    TriadBalance2to3(svg.triad_balance_state.CUR_TRIANGLE_COORDS,
+    m.TriadBalance2to3(svg.triad_balance_state.CUR_TRIANGLE_COORDS,
                      svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,
                      svg.triad_balance_state.NORM_TO_USE);
 
-  var tri_point = invertTriadBalance2to3(
+  var tri_point = m.invertTriadBalance2to3(
     svg.triad_balance_state.CUR_BALANCE,
     svg.triad_balance_state.TRIAD_WORLD_TRIANGLE,
     svg.triad_balance_state.NORM_TO_USE);
@@ -294,3 +297,16 @@ function initialize_triad_diagram(tbs) {
     });
 
 }
+
+module.exports = {
+  vec: vec,
+  initialize_triad_diagram: initialize_triad_diagram,
+  get_triangle: get_triangle,
+  TriadBalanceState: TriadBalanceState,
+  set_norm_to_use: set_norm_to_use,
+  set_labels: set_labels,
+  TriadBalance2to3: m.TriadBalance2to3,
+  invertTriadBalance2to3: m.invertTriadBalance2to3
+};
+
+console.log(vec);
