@@ -27,10 +27,10 @@ var vec = require("../js/vec.module.js");
 class TriadBalanceState {
   constructor(svg,ccb,lbls,
               twt,w,h,cb,ctc,
-              ntu = L1,
+              ntu = m.L1,
               s_t_m_b = 7/10,
               fs_r_t_h = 1/20,
-              ydpc 10,
+              ydpc = 10,
               pu = true) {
 
     // REQUIRED

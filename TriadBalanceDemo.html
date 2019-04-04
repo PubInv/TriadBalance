@@ -649,14 +649,14 @@ function setBalance(bal) {
 // THIS IS AN EXAMPLE OF INITIALIZING THE TRIAD DIAGRAM
 var TBS;
 function init() {
-  // HERE IS THE INITIALIZATION of the object
+  // HERE IS THE INITIALIZATION OF THE DIAGRAM
   let GLOBAL_SVG_ID = "create_svg";
   TBS = new triadb.TriadBalanceState();
   TBS.SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
   TBS.CLICK_CALLBACK = ((tp,tpi,bal) => setBalance(bal));
   TBS.LABELS = THREE_DIMENSIONS[CUR_LABELS];
 
-  // These are optional configuraton settins, which have defaults.
+  // These are optional configuraton settings, which have defaults.
   TBS.POINTS_UPWARD = true;
   TBS.FONT_SIZE_RATIO_TO_HEIGHT = 1/20;
   // These value look good to me but I am not a web designer.
@@ -667,11 +667,8 @@ function init() {
 
   TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? triadb.L1 : triadb.L2);
 
-
   triadb.initialize_triad_diagram(TBS);
 }
-
-var vec = triadb.vec;
 
 $( document ).ready(function() {
 
@@ -736,7 +733,7 @@ $( document ).ready(function() {
 
   init();
 
-  // NOW WE EXECUTE OUR TEST SUITE
+  // NOW WE EXECUTE OUR TEST SUITE; A NON-DEVELOPER NEED NOT DO THIS
 
   var UPWARD_TRIANGLES = triadb.get_triangle(true,TBS.SVG_ELT,
                                    TBS.SIDE_TO_MIN_BOUND);

@@ -9,8 +9,7 @@
   },
   "scripts": {
     "build": "browserify --debug src/TriadBalanceDiagram.js --standalone triadb > dist/TriadBalance.js",
-    "build-browser-tests": "browserify test/TriadBalanceTest.js --standalone triadbtest > dist/TriadBalanceTest.js",
-    "test": "mocha"
+    "build-browser-test": "browserify --debug test/TriadBalanceTest.js --standalone triadbtest > dist/TriadBalanceTest.js"
   },
   "repository": {
     "type": "git",
