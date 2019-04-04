@@ -15,16 +15,44 @@ It should be easy for any javascript programmer to embed this on
 a page. A full test suite and example code should assist in reuse.
 </p>
 
+# Usage
+
+To place an interactive diagram on your page:
+
+Include the file ./dist/TriadBalance.js in your HTML.
+Include the file ./dist/TriadBalance.css for styling.
+Create an SVG element where you want the diagram.
+Create a callback to receive the data when the diagram is clicked on.
+In your JavaScript, create the initialization object from
+your svg element and your callback. Other configuration is
+possible, but defaults are given.
+
+Call:
+triadb.initialize_triad_diagrem(TBS);
+
+
+# Development Usage
+
+Mocha at present requires no other pacakges from NPM, though
+it currently directly inlcludes a slight extension of vec-la-fp.
+
+TriadBalance has mocha tests, and a browser-based test page.
+
+To run the tests, install mocha
+
+>  npm install --global mocha
+
+Run mocha directly, or point your browser at the test file:
+TriadBalanceTest.html.
 
   <h2>License</h2>
   <p>
   You are free to reuse this software under the terms
   of the GNU General Public License. Although the code is covered
   by the GPL, the algorithm is not. Please re-code the
-  math and algorithm here and use it as you see fit. 
+  math and algorithm here and use it as you see fit.
   </p>
   <p>
 Contact me (&lt;read.robert@gmail.com&gt;) with any questions or comments.    </p>
   <h2> Acknowledgements</h2>
   <p>Thanks to Mark Frazier for the concept and Sean Johnson for a proofread and code review.</p>
-

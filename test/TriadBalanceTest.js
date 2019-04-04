@@ -23,8 +23,10 @@
 "use strict";
 
 var m = require("../src/TriadBalanceMath.js");
-var vecBig = require("../js/vec.module.js");
-var vec = vecBig.vec;
+var vecModule = require("../js/vec.module.js");
+
+// vec-la-fp places nice names in a member named "vec"
+var vec = vecModule.vec;
 
 function computeFinverseF(wtc,norm,p) {
    return m.invertTriadBalance2to3(
@@ -225,6 +227,7 @@ function testEquilateralFunctions(wtc) {
   allTrue &= test_eqPointOnAlgebraically(wtc);
   return allTrue;
 }
+
 function testAllTriadBalance(upward,wtc) {
   var allTrue = 1;
   if (upward) {
@@ -247,6 +250,7 @@ function testAllTriadBalance(upward,wtc) {
   allTrue &= testInversionWithACircle(wtc,m.L2,large_radius);
   return allTrue;
 }
+
 module.exports = {
   testAllTriadBalance: testAllTriadBalance
 };

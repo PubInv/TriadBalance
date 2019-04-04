@@ -16,8 +16,10 @@
 
 "use strict";
 
-var vecBig = require("../js/vec.module.js");
-var vec = vecBig.vec;
+var vecModule = require("../js/vec.module.js");
+
+// vec-la-fp places nice names in a member named "vec"
+var vec = vecModule.vec;
 
 // TODO: This needs to be scaled!!!
 function mean(wtc) {

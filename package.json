@@ -10,7 +10,7 @@
   "scripts": {
     "build": "browserify --debug src/TriadBalanceDiagram.js --standalone triadb > dist/TriadBalance.js",
     "build-browser-tests": "browserify test/TriadBalanceTest.js --standalone triadbtest > dist/TriadBalanceTest.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -29,5 +29,9 @@
   "bugs": {
     "url": "https://github.com/PubInv/TriadBalance/issues"
   },
-  "homepage": "https://github.com/PubInv/TriadBalance#readme"
+  "homepage": "https://github.com/PubInv/TriadBalance#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2"
+  }
 }

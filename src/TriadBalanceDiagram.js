@@ -25,31 +25,47 @@ var vec = require("../js/vec.module.js");
 // specifically to make the chance of name collision very small.
 
 class TriadBalanceState {
-  constructor(svg,ccb,cb,ctc,w,h,wh,hh,ntu,lbls,twt,fs_r_t_h,ydpc,pu) {
+  constructor(svg,ccb,lbls,
+              twt,w,h,cb,ctc,
+              ntu = L1,
+              s_t_m_b = 7/10,
+              fs_r_t_h = 1/20,
+              ydpc 10,
+              pu = true) {
+
+    // REQUIRED
     // The SVG HTML ELMENT
     this.SVG_ELT = svg;
     // callback to receive numeric data on click
     this.CLICK_CALLBACK = ccb;
-    // The most recent "balance vector", a 3-attribute vector
-    this.CUR_BALANCE = cb;
-    // The most click point in 2-dimensional space of the SVG triangle
-    this.CUR_TRIANGLE_COORDS = ctc;
+    // An array of 3 titles for the 3 attributes
+    this.LABELS = lbls;
+
+    // THESES ARE COMPUTED VALUES
+    // The World Triangle coordinates
+    this.TRIAD_WORLD_TRIANGLE = twt;
     // The width of the SVG element
     this.W = w;
     // The Height  of the SVG element
     this.H = h;
+
+    // These are convenient storage
+    // The most recent "balance vector", a 3-attribute vector
+    this.CUR_BALANCE = cb;
+    // The most recent click point in 2-dimensional space of the SVG triangle
+    this.CUR_TRIANGLE_COORDS = ctc;
+
+    // OPTIONAL
     // Either the L1 or L2 norm (see TriadBalanceMath.js)
     this.NORM_TO_USE = ntu;
-    // An array of 3 titles for the 3 attributes
-    this.LABELS = lbls;
-    // The vertices of the triangle in the SVG world space
-    this.TRIAD_WORLD_TRIANGLE = twt;
     // For confiruation, the size of the font relative to the total height
     this.FONT_SIZE_RATIO_TO_HEIGHT = fs_r_t_h;
     // The percent of the height to lower the orign to create a balanced appearance
     this.Y_DISP_PER_CENT = ydpc;
     // Whether the triangle points up or not;
     this.POINTS_UPWARD = pu;
+    // The length of a triangle side to SVG elment size (ratio)
+    this.SIDE_TO_MIN_BOUND = s_t_m_b;
   }
   get Hhalf() {
     return this.H/2;
