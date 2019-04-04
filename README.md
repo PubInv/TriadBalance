@@ -5,7 +5,7 @@ Because this is an interactive demo, please go to [https://pubinv.github.io/Tria
 On the demo page you will see something that looks like this:
 
 <img width="50%' src="./images/ExampleScreenShot.png"
-alt="example triad diagram></img>
+alt="example triad diagram"></img>
 
 # Purpose and Status
 <p>
