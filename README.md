@@ -2,6 +2,8 @@
 
 Because this is an interactive demo, please go to [https://pubinv.github.io/TriadBalance/TriadBalanceDemo.html](https://pubinv.github.io/TriadBalance/TriadBalanceDemo.html), which has an extensive demo and a <a href="https://jsfiddle.net/RobertLRead/o1vnfrh7/">JSFiddle</a>.
 
+<img src="./images/ExampleScreenShot.png"></img>
+
 # Purpose and Status
 <p>
 This interactive page presents what may be a new graphical user interface element — the "triad-balance" diagram. The purpose is to use a
@@ -19,31 +21,35 @@ a page. A full test suite and example code should assist in reuse.
 
 To place an interactive diagram on your page:
 
-Include the file ./dist/TriadBalance.js in your HTML.
-Include the file ./dist/TriadBalance.css for styling.
-Create an SVG element where you want the diagram.
-Create a callback to receive the data when the diagram is clicked on.
-In your JavaScript, create the initialization object from
+* Include the file ./dist/TriadBalance.js in your HTML.
+* Include the file ./dist/TriadBalance.css for styling.
+* Create an SVG element where you want the diagram.
+* Create a callback to receive the data when the diagram is clicked on.
+* In your JavaScript, create the initialization object from
 your svg element and your callback. Other configuration is
 possible, but defaults are given.
 
-Call:
-triadb.initialize_triad_diagrem(TBS);
+This is a minimal example of invocation; for more explanation
+see the <a href="https://pubinv.github.io/TriadBalance/TriadBalanceDemo.html">docs</a>.
+```javascript
+function init() {
+  // HERE IS THE INITIALIZATION of the object
+  let GLOBAL_SVG_ID = "create_svg";
+  TBS = new TriadBalanceState();
+  TBS.SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
+  TBS.CLICK_CALLBACK = ((tp,tpi,bal) => foo(bal));
+  TBS.LABELS = ["Mind", "Body", "Spirit"];
+
+  triadb.initialize_triad_diagram(TBS);
+}
+```
 
 
 # Development Usage
 
-Mocha at present requires no other pacakges from NPM, though
-it currently directly inlcludes a slight extension of vec-la-fp.
+At present, TriadBalance depends on no other NPM modules. It is direcly including
+an extension of <a href="https://github.com/francisrstokes/vec-la-fp">vec-la-fp</a> by Francis Stokes.
 
-TriadBalance has mocha tests, and a browser-based test page.
-
-To run the tests, install mocha
-
->  npm install --global mocha
-
-Run mocha directly, or point your browser at the test file:
-TriadBalanceTest.html.
 
   <h2>License</h2>
   <p>
