@@ -1,0 +1,52 @@
+/*
+    Copyright 2019, Robert L. Read
+
+    This file is part of TriadBalance.
+
+    TriadBalance is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TriadBalance is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with TriadBalance.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#triad-balance-triangle {
+    fill: lemonchiffon;
+}
+
+.triad-vertices-labels {
+    fill: blue;
+    text-anchor: middle;
+}
+
+#triad-vertex-label-0 {
+    fill: green;
+}
+
+#triad-vertex-label-1 {
+    fill: blue;
+}
+
+#triad-vertex-label-2 {
+    fill: red;
+}
+
+#triangle_origin {
+    fill: black;
+    stroke: black;
+    stroke-width: 1px;
+}
+
+.triad-marker {
+    fill: red;
+    stroke: red;
+    stroke-width: 1px;
+    r: 3px;
+}
