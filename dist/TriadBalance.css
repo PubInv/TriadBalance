@@ -19,6 +19,8 @@
 
 #triad-balance-triangle {
     fill: lemonchiffon;
+    stroke: blue;
+    stroke-width: 1;
 }
 
 .triad-vertices-labels {
