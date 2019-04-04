@@ -2,7 +2,10 @@
 
 Because this is an interactive demo, please go to [https://pubinv.github.io/TriadBalance/TriadBalanceDemo.html](https://pubinv.github.io/TriadBalance/TriadBalanceDemo.html), which has an extensive demo and a <a href="https://jsfiddle.net/RobertLRead/o1vnfrh7/">JSFiddle</a>.
 
-<img src="./images/ExampleScreenShot.png"></img>
+On the demo page you will see something that looks like this:
+
+<img width="50%' src="./images/ExampleScreenShot.png"
+alt="example triad diagram></img>
 
 # Purpose and Status
 <p>
@@ -21,8 +24,8 @@ a page. A full test suite and example code should assist in reuse.
 
 To place an interactive diagram on your page:
 
-* Include the file ./dist/TriadBalance.js in your HTML.
-* Include the file ./dist/TriadBalance.css for styling.
+* Include the file <code>./dist/TriadBalance.js</code> in your HTML.
+* Include the file <code>./dist/TriadBalance.css</code> for styling.
 * Create an SVG element where you want the diagram.
 * Create a callback to receive the data when the diagram is clicked on.
 * In your JavaScript, create the initialization object from
@@ -47,9 +50,12 @@ function init() {
 
 # Development Usage
 
-At present, TriadBalance depends on no other NPM modules. It is direcly including
-an extension of <a href="https://github.com/francisrstokes/vec-la-fp">vec-la-fp</a> by Francis Stokes.
+TriadBalance is direcly including
+an extension of <a href="https://github.com/francisrstokes/vec-la-fp">vec-la-fp</a> by Francis Stokes. This has kept the footprint of this widget very small (< 12K bytes).
 
+There are extensive tests, which are loaded into a file in the browser.
+I prefer to use mocha but have found it difficult to make mocha tests
+work both the cli and the browser.
 
   <h2>License</h2>
   <p>

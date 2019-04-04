@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "build": "browserify --debug src/TriadBalanceDiagram.js --standalone triadb > dist/TriadBalance.js",
+    "build": "browserify -p tinyify src/TriadBalanceDiagram.js  --standalone triadb > dist/TriadBalance.js",
     "build-browser-test": "browserify --debug test/TriadBalanceTest.js --standalone triadbtest > dist/TriadBalanceTest.js"
   },
   "repository": {
@@ -31,6 +31,7 @@
   "homepage": "https://github.com/PubInv/TriadBalance#readme",
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.0.2"
+    "mocha": "^6.0.2",
+    "tinyify": "^2.5.0"
   }
 }
