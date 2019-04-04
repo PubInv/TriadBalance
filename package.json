@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "build": "browserify -p tinyify src/TriadBalanceDiagram.js  --standalone triadb > dist/TriadBalance.js",
+    "build": "browserify -p tinyify src/TriadBalanceDiagram.js --standalone triadb > dist/TriadBalance.js",
     "build-browser-test": "browserify --debug test/TriadBalanceTest.js --standalone triadbtest > dist/TriadBalanceTest.js"
   },
   "repository": {

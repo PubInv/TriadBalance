@@ -36,7 +36,7 @@
 
 
     <!-- Template of .css elements used to style the TriadBalance widget -->
-    <link rel="stylesheet" type="text/css" href="./src/TriadBalance.css" />
+    <link rel="stylesheet" type="text/css" href="./dist/TriadBalance.css" />
 
 
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -252,10 +252,14 @@ the size of the svg element which contains it (probably in .css). The responsive
 diagram is demonstrated by this page.
 <pre><code class="language-js">
 function init() {
-  // HERE IS THE INITIALIZATION of the object
+  // HERE IS THE INITIALIZATION OF THE DIAGRAM
   let GLOBAL_SVG_ID = "create_svg";
-  TBS = new TriadBalanceState();
+  TBS = new triadb.TriadBalanceState();
   TBS.SVG_ELT = document.getElementById(GLOBAL_SVG_ID);
+  TBS.CLICK_CALLBACK = ((tp,tpi,bal) => setBalance(bal));
+  TBS.LABELS = THREE_DIMENSIONS[CUR_LABELS];
+
+  // These are optional configuraton settings, which have defaults.
   TBS.POINTS_UPWARD = true;
   TBS.FONT_SIZE_RATIO_TO_HEIGHT = 1/20;
   // These value look good to me but I am not a web designer.
@@ -263,11 +267,10 @@ function init() {
   TBS.SIDE_TO_MIN_BOUND = 7/10;
   // The percentage to push the origin down to make it look balanced.
   TBS.Y_DISP_PER_CENT = 10;
-  TBS.CLICK_CALLBACK = ((tp,tpi,bal) => setBalance(bal));
-  TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? L1 :L2);
-  TBS.LABELS = THREE_DIMENSIONS[CUR_LABELS];
 
-  initialize_triad_diagram(TBS);
+  TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? triadb.L1 : triadb.L2);
+
+  triadb.initialize_triad_diagram(TBS);
 }
 </code></pre>
   The <a href="https://jsfiddle.net/RobertLRead/o1vnfrh7/">JSFiddle</a> allows you to play with
