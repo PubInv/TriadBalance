@@ -47,6 +47,8 @@ function init() {
 }
 ```
 
+The <code>TriadBalance</code> functions are brought into JavaScript under the symbol <code>triadb</code>.
+
 
 # Development Usage
 
