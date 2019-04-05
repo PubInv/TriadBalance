@@ -721,7 +721,7 @@ $( document ).ready(function() {
     TBS.POINTS_UPWARD
       = (getRadioValue("orientation") == 0 ? true : false);
 
-    initialize_triad_diagram(TBS);
+    triadb.initialize_triad_diagram(TBS);
 
     var triangle_coords_inside_triangle =
         triadb.invertTriadBalance2to3(CUR_BAL,TBS.TRIAD_WORLD_TRIANGLE,
