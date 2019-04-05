@@ -3,7 +3,7 @@
   "author": "Robert L. Read, <read.robert@gmail.com> (https://pubinv.github.io/PubInv/)",
   "version": "0.1.0",
   "main": "src/TriadBalanceDiagram.js",
-  "description": "Interactive diagram to represent a balance of a triad or trinity of attributes, such as Mind/Body/Spirt or Strength/Endurance/Flexibility",
+  "description": "Interactive widget/diagram to represent a balance of a triad or trinity of attributes, such as Mind/Body/Spirt or Strength/Endurance/Flexibility",
   "directories": {
     "test": "test"
   },
@@ -24,6 +24,7 @@
     "diagram",
     "javascript",
     "triad",
+    "widget",
     "trinity"
   ],
   "license": "GPL-3.0-or-later",
@@ -33,8 +34,6 @@
   "homepage": "https://github.com/PubInv/TriadBalance#readme",
   "devDependencies": {
     "browserify": "^16.2.3",
-    "chai": "^4.2.0",
-    "mocha": "^6.0.2",
     "tinyify": "^2.5.0"
   }
 }

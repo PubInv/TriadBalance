@@ -52,8 +52,21 @@ The <code>TriadBalance</code> functions are brought into JavaScript under the sy
 
 # Development Usage
 
+```bash
+npm install
+```
+
+Should give you <code>browserify</code> and <code>tinify</code>
+for the purpose of building; the code itself does not depend
+on anything not in the repo.
+
 TriadBalance is direcly including
 an extension of <a href="https://github.com/francisrstokes/vec-la-fp">vec-la-fp</a> by Francis Stokes. This has kept the footprint of this widget very small (< 12K bytes).
+
+<code>npm run build</code> execute scripts to copy to run
+browserify and tinify; build the browser test file, and, finally,
+copy the .css files into the distro and copy a file where it can be
+serverd by GitHub pages for the JSFiddle to read.
 
 There are extensive tests, which are loaded into a file in the browser.
 I prefer to use mocha but have found it difficult to make mocha tests
