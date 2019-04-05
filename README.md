@@ -1,4 +1,4 @@
-# Triad Balance Interactive, Respsonsive Diagram
+# Triad Balance Interactive, Responsive Diagram
 
 Because this is an interactive demo, please go to [https://pubinv.github.io/TriadBalance/TriadBalanceDemo.html](https://pubinv.github.io/TriadBalance/TriadBalanceDemo.html), which has an extensive demo and a <a href="https://jsfiddle.net/RobertLRead/o1vnfrh7/">JSFiddle</a>.
 
@@ -16,7 +16,7 @@ This diagram solves the fundamental problem of converting a point
 on such a diagram into a 3-vector of values in a mathematically
 consistent and invertible way.
 The Triad Balance widget is fully responsive and stylable in css.
-It should be easy for any javascript programmer to embed this on
+It should be easy for any JavaScript programmer to embed this on
 a page. A full test suite and example code should assist in reuse.
 </p>
 

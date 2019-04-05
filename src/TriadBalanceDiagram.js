@@ -37,6 +37,11 @@ class TriadBalanceState {
     // The SVG HTML ELMENT
     this.SVG_ELT = svg;
     // callback to receive numeric data on click
+    // This routine is called ccb(tp,tipi,bal) upon clicks
+    // on the SVG elemement.
+    // tp = The triangle coordinates where the click occured,
+    // tpi = The point on the same line guaranteed to be "in" the triangle
+    // bal = The normalized 3-vector representing the attributes.
     this.CLICK_CALLBACK = ccb;
     // An array of 3 titles for the 3 attributes
     this.LABELS = lbls;
@@ -316,6 +321,7 @@ function initialize_triad_diagram(tbs) {
 
 module.exports = {
   vec: vec,
+  m: m,
   initialize_triad_diagram: initialize_triad_diagram,
   get_triangle: get_triangle,
   TriadBalanceState: TriadBalanceState,

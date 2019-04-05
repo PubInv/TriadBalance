@@ -284,7 +284,7 @@ function init() {
             The diagram is responsive; that is, it will change size more or less correctly, you can try it on this page.
           </p>
           <p>
-            Additionally, I have tried to give all of the elements clear ids and classes in .css, so that significatn styling may be done entirely in css.
+            Additionally, I have tried to give all of the elements clear ids and classes in .css, so that significant styling may be done entirely in css.
             However, some actions (such as adding multiple markers on the same diagram) cannot be implemented with styling and would require extensions to the
             current JavaScript code.
 
@@ -300,7 +300,7 @@ function init() {
   In this code, I use a slightly extended version of a light-weight, purely functional library,
   <a href="https://github.com/francisrstokes/vec-la-fp">vec-la-fp</a> by Francis Stokes, which has a
 nice <a href="https://hackernoon.com/more-functional-refactoring-a-vector-library-4bf3d6b88612">write-up</a>.
-  This vectore library is extremely small, keeping the load time for the total diagram code very low.
+  This vector library is extremely small, keeping the load time for the total diagram code very low.
             Additionally, I use
             a slight modification of a routine <code class="language-js">GetRayToLineSegmentIntersection</code> <a href="https://stackoverflow.com/questions/14307158/how-do-you-check-for-intersection-between-a-line-segment-and-a-line-ray-emanatin">provided</a>
             on Stack Overflow by <a href="https://stackoverflow.com/users/71689/ezolotko">ezolotko</a>.
@@ -348,7 +348,7 @@ function TriadBalance2to3(p,wtc,LXnorm_and_length = L2) {
             Such a point must exists, and is on one edge or the intersection of two edges. Imagine a ray from the <code class="language-js">origin</code> through
             point <code class="language-js">p</code> to <code class="language-js">point_on_edge</code>.
             The point <code class="language-js">point_on_edge</code> is along the ray from <code class="language-js">origin</code> to <code class="language-js">p</code>
-  and length is at most the distance from the origin to the edge along this ray (to keep the point inside the triangle.) Determining which edget the ray hits is done in a subroutine
+  and length is at most the distance from the origin to the edge along this ray (to keep the point inside the triangle.) Determining which edge the ray hits is done in a subroutine
 <code class="language-js">getEdgeAndPoint</code>
           </p>
   <pre><code class="language-js">
@@ -574,10 +574,10 @@ executed on loading, the will print failed assertions on your browser console or
   </p>
   <h4>A Weakness</h4>
   The code sets the viewport of the SVG so that the center of the triangle is the center of the
-world coordinates. This might make it hard for a programmer to insert additional elments into
+world coordinates. This might make it hard for a programmer to insert additional elements into
 the SVG, unless they are willing to do so relative to the center of the triangle, not the
 center of the bounding box. This would be a consideration if one wanted a richer graphical
-presentation, exemplifed by the <a href="https://en.wikipedia.org/wiki/Shield_of_the_Trinity">Scutum Fidei</a>.
+presentation, exemplified by the <a href="https://en.wikipedia.org/wiki/Shield_of_the_Trinity">Scutum Fidei</a>.
           <h2>License</h2>
           <p>
             You are free to reuse this software under the terms
@@ -617,7 +617,8 @@ presentation, exemplifed by the <a href="https://en.wikipedia.org/wiki/Shield_of
   <script src="./dist/TriadBalance.js"></script>
   <script src="./dist/TriadBalanceTest.js"></script>
 
-<script>
+  <script>
+    "use strict";
 
 var THREE_DIMENSIONS = { "MBS": ["Mind","Body","Spirit"],
                          "HHH": ["Head","Heart","Hands"],
@@ -668,7 +669,7 @@ function init() {
   // The percentage to push the origin down to make it look balanced.
   TBS.Y_DISP_PER_CENT = 10;
 
-  TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? triadb.L1 : triadb.L2);
+  TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? triadb.m.L1 : triadb.m.L2);
 
   triadb.initialize_triad_diagram(TBS);
 }
@@ -707,7 +708,7 @@ $( document ).ready(function() {
                                TBS.NORM_TO_USE);
 
     // now recompute with new norm..
-    TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? L1 :L2);
+    TBS.NORM_TO_USE = (getRadioValue("norm") == 0 ? triadb.m.L1 : triadb.m.L2);
     triadb.set_norm_to_use(TBS.SVG_ELT,TBS.NORM_TO_USE);
 
     let bal = triadb.TriadBalance2to3(triangle_coords_inside_triangle,

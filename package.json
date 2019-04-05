@@ -8,8 +8,10 @@
     "test": "test"
   },
   "scripts": {
-    "build": "browserify -p tinyify src/TriadBalanceDiagram.js --standalone triadb > dist/TriadBalance.js",
-    "build-browser-test": "browserify --debug test/TriadBalanceTest.js --standalone triadbtest > dist/TriadBalanceTest.js"
+    "build": "npm run bbrowser; npm run build-browser-test; npm run copy-all",
+    "bbrowser": "browserify -p tinyify src/TriadBalanceDiagram.js --standalone triadb > dist/TriadBalance.js",
+    "build-browser-test": "browserify --debug test/TriadBalanceTest.js --standalone triadbtest > dist/TriadBalanceTest.js",
+    "copy-all": "cp src/TriadBalance.css dist/TriadBalance.css; cp dist/TriadBalance.js TriadBalance.forJSFiddle.js"
   },
   "repository": {
     "type": "git",
@@ -30,6 +32,7 @@
   },
   "homepage": "https://github.com/PubInv/TriadBalance#readme",
   "devDependencies": {
+    "browserify": "^16.2.3",
     "chai": "^4.2.0",
     "mocha": "^6.0.2",
     "tinyify": "^2.5.0"
