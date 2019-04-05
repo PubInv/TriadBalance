@@ -1,7 +1,7 @@
 {
   "name": "triadbalance",
   "author": "Robert L. Read, <read.robert@gmail.com> (https://pubinv.github.io/PubInv/)",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "src/TriadBalanceDiagram.js",
   "description": "Interactive widget/diagram to represent a balance of a triad or trinity of attributes, such as Mind/Body/Spirt or Strength/Endurance/Flexibility. It is responsive, has a small footprint (< 12kbytes), and well documented.",
   "directories": {
