@@ -1,7 +1,7 @@
 {
   "name": "triadbalance",
   "author": "Robert L. Read, <read.robert@gmail.com> (https://pubinv.github.io/PubInv/)",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "src/TriadBalanceDiagram.js",
   "description": "Interactive widget/diagram to represent a balance of a triad or trinity of attributes, such as Mind/Body/Spirt or Strength/Endurance/Flexibility. It is responsive, has a small footprint (< 12kbytes), and well documented.",
   "directories": {
@@ -10,6 +10,7 @@
   "scripts": {
     "build": "npm run bbrowser; npm run build-browser-test; npm run copy-all",
     "bbrowser": "browserify -p tinyify src/TriadBalanceDiagram.js --standalone triadb > dist/TriadBalance.js",
+    "bbrowser-debug": "browserify --debug src/TriadBalanceDiagram.js --standalone triadb > dist/TriadBalance.debug.js",
     "build-browser-test": "browserify --debug test/TriadBalanceTest.js --standalone triadbtest > dist/TriadBalanceTest.js",
     "copy-all": "cp src/TriadBalance.css dist/TriadBalance.css; cp dist/TriadBalance.js TriadBalance.forJSFiddle.js"
   },

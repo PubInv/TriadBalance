@@ -100,8 +100,14 @@ function set_labels(svg,labels) {
 // Create an upward pointing triangle
 
 function get_triangle(upward,svg,s_to_m_b = 7/10) {
-  let W = svg.clientWidth;
-  let H = svg.clientHeight;
+
+  // WARNING!  Firefox seems to demand this Chrome worked fine with lines below!
+  let c = svg.getClientRects()[0];
+  let W = c.width;
+  let H = c.height;
+  //  let W = svg.clientWidth;
+  //  let H = svg.clientHeight;
+
   // we compute against whichever dimension is smaller
   var min = Math.min(W,H);
 
@@ -278,8 +284,14 @@ function initialize_triad_diagram(tbs) {
 
   // We need this as a separate function to handle resize events.
   function setSizeConstants(svg) {
-    let W = svg.triad_balance_state.W = svg.clientWidth;
-    let H = svg.triad_balance_state.H = svg.clientHeight;
+    // WARNING!  Firefox seems to demand this!
+    let c = tbs.SVG_ELT.getClientRects()[0];
+    let W = c.width;
+    let H = c.height;
+    //    let W = svg.triad_balance_state.W = svg.clientWidth;
+    //    let H = svg.triad_balance_state.H = svg.clientHeight;
+    svg.triad_balance_state.W = W;
+    svg.triad_balance_state.H = H;
     let Whalf = svg.triad_balance_state.Whalf;
     let Hhalf = svg.triad_balance_state.Hhalf;
     svg.triad_balance_state.TRIAD_WORLD_TRIANGLE =
