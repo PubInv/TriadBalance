@@ -47,8 +47,8 @@
 }
 
 .triad-marker {
-    fill: red;
-    stroke: red;
+    fill: orange;
+    stroke: orange;
     stroke-width: 1px;
     r: 3px;
 }
